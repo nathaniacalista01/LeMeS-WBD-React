@@ -74,13 +74,13 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       {...rest}>
       <Flex h="20" alignItems="center" margin="15">
         <Image
-        src="/premiumlogo.png"
-        alt="Logo"
-        width="200px"
-        height="auto"
+          src="/premiumlogo.png"
+          alt="Logo"
+          width="200px"
+          height="auto"
         />
         <Flex ml="10">
-          <Icon as={BiMenu} display={{ base: 'flex', md: 'none' }} onClick={onClose} fontSize="30" cursor="pointer" color="white"/>
+          <Icon as={BiMenu} display={{ base: 'flex', md: 'none' }} onClick={onClose} fontSize="30" cursor="pointer" color="white" />
         </Flex>
       </Flex>
       {LinkItems.map((link) => (
@@ -119,14 +119,14 @@ const NavItem = ({ icon, destination, children, ...rest }: NavItemProps) => {
           {...rest}>
           {icon && (
             <Icon
-            mr="4"
+              mr="4"
               fontSize="30"
               _groupHover={{
                 color: 'black',
               }}
               as={icon}
-              />
-              )}
+            />
+          )}
           {children}
         </Flex>
       </Box>
@@ -152,7 +152,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
         variant="outline"
         onClick={onOpen}
         aria-label="open menu"
-        icon={<BiMenu fontSize="30"/>}
+        icon={<BiMenu fontSize="30" />}
       />
     </Flex>
   )
