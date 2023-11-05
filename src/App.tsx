@@ -15,7 +15,7 @@ function App() {
       flexDirection={"row"}
       className="App"
     >
-      <Navbar />
+      {/* <Navbar /> */}
       <Routes>
         {/* Contoh react router */}
         <Route path="/" element={<Home />} />
