@@ -1,13 +1,97 @@
-import React from 'react'
-import {Container, Heading} from "@chakra-ui/react"
-const Register = () => {
+import {
+  Text,
+  Box,
+  Flex,
+  Stack,
+  Button,
+  Image,
+  FormControl,
+  Input,
+  InputGroup,
+  useColorModeValue,
+  Container,
+} from "@chakra-ui/react";
+
+import { Link } from "react-router-dom";
+
+function Register() {
   return (
-    <Container display={"flex"} flexDir={"column"}>
-        <Heading>
-            Register page
-        </Heading>
-    </Container>    
-  )
+    <>
+    <Container
+    justifyContent={"center"}>
+      <Flex
+        minH={"100vh"}
+        align={"center"}
+        justify={"center"}
+        textColor={"black"}
+        bg={useColorModeValue("#f2f2f2", "gray.800")}
+        >
+        <Stack spacing={8} mx={"auto"} maxW={"lg"} py={8} px={6}>
+          <Stack align={"center"}>
+            <Image src="premiumlogo.png" alt="logo" mb={8} />
+            <Text fontSize={"lg"} color={"black"} fontWeight={"bold"}>
+              Create Account
+            </Text>
+          </Stack>
+
+          <Box>
+            <Stack spacing={4}>
+            <FormControl id="fullname" isRequired>
+                <Input
+                  type="text"
+                  bg="white"
+                  placeholder="Full Name"
+                  border={"none"}
+                  />
+              </FormControl>
+
+              <FormControl id="username" isRequired>
+                <Input
+                  type="text"
+                  bg="white"
+                  placeholder="Username"
+                  border={"none"}
+                  />
+              </FormControl>
+
+              <FormControl id="password" isRequired>
+                <InputGroup>
+                  <Input
+                    type="password"
+                    bg="white"
+                    placeholder="Password"
+                    border={"none"}
+                    />
+                </InputGroup>
+              </FormControl>
+
+              <Stack spacing={10} pt={2}>
+                <Button
+                  borderRadius={"22px"}
+                  size="lg"
+                  bg={"#9d4bff"}
+                  color={"white"}
+                  _hover={{ bg: "#23004d" }}
+                  >
+                  Sign Up
+                </Button>
+              </Stack>
+
+              <Stack pt={6}>
+                <Text align={"center"}>
+                  Already have an Account?{" "}
+                    <Link to={{ pathname: "/login" }} style={{ color: "#9d4bff" }}>
+                      Sign In
+                    </Link>
+                </Text>
+              </Stack>
+            </Stack>
+          </Box>
+        </Stack>
+      </Flex>
+      </Container>
+    </>
+  );
 }
 
-export default Register
+export default Register;
