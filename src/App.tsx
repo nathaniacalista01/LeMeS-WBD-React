@@ -7,7 +7,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Courses from "./pages/PremiumCourses";
 import Users from "./pages/PremiumUsers";
-import Navbar from "./components/Navbar";
+import Profile from "./pages/Profile";
+import Navbar from "./components/navbar/Navbar";
 function App() {
   return (
     <Container
@@ -23,6 +24,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/premium-courses" element={<Courses />} />
         <Route path="/premium-users" element={<Users />} />
       </Routes>
