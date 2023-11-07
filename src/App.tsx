@@ -17,6 +17,7 @@ function App() {
       display={"flex"}
       flexDirection={"row"}
       className="App"
+      bg={"#ffeaff"}
     >
       <Navbar />
       <Routes>
