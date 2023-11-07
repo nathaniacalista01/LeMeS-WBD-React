@@ -17,18 +17,8 @@ function Profile() {
                 direction='column'
                 alignSelf='center'
                 justifySelf='center'
+                mt="4rem"
                 overflow='hidden'>
-                <Flex
-                    direction='column'
-                    textAlign='center'
-                    justifyContent='center'
-                    align='center'
-                    mt='3rem'
-                    mb='15px'>
-                    <Text fontSize='4xl' color='black' fontWeight='bold'>
-                        Your Profile
-                    </Text>
-                </Flex>
                 <Flex alignItems='center' justifyContent='center' mb='60px' mt='20px'>
                     <Flex
                         direction='column'
@@ -39,6 +29,9 @@ function Profile() {
                         mx={{ base: "100px" }}
                         bg={useColorModeValue("#f2f2f2", "gray.700")}
                         boxShadow='0 20px 27px 0 rgb(0 0 0 / 15%)'>
+                        <Text fontSize='4xl' color='black' fontWeight='bold' mb="8">
+                            Your Profile
+                        </Text>
                         <FormControl>
                             <FormLabel ms='4px' fontSize='sm' fontWeight='normal'>
                                 Name
