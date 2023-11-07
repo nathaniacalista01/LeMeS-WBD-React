@@ -4,7 +4,6 @@ import {
     Heading,
     Button,
     Table,
-    Text,
     Thead,
     Tbody,
     Tr,
@@ -14,7 +13,6 @@ import {
     Flex,
     TableContainer,
     Icon,
-    useColorModeValue,
 } from '@chakra-ui/react';
 import {
     BiSolidTrash,
@@ -50,7 +48,7 @@ const UsersList = () => {
                     borderRadius='15px'
                     p='30px'
                     // mx={{ base: "100px" }}
-                    bg={useColorModeValue("#f2f2f2", "gray.700")}
+                    bg={"#f2f2f2"}
                     boxShadow='0 20px 27px 0 rgb(0 0 0 / 15%)'>
                     <Box display="flex" justifyContent="space-between" alignItems="center" mt="-5">
                         <Heading as="h1">

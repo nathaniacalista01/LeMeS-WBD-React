@@ -7,7 +7,6 @@ import {
     FormLabel,
     Input,
     Text,
-    useColorModeValue,
 } from "@chakra-ui/react";
 
 function Profile() {
@@ -27,13 +26,13 @@ function Profile() {
                         borderRadius='15px'
                         p='40px'
                         mx={{ base: "100px" }}
-                        bg={useColorModeValue("#f2f2f2", "gray.700")}
+                        bg={"#f2f2f2"}
                         boxShadow='0 20px 27px 0 rgb(0 0 0 / 15%)'>
                         <Text fontSize='4xl' color='black' fontWeight='bold' mb="8">
                             Your Profile
                         </Text>
                         <FormControl>
-                            <FormLabel ms='4px' fontSize='sm' fontWeight='normal'>
+                            <FormLabel ms='4px' fontSize='sm' fontWeight='bold'>
                                 Name
                             </FormLabel>
                             <Input
@@ -46,7 +45,7 @@ function Profile() {
                                 mb='24px'
                                 size='lg'
                             />
-                            <FormLabel ms='4px' fontSize='sm' fontWeight='normal'>
+                            <FormLabel ms='4px' fontSize='sm' fontWeight='bold'>
                                 Username
                             </FormLabel>
                             <Input
@@ -59,7 +58,7 @@ function Profile() {
                                 mb='24px'
                                 size='lg'
                             />
-                            {/* <FormLabel ms='4px' fontSize='sm' fontWeight='normal'>
+                            {/* <FormLabel ms='4px' fontSize='sm' fontWeight='bold'>
                                 Password
                             </FormLabel>
                             <Input
@@ -71,7 +70,7 @@ function Profile() {
                                 mb='24px'
                                 size='lg'
                             /> */}
-                            <FormLabel ms='4px' fontSize='sm' fontWeight='normal'>
+                            <FormLabel ms='4px' fontSize='sm' fontWeight='bold'>
                                 New Picture
                             </FormLabel>
                             <Input
