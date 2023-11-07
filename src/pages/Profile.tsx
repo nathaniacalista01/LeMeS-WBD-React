@@ -1,3 +1,4 @@
+import React from "react";
 import {
     Button,
     Container,
@@ -8,18 +9,17 @@ import {
     Text,
     useColorModeValue,
 } from "@chakra-ui/react";
-import React from "react";
 
 function Profile() {
     return (
-        <Container display={"flex"} flexDir={"column"} >
+        <Container display={"flex"} flexDir={"column"}>
             <Flex
                 direction='column'
                 alignSelf='center'
                 justifySelf='center'
-                mt="4rem"
+                mt="3rem"
                 overflow='hidden'>
-                <Flex alignItems='center' justifyContent='center' mb='60px' mt='20px'>
+                <Flex alignItems='center' justifyContent='center' mb='60px'>
                     <Flex
                         direction='column'
                         w='445px'
