@@ -6,7 +6,9 @@ import {
     Text,
     Link,
     Tooltip,
-    IconButton
+    IconButton,
+    Avatar,
+    WrapItem
 } from "@chakra-ui/react";
 import { IconType } from "react-icons";
 import { NavLink } from "react-router-dom";
@@ -17,12 +19,20 @@ export interface Item {
     to: string;
 }
 
+export interface Profile {
+    image_path: string;
+    label: string;
+    role: string;
+    to: string;
+}
+
 export interface ItemsProps {
     navItems: Item[];
     mode?: "semi" | "over";
+    pict: Profile;
 }
 
-export function Items({ navItems, mode = "semi" }: ItemsProps) {
+export function Items({ navItems, mode = "semi", pict }: ItemsProps) {
     const sidebarItemInOverMode = (item: Item, index: number) => (
         <ListItem key={index}>
             <Link
@@ -65,13 +75,53 @@ export function Items({ navItems, mode = "semi" }: ItemsProps) {
             </Tooltip>
         </ListItem>
     );
-    return (
-        <List spacing={3}>
-            {mode === "semi"
-                ? navItems.map((item, index) => sidebarItemInSemiMode(item, index))
-                : navItems.map((item, index) => sidebarItemInOverMode(item, index))}
-        </List>
-    );
+    if (mode === "semi") {
+        return (
+            <List spacing={3}>
+                <Tooltip label={pict.label} placement="right" bg="transparent" color="black">
+                    <NavLink to={pict.to} style={{ textDecoration: 'none' }}>
+                        <Text>{pict.role}</Text>
+                        <Avatar
+                            src={pict.image_path}
+                            name={pict.label}
+                            size="l"
+                            bg="transparent"
+                            _hover={{ cursor: 'pointer' }}
+                        />
+                    </NavLink>
+                </Tooltip>
+                {navItems.map((item, index) => sidebarItemInSemiMode(item, index))}
+            </List>
+        );
+    } else {
+        return (
+            <List spacing={3}>
+                <WrapItem>
+                    <Link
+                        display="block"
+                        as={NavLink}
+                        to={pict.to}
+                        _focus={{ bg: "gray.100" }}
+                        _hover={{
+                            bg: "gray.200"
+                        }}
+                        _activeLink={{ bg: "purple.500", color: "white" }}
+                        w="full"
+                        borderRadius="md"
+                    >
+                        <Flex alignItems="center" p={2}>
+                            <Avatar name={pict.label} src={pict.image_path} />
+                            <Flex display={"block"}>
+                                <Text ml={2} fontWeight={"bold"}>{pict.label}</Text>
+                                <Text ml={2}>{pict.role}</Text>
+                            </Flex>
+                        </Flex>
+                    </Link>
+                </WrapItem>
+                {navItems.map((item, index) => sidebarItemInOverMode(item, index))}
+            </List>
+        );
+    };
 }
 
 export default Items;
