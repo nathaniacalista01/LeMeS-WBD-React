@@ -8,11 +8,11 @@ import {
     VStack,
     DrawerBody,
     Text,
-    WrapItem
+    IconButton
 } from "@chakra-ui/react";
-import { useSidenav } from "./context/context";
-import Items, { Item, Profile } from "./items/items";
-import { Avatar } from '@chakra-ui/react'
+import { useSidenav } from "../context/context";
+import Items, { Item, Profile } from "../items/items";
+import { BiMenu } from "react-icons/bi";
 
 export interface SidenavProps {
     navItems: Item[];
@@ -20,12 +20,19 @@ export interface SidenavProps {
 }
 
 export function Sidenav({ navItems, pict }: SidenavProps) {
-    const { isOpen, onClose } = useSidenav();
+    const { isOpen, onClose, onOpen } = useSidenav();
     return (
         <React.Fragment>
-            <VStack spacing="3" as="nav" display={{ base: "none", md: "flex" }}>
-                <Text fontWeight={"bold"}>LeMeS</Text>
-                <Text mt="-5" fontWeight={"bold"}>Plus</Text>
+            <VStack spacing="3" as="nav" display="flex">
+                <IconButton
+                    mt="-5"
+                    aria-label="menu1"
+                    onClick={onOpen}
+                    icon={<BiMenu />}
+                    bg="transparent"
+                />
+                <Text mt="-3" fontWeight={"bold"}>LeMeS</Text>
+                <Text mt="-5" fontWeight={"bold"}>Premium</Text>
                 <Items navItems={navItems} pict={pict} />
             </VStack>
             <Drawer placement="left" onClose={onClose} isOpen={isOpen}>

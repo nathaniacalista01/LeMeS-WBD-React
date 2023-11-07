@@ -13,9 +13,9 @@ export function Container({ children, sidenav }: ContainerProps) {
                 <Box
                     pos="sticky"
                     top={0}
-                    w={{ base: 0, md: "72px" }}
+                    w={"72px"}
                     border="none"
-                    p={{ base: 0, md: 2 }}
+                    p={2}
                     paddingTop={8}
                     height="100vh"
                     overflow="auto"
@@ -32,7 +32,7 @@ export function Container({ children, sidenav }: ContainerProps) {
                     {sidenav}
                 </Box>
             </GridItem>
-            <GridItem as="main" area="main" p={{ base: 1, md: 1 }}>
+            <GridItem as="main" area="main" p={1}>
                 {children}
             </GridItem>
         </Grid>

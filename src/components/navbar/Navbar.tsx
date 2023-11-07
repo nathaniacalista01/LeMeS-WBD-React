@@ -6,8 +6,7 @@ import {
   Item,
   Profile,
   Sidenav
-} from "./sidenav";
-import { Navigation } from "./navigation/navigation";
+} from ".";
 
 export default function Navbar() {
   const pict: Profile = {
@@ -28,7 +27,6 @@ export default function Navbar() {
   return (
     <Provider>
       <Container sidenav={<Sidenav navItems={navItems} pict={pict} />}>
-        <Navigation />
         <Outlet />
       </Container>
     </Provider>

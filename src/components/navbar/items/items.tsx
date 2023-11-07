@@ -1,3 +1,5 @@
+import { IconType } from "react-icons";
+import { NavLink } from "react-router-dom";
 import {
     List,
     ListItem,
@@ -10,8 +12,6 @@ import {
     Avatar,
     WrapItem
 } from "@chakra-ui/react";
-import { IconType } from "react-icons";
-import { NavLink } from "react-router-dom";
 
 export interface Item {
     icon: IconType;
@@ -80,14 +80,14 @@ export function Items({ navItems, mode = "semi", pict }: ItemsProps) {
             <List spacing={3}>
                 <Tooltip label={pict.label} placement="right" bg="transparent" color="black">
                     <NavLink to={pict.to} style={{ textDecoration: 'none' }}>
-                        <Text>{pict.role}</Text>
                         <Avatar
                             src={pict.image_path}
                             name={pict.label}
                             size="l"
                             bg="transparent"
                             _hover={{ cursor: 'pointer' }}
-                        />
+                            />
+                        <Text>{pict.role}</Text>
                     </NavLink>
                 </Tooltip>
                 {navItems.map((item, index) => sidebarItemInSemiMode(item, index))}
