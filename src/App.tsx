@@ -1,13 +1,14 @@
 import React from "react";
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
 import { Container } from "@chakra-ui/react";
+import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Courses from "./pages/PremiumCourses";
 import Users from "./pages/PremiumUsers";
 import Profile from "./pages/Profile";
+import Materials from "./pages/Materials";
 import Navbar from "./components/navbar/Navbar";
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/premium-courses" element={<Courses />} />
         <Route path="/premium-users" element={<Users />} />
+        <Route path="/materials" element={<Materials />} />
       </Routes>
     </Container>
   );

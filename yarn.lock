@@ -9175,6 +9175,11 @@ react-style-singleton@^2.2.1:
     invariant "^2.2.4"
     tslib "^2.0.0"
 
+react-typescript-pdf-reader@^0.0.13:
+  version "0.0.13"
+  resolved "https://registry.npmjs.org/react-typescript-pdf-reader/-/react-typescript-pdf-reader-0.0.13.tgz"
+  integrity sha512-QrUeJjxnfzEUR9acNmHDLxn/JqMSVTKIGfAKUoSxHHHFCmTw++ksWmfkzBhOrshtUBJF/0zIt8XCyBUqS9mNgA==
+
 react@*, "react@^15.3.0 || ^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", react@^18.0.0, react@^18.2.0, "react@>= 16", react@>=16.6.0, react@>=16.8, react@>=16.8.0, react@>=18:
   version "18.2.0"
   resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
