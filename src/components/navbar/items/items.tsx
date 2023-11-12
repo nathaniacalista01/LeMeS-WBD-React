@@ -59,7 +59,7 @@ export function Items({ navItems, mode = "semi", pict }: ItemsProps) {
         index: number
     ) => (
         <ListItem key={index}>
-            <Tooltip label={item.label} placement="right" bg="transparent" color="black">
+            <Tooltip label={item.label} placement="right" bg="purple.500" color="white">
                 <IconButton
                     key={index}
                     as={NavLink}
@@ -78,7 +78,7 @@ export function Items({ navItems, mode = "semi", pict }: ItemsProps) {
     if (mode === "semi") {
         return (
             <List spacing={3}>
-                <Tooltip label={pict.label} placement="right" bg="transparent" color="black">
+                <Tooltip label={pict.label} placement="right" bg="purple.500" color="white">
                     <NavLink to={pict.to} style={{ textDecoration: 'none' }}>
                         <Avatar
                             src={pict.image_path}
