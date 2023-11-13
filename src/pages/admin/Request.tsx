@@ -6,10 +6,22 @@ import {
     Flex,
     TableContainer,
     Icon,
+    Button,
+    ButtonGroup,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
+    Text
 } from '@chakra-ui/react';
 import {
     BiSolidTrash,
-    BiCheckCircle
+    BiCheckCircle,
+    BiError,
+    BiUpvote
 } from 'react-icons/bi'
 import { Link } from 'react-router-dom';
 import "primereact/resources/themes/lara-light-indigo/theme.css";
@@ -33,11 +45,63 @@ const Request = () => {
         { user_id: 3, username: 'User7', fullname: 'user3', role: "teacher" },
     ]);
 
+    const [isModalRejectingOpen, setIsModalRejectingOpen] = useState(false);
+    const [rejectingID, setRejectingID] = useState(0);
+    const [rejectingUsername, setRejectingUsername] = useState('');
+    const openModalRejecting = (id: number, username: string) => {
+        setIsModalRejectingOpen(true);
+        setRejectingID(id);
+        setRejectingUsername(username);
+    };
+    const closeModalRejecting = () => {
+        setIsModalRejectingOpen(false);
+    };
+    const handleRejecting = () => {
+        // Handle the Rejecting action here, e.g., send an API request to update the data
+        // After Rejecting is complete, close the modal.
+        closeModalRejecting();
+    };
+
+    const [isModalAcceptingOpen, setIsModalAcceptingOpen] = useState(false);
+    const [acceptingID, setAcceptingID] = useState(0);
+    const [acceptingUsername, setAcceptingUsername] = useState('');
+    const openModalAccepting = (id: number, username: string) => {
+        setIsModalAcceptingOpen(true);
+        setAcceptingID(id);
+        setAcceptingUsername(username);
+    };
+    const closeModalAccepting = () => {
+        setIsModalAcceptingOpen(false);
+    };
+    const handleAccepting = () => {
+        // Handle the Accepting action here, e.g., send an API request to update the data
+        // After Accepting is complete, close the modal.
+        closeModalAccepting();
+    };
+
     return (
         <Container
             overflow="auto"
             maxW={"100vw"}
             maxH={"100vh"}>
+
+            {/* Render the RejectingModal component conditionally */}
+            <RejectingModal
+                isOpen={isModalRejectingOpen}
+                onClose={closeModalRejecting}
+                user_id={rejectingID}
+                username={rejectingUsername}
+                handleRejecting={handleRejecting}
+            />
+
+            {/* Render the AcceptingModal component conditionally */}
+            <AcceptingModal
+                isOpen={isModalAcceptingOpen}
+                onClose={closeModalAccepting}
+                user_id={acceptingID}
+                username={acceptingUsername}
+                handleAccepting={handleAccepting}
+            />
             <Flex alignItems='center' justifyContent='center' mb='20px' mt='50px'>
                 <Flex
                     direction='column'
@@ -66,8 +130,23 @@ const Request = () => {
                             <Column field="role" header="Role" headerClassName="custom-header"></Column>
                             <Column header="Action" headerClassName="custom-header" body={rowData => (
                                 <span>
-                                    <Icon as={BiCheckCircle} fontSize={"24"} color={"#564c95"} _hover={{ color: "green" }} cursor={"pointer"}></Icon>
-                                    <Icon as={BiSolidTrash} fontSize={"24"} color={"#564c95"} _hover={{ color: "red" }} cursor={"pointer"}></Icon>
+                                    <Icon
+                                        as={BiCheckCircle}
+                                        fontSize={"24"}
+                                        color={"#564c95"}
+                                        _hover={{ color: "green" }}
+                                        cursor={"pointer"}
+                                        onClick={() => openModalAccepting(rowData.user_id, rowData.username)}>
+                                    </Icon>
+
+                                    <Icon
+                                        as={BiSolidTrash}
+                                        fontSize={"24"}
+                                        color={"#564c95"}
+                                        _hover={{ color: "red" }}
+                                        cursor={"pointer"}
+                                        onClick={() => openModalRejecting(rowData.user_id, rowData.username)}>
+                                    </Icon>
                                 </span>
                             )} >
                             </Column>
@@ -76,6 +155,98 @@ const Request = () => {
                 </Flex>
             </Flex >
         </Container >
+    );
+};
+
+{/* Modal Rejecting */ }
+interface RejectingModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    user_id: number;
+    username: string;
+    handleRejecting: () => void;
+}
+
+function RejectingModal({
+    isOpen,
+    onClose,
+    user_id,
+    username,
+    handleRejecting,
+}: RejectingModalProps) {
+    return (
+        < Modal isOpen={isOpen} onClose={onClose} >
+            <ModalOverlay />
+            <ModalContent>
+                <ModalHeader textAlign={"center"}>Reject Request</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody textAlign={"center"}>
+                    <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+                        <Text as={BiError} fontSize={"150px"} color="red" />
+                        <Text>
+                            Decline request from {username}?
+                        </Text>
+                    </Box>
+                </ModalBody>
+
+                <ModalFooter justifyContent={"center"}>
+                    <ButtonGroup>
+                        <Button colorScheme='gray' flex="1" onClick={onClose}>
+                            Cancel
+                        </Button>
+                        <Button colorScheme='red' flex="1" ml={3} onClick={handleRejecting}>
+                            Decline
+                        </Button>
+                    </ButtonGroup>
+                </ModalFooter>
+            </ModalContent>
+        </Modal >
+    );
+};
+
+{/* Modal Accepting */ }
+interface AcceptingModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    user_id: number;
+    username: string;
+    handleAccepting: () => void;
+}
+
+function AcceptingModal({
+    isOpen,
+    onClose,
+    user_id,
+    username,
+    handleAccepting,
+}: AcceptingModalProps) {
+    return (
+        < Modal isOpen={isOpen} onClose={onClose} >
+            <ModalOverlay />
+            <ModalContent>
+                <ModalHeader textAlign={"center"}>Accept Request</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody textAlign={"center"}>
+                    <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+                        <Text as={BiUpvote} fontSize={"150px"} color="green" />
+                        <Text>
+                            Upgrade {username} to be user premium?
+                        </Text>
+                    </Box>
+                </ModalBody>
+
+                <ModalFooter justifyContent={"center"}>
+                    <ButtonGroup>
+                        <Button colorScheme='gray' flex="1" onClick={onClose}>
+                            Cancel
+                        </Button>
+                        <Button colorScheme='purple' flex="1" ml={3} onClick={handleAccepting}>
+                            Accept
+                        </Button>
+                    </ButtonGroup>
+                </ModalFooter>
+            </ModalContent>
+        </Modal >
     );
 };
 
