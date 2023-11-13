@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import Courses from "./pages/admin/PremiumCourses";
 import Users from "./pages/admin/PremiumUsers";
 import Request from "./pages/admin/Request";
+import AdminRegister from "./pages/admin/AdminRegister";
 import Profile from "./pages/Profile";
 import Materials from "./pages/Materials";
 import Navbar from "./components/navbar/Navbar";
@@ -27,7 +28,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        {/* <Route path="/admin/register" element={<AdminRegister />} /> */}
+        <Route path="/admin/register" element={<AdminRegister />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/request" element={<Request />} />
         <Route path="/premium-courses" element={<Courses />} />
