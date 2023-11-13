@@ -15,7 +15,9 @@ import {
     AlertDialogOverlay,
     AlertDialogCloseButton,
     useDisclosure,
+    Box,
 } from "@chakra-ui/react";
+import { BiWinkSmile } from "react-icons/bi";
 
 function Profile() {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -112,26 +114,29 @@ function Profile() {
                                 }}
                                 onClick={onOpen}>Edit Profile</Button>
                             <AlertDialog
-                                motionPreset='slideInBottom'
                                 leastDestructiveRef={cancelRef}
                                 onClose={onClose}
                                 isOpen={isOpen}
                                 isCentered
                             >
                                 <AlertDialogOverlay />
-
                                 <AlertDialogContent>
-                                    <AlertDialogHeader>Edit Profile</AlertDialogHeader>
+                                    <AlertDialogHeader textAlign={"center"}>Edit Profile</AlertDialogHeader>
                                     <AlertDialogCloseButton />
-                                    <AlertDialogBody>
-                                        Are you sure want to edit profile?
+                                    <AlertDialogBody textAlign={"center"}>
+                                        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+                                            <Text as={BiWinkSmile} fontSize={"150px"} color="purple" />
+                                            <Text>
+                                                Are you sure want to edit profile?
+                                            </Text>
+                                        </Box>
                                     </AlertDialogBody>
-                                    <AlertDialogFooter>
-                                        <Button ref={cancelRef} onClick={onClose}>
-                                            No
+                                    <AlertDialogFooter justifyContent={"center"}>
+                                        <Button colorScheme="gray" ref={cancelRef} onClick={onClose} flex="1">
+                                            Cancel
                                         </Button>
-                                        <Button colorScheme='blue' ml={3}>
-                                            Yes
+                                        <Button colorScheme='purple' ml={3} flex="1">
+                                            Edit
                                         </Button>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
