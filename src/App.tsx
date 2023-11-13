@@ -31,7 +31,7 @@ function App() {
         <Route path="/request" element={<Request />} />
         <Route path="/premium-courses" element={<Courses />} />
         <Route path="/premium-users" element={<Users />} />
-        <Route path="/materials" element={<Materials />} />
+        <Route path="/materials/:course_id" element={<Materials />} />
       </Routes>
     </Container>
   );

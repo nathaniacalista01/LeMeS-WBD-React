@@ -32,13 +32,15 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
 
 .custom-header {
-  background-color: #564c95; /* Change the text color to red */
+  background-color: #564c95;
+  /* Change the text color to red */
   /* You can add more styles as needed */
   color: white;
   font-weight: bold;
@@ -55,7 +57,7 @@
   cursor: pointer;
 }
 
-.active {
+.active-page {
   background-color: #d78dff;
   border-radius: 50%;
 }
@@ -69,4 +71,13 @@
   justify-content: center;
   align-items: center;
   margin-top: 2px;
+}
+
+.p-paginator{
+  background-color: transparent;
+  color: black;
+}
+
+.p-paginator-page.p-highlight{
+ background-color: #d78dff;
 }

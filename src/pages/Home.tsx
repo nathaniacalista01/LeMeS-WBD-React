@@ -3,7 +3,8 @@ import { Button, Container, Divider, SimpleGrid, Stack, Text, Image, Heading, Bo
 import { Card, CardBody, CardFooter } from '@chakra-ui/react'
 import ReactPaginate from 'react-paginate';
 import { IconContext } from 'react-icons';
-import { AiFillLeftCircle, AiFillRightCircle } from "react-icons/ai";
+import { BiChevronLeftCircle, BiChevronRightCircle } from "react-icons/bi";
+import { Link } from 'react-router-dom';
 
 const Home = () => {
   const courses = [
@@ -54,33 +55,35 @@ const Home = () => {
             </CardBody>
             <Divider />
             <CardFooter justify="center">
-              <Button variant='solid' colorScheme='purple'>
-                See Course
-              </Button>
+              <Link to={`/materials/${item.course_id}`} style={{ textDecoration: 'none' }}>
+                <Button variant='solid' colorScheme='purple'>
+                  See Course
+                </Button>
+              </Link>
             </CardFooter>
           </Card>
         )}
       </SimpleGrid>
       <Box mt={10} alignContent="center">
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <ReactPaginate
-          containerClassName={"pagination"}
-          pageClassName={"page-item"}
-          activeClassName={"active"}
-          onPageChange={(event) => setPage(event.selected)}
-          pageCount={Math.ceil(courses.length / n)}
-          breakLabel="..."
-          previousLabel={
-            <IconContext.Provider value={{ color: "#B8C1CC", size: "36px" }}>
-              <AiFillLeftCircle />
-            </IconContext.Provider>
-          }
-          nextLabel={
-            <IconContext.Provider value={{ color: "#B8C1CC", size: "36px" }}>
-              <AiFillRightCircle />
-            </IconContext.Provider>
-          }
-        />
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <ReactPaginate
+            containerClassName={"pagination"}
+            pageClassName={"page-item"}
+            activeClassName={"active-page"}
+            onPageChange={(event) => setPage(event.selected)}
+            pageCount={Math.ceil(courses.length / n)}
+            breakLabel="..."
+            previousLabel={
+              <IconContext.Provider value={{ size: "36px"}}>
+                <BiChevronLeftCircle color="gray"/>
+              </IconContext.Provider>
+            }
+            nextLabel={
+              <IconContext.Provider value={{ size: "36px" }}>
+                <BiChevronRightCircle color="gray"/>
+              </IconContext.Provider>
+            }
+          />
         </div>
       </Box>
     </Container>
