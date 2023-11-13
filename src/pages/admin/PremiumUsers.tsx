@@ -8,17 +8,25 @@ import {
     TableContainer,
     Icon,
     useDisclosure,
-    AlertDialog,
-    AlertDialogOverlay,
-    AlertDialogContent,
-    AlertDialogHeader,
-    AlertDialogCloseButton,
-    AlertDialogBody,
-    AlertDialogFooter,
+    Text,
+    ButtonGroup,
+    FormControl,
+    FormLabel,
+    Input,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
+    Textarea,
+    Select,
 } from '@chakra-ui/react';
 import {
     BiSolidTrash,
-    BiSolidEdit
+    BiSolidEdit,
+    BiError
 } from 'react-icons/bi'
 import { Link } from 'react-router-dom';
 import "primereact/resources/themes/lara-light-indigo/theme.css";
@@ -36,7 +44,7 @@ const UsersList = () => {
 
     const cancelRef = React.useRef<HTMLButtonElement | null>(null);
     const { isOpen, onOpen, onClose } = useDisclosure();
-    
+
     const [users, setUsers] = useState([
         { user_id: 1, username: 'User1', fullname: 'user1', role: "student" },
         { user_id: 5, username: 'User2', fullname: 'Courszxcze5zxczxczxczxczx', role: "student" },
@@ -45,11 +53,66 @@ const UsersList = () => {
         { user_id: 3, username: 'User7', fullname: 'user3', role: "teacher" },
     ]);
 
+    const [isModalEditOpen, setIsModalEditOpen] = useState(false);
+    const [editedUsername, setEditedUsername] = useState('');
+    const [editedFullname, setEditedFullname] = useState('');
+    const [editedRole, setEditedRole] = useState('');
+    const openModalEdit = (id: number, username: string, fullname: string, role: string) => {
+        setIsModalEditOpen(true);
+        setEditedUsername(username);
+        setEditedFullname(fullname);
+        setEditedRole(role);
+    };
+    const closeModalEdit = () => {
+        setIsModalEditOpen(false);
+    };
+    const handleEdit = () => {
+        // Handle the editing action here, e.g., send an API request to update the data
+        // You can use the editedTitle and editedDescription state variables
+        // to send the updated data.
+        // After editing is complete, close the modal.
+        closeModalEdit();
+    }
+
+    const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+    const [deletedID, setDeletedID] = useState(0);
+    const openModalDelete = (id: number) => {
+        setIsModalDeleteOpen(true);
+        setDeletedID(id);
+    };
+    const closeModalDelete = () => {
+        setIsModalDeleteOpen(false);
+    };
+    const handleDelete = () => {
+        // Handle the Deleteing action here, e.g., send an API request to update the data
+        // You can use the DeleteedTitle and DeleteedDescription state variables
+        // to send the updated data.
+        // After Deleteing is complete, close the modal.
+        closeModalDelete();
+    };
+
     return (
         <Container
             overflow="auto"
             maxW={"100vw"}
             maxH={"100vh"}>
+            {/* Render the EditUserModal component conditionally */}
+            <EditUserModal
+                isOpen={isModalEditOpen}
+                onClose={closeModalEdit}
+                username={editedUsername}
+                fullname={editedFullname}
+                role={editedRole}
+                handleEdit={handleEdit}
+            />
+
+            {/* Render the DeleteUserModal component conditionally */}
+            <DeleteUserModal
+                isOpen={isModalDeleteOpen}
+                onClose={closeModalDelete}
+                user_id={deletedID}
+                handleDelete={handleDelete}
+            />
             <Flex alignItems='center' justifyContent='center' mb='20px' mt='50px'>
                 <Flex
                     direction='column'
@@ -65,7 +128,7 @@ const UsersList = () => {
                         </Heading>
                         <Box>
                             <Button bg="#9d4bff" textColor="white" _hover={{ bg: "#23004d" }} my="5">
-                                <Link to="/admin/addUsers">
+                                <Link to="/admin/register">
                                     Add Users
                                 </Link>
                             </Button>
@@ -84,75 +147,23 @@ const UsersList = () => {
                             <Column field="role" header="Role" headerClassName="custom-header"></Column>
                             <Column header="Action" headerClassName="custom-header" body={rowData => (
                                 <span>
-                                    <Icon 
-                                        as={BiSolidEdit} 
-                                        fontSize={"24"} 
-                                        color={"#564c95"} 
-                                        _hover={{ color: "green" }} 
+                                    <Icon
+                                        as={BiSolidEdit}
+                                        fontSize={"24"}
+                                        color={"#564c95"}
+                                        _hover={{ color: "green" }}
                                         cursor={"pointer"}
-                                        onClick={onOpen}>
+                                        onClick={() => openModalEdit(rowData.user_id, rowData.username, rowData.fullname, rowData.role)}>
                                     </Icon>
-                                        <AlertDialog
-                                            motionPreset='slideInBottom'
-                                            leastDestructiveRef={cancelRef}
-                                            onClose={onClose}
-                                            isOpen={isOpen}
-                                            isCentered
-                                            >
-                                            <AlertDialogOverlay />
-                                                <AlertDialogContent>
-                                                    <AlertDialogHeader>Edit User Confirmation</AlertDialogHeader>
-                                                        <AlertDialogCloseButton />
-                                                            <AlertDialogBody>
-                                                                Are you sure want to edit this user?
-                                                            </AlertDialogBody>
-                                                        <AlertDialogFooter>
-                                                    <Button ref={cancelRef} onClick={onClose}>
-                                                        No
-                                                     </Button>
-                                                     <Button colorScheme='blue' ml={3}>
-                                                        <Link to="/admin/editusers">
-                                                            Yes
-                                                        </Link>
-                                                    </Button>
-                                                        </AlertDialogFooter>
-                                                </AlertDialogContent>
-                                            </AlertDialog>
-                                    
-                                    <Icon 
-                                        as={BiSolidTrash} 
-                                        fontSize={"24"} 
-                                        color={"#564c95"} 
-                                        _hover={{ color: "red" }} 
+
+                                    <Icon
+                                        as={BiSolidTrash}
+                                        fontSize={"24"}
+                                        color={"#564c95"}
+                                        _hover={{ color: "red" }}
                                         cursor={"pointer"}
-                                        onClick={onOpen}>
+                                        onClick={() => openModalDelete(rowData.user_id)}>
                                     </Icon>
-                                        <AlertDialog
-                                            motionPreset='slideInBottom'
-                                            leastDestructiveRef={cancelRef}
-                                            onClose={onClose}
-                                            isOpen={isOpen}
-                                            isCentered
-                                            >
-                                        <AlertDialogOverlay />
-                                            <AlertDialogContent>
-                                                <AlertDialogHeader>Delete User Confirmation</AlertDialogHeader>
-                                                    <AlertDialogCloseButton />
-                                                        <AlertDialogBody>
-                                                            Are you sure want to delete this user?
-                                                        </AlertDialogBody>
-                                                    <AlertDialogFooter>
-                                                <Button ref={cancelRef} onClick={onClose}>
-                                                    No
-                                                </Button>
-                                                <Button colorScheme='red' ml={3}>
-                                                    <Link to="/admin/deleteusers">
-                                                        Yes
-                                                    </Link>
-                                                </Button>
-                                                    </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog>
                                 </span>
                             )} >
                             </Column>
@@ -161,6 +172,130 @@ const UsersList = () => {
                 </Flex>
             </Flex >
         </Container >
+    );
+};
+
+{/* Modal Edit */ }
+interface EditUserModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    username: string;
+    fullname: string;
+    role: string;
+    handleEdit: () => void;
+}
+
+function EditUserModal({
+    isOpen,
+    onClose,
+    username,
+    fullname,
+    role,
+    handleEdit,
+}: EditUserModalProps) {
+    return (
+        <Modal isOpen={isOpen} onClose={onClose}>
+            <ModalOverlay />
+            <ModalContent>
+                <ModalHeader bg="#d78dff" textAlign={"center"}>Edit Premium User</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                    <FormControl>
+                        <FormLabel ms='4px' fontSize='sm' fontWeight='bold'>
+                            Username
+                        </FormLabel>
+                        <Input
+                            isRequired
+                            variant='outline'
+                            bg="white"
+                            borderRadius='15px'
+                            mb="5"
+                            fontSize='sm'
+                            placeholder={username}
+                            size='lg'
+                        />
+
+                        <FormLabel ms='4px' fontSize='sm' fontWeight='bold'>
+                            Fullname
+                        </FormLabel>
+                        <Input
+                            isRequired
+                            variant='outline'
+                            bg="white"
+                            borderRadius='15px'
+                            mb="5"
+                            fontSize='sm'
+                            placeholder={fullname}
+                            size='lg'
+                        />
+
+                        <FormLabel ms='4px' fontSize='sm' fontWeight='bold'>
+                            Role
+                        </FormLabel>
+                        <Select placeholder={'Change Role'}>
+                            <option value='student'>Student</option>
+                            <option value='teacher'>Teacher</option>
+                            <option value='admin'>Admin</option>
+                        </Select>
+                    </FormControl>
+                </ModalBody>
+
+                <ModalFooter justifyContent={"center"}>
+                    <ButtonGroup>
+                        <Button colorScheme='gray' flex="1" onClick={onClose}>
+                            Cancel
+                        </Button>
+                        <Button colorScheme='purple' flex="1" ml={3} onClick={handleEdit}>
+                            Edit
+                        </Button>
+                    </ButtonGroup>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
+    );
+};
+
+{/* Modal Delete */ }
+interface DeleteUserModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    user_id: number;
+    handleDelete: () => void;
+}
+
+function DeleteUserModal({
+    isOpen,
+    onClose,
+    user_id,
+    handleDelete,
+}: DeleteUserModalProps) {
+    return (
+        < Modal isOpen={isOpen} onClose={onClose} >
+            <ModalOverlay />
+            <ModalContent>
+                <ModalHeader textAlign={"center"}>Delete User</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody textAlign={"center"}>
+                    <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+                        <Text as={BiError} fontSize={"150px"} color="red" />
+                        <Text>
+                            Are you sure want to delete this User?
+                        </Text>
+                    </Box>
+                </ModalBody>
+
+                <ModalFooter justifyContent={"center"}>
+                    <ButtonGroup>
+                        <Button colorScheme='gray' flex="1" onClick={onClose}>
+                            Cancel
+                        </Button>
+                        <Button colorScheme='red' flex="1" ml={3} onClick={handleDelete}>
+                            Delete
+                        </Button>
+                    </ButtonGroup>
+                </ModalFooter>
+            </ModalContent>
+        </Modal >
     );
 };
 

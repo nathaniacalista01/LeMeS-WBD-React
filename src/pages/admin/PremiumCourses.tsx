@@ -306,7 +306,7 @@ function DeleteCourseModal({
         < Modal isOpen={isOpen} onClose={onClose} >
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader>Delete Course</ModalHeader>
+                <ModalHeader textAlign={"center"}>Delete Course</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody textAlign={"center"}>
                     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
