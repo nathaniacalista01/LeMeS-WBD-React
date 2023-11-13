@@ -1,73 +1,58 @@
 import React from 'react';
+import { Button, Container, Divider, SimpleGrid, Stack, Text, Image, Heading } from '@chakra-ui/react'
+import { Card, CardBody, CardFooter } from '@chakra-ui/react'
 
-const courseCardStyle: React.CSSProperties = {
-  width: '300px',
-  padding: '16px',
-  border: '1px solid #ddd',
-  borderRadius: '8px',
-  margin: '16px',
-  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-};
-
-const titleStyle: React.CSSProperties = {
-  fontSize: '1.2em',
-  fontWeight: 'bold',
-  marginBottom: '8px',
-};
-
-const instructorStyle: React.CSSProperties = {
-  fontSize: '0.9em',
-  color: '#555',
-};
-
-const detailStyle: React.CSSProperties = {
-  marginTop: '8px',
-};
-
-const buttonStyle: React.CSSProperties = {
-  marginTop: '12px',
-  padding: '8px 12px',
-  backgroundColor: '#4CAF50',
-  color: 'white',
-  border: 'none',
-  borderRadius: '4px',
-  cursor: 'pointer',
-};
-
-const CourseCard: React.FC<{ title: string; instructor: string; details: string }> = ({ title, instructor, details }) => {
-  const handleGoToCourse = () => {
-    // Handle navigation to the course page
-    console.log('Navigating to the course:', title);
-  };
+const Home = () => {
+  const courses = [
+    { course_id: '1', title: 'Course 1', description: 'Course ini adlaha dwakjdskdjalsdjaks  sasdga s', release_date: '11-08-2023' },
+    { course_id: '1', title: 'Course 1', description: 'Course ini adlaha dwakjdskdjalsdjaks  sasdga s', release_date: '11-08-2023' },
+    { course_id: '1', title: 'Course 1', description: 'Course ini adlaha dwakjdskdjalsdjaks  sasdga s', release_date: '11-08-2023' },
+    { course_id: '1', title: 'Course 1', description: 'Course ini adlaha dwakjdskdjalsdjaks  sasdga s', release_date: '11-08-2023' },
+    { course_id: '1', title: 'Course 1', description: 'Course ini adlaha dwakjdskdjalsdjaks  sasdga s', release_date: '11-08-2023' },
+    { course_id: '1', title: 'Course 1', description: 'Course ini adlaha dwakjdskdjalsdjaks  sasdga s', release_date: '11-08-2023' },
+    { course_id: '1', title: 'Course 1', description: 'Course ini adlaha dwakjdskdjalsdjaks  sasdga s', release_date: '11-08-2023' },
+  ];
 
   return (
-    <div style={courseCardStyle}>
-      <div style={titleStyle}>{title}</div>
-      <div style={instructorStyle}>{instructor}</div>
-      <div style={detailStyle}>{details}</div>
-      <button style={buttonStyle} onClick={handleGoToCourse}>
-        Go to Course
-      </button>
-    </div>
+    <Container
+      overflow={"auto"}
+      px="20"
+      py="35"
+      maxW={"100vw"}
+      maxH={"100vh"}>
+      <Heading size='md'>Select a Premium Course to Get Premium Knowledges!</Heading>
+      <SimpleGrid minChildWidth='240px' spacing='30px' mt="5">
+        {courses.map((course, index) => (
+          <Card maxW='sm'>
+            <CardBody>
+              <Image
+                w="50"
+                src='https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80'
+                alt='Course Image'
+                borderRadius='lg'
+              />
+              <Stack mt='6' spacing='3'>
+                <Heading size='sm'>{course.title}</Heading>
+                <Text fontSize={"14"}>
+                  {course.description}
+                </Text>
+                <Text fontSize='13' fontWeight={"bold"}>
+                  {course.release_date}
+                </Text>
+              </Stack>
+            </CardBody>
+            <Divider />
+            <CardFooter justify="center">
+              <Button variant='solid' colorScheme='purple'>
+                See Course
+              </Button>
+            </CardFooter>
+          </Card>
+        ))
+        }
+      </SimpleGrid>
+    </Container>
   );
 };
 
-const App: React.FC = () => {
-  return (
-    <div>
-      <CourseCard
-        title="Introduction to React"
-        instructor="John Doe"
-        details="Learn the basics of React and build your first web application."
-      />
-      <CourseCard
-        title="Advanced TypeScript"
-        instructor="Jane Smith"
-        details="Deepen your TypeScript knowledge with advanced concepts and best practices."
-      />
-      {/* Add more CourseCard components with different data */}
-    </div>
-  );
-};
-
-export default App;
+export default Home;
