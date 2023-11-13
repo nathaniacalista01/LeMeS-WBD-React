@@ -47,12 +47,13 @@ function Profile() {
                                 Name
                             </FormLabel>
                             <Input
+                                isRequired
                                 bg="white"
                                 fontSize='sm'
                                 ms='4px'
                                 borderRadius='15px'
                                 type='text'
-                                placeholder='Your full name'
+                                placeholder='user.fullname'
                                 mb='24px'
                                 size='lg'
                             />
@@ -60,12 +61,13 @@ function Profile() {
                                 Username
                             </FormLabel>
                             <Input
+                                isRequired
                                 bg="white"
                                 fontSize='sm'
                                 ms='4px'
                                 borderRadius='15px'
                                 type='text'
-                                placeholder='Your username'
+                                placeholder='user.username'
                                 mb='24px'
                                 size='lg'
                             />
@@ -90,11 +92,10 @@ function Profile() {
                                 border='none'
                                 type='file'
                                 accept="image/*"
-                                placeholder='Your username'
                                 mb='24px'
                                 size='lg'
                             />
-                            <Button 
+                            <Button
                                 type='submit'
                                 bg='purple.500'
                                 fontSize='16 px'

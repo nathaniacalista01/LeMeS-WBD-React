@@ -48,6 +48,7 @@ function Login() {
                 Username
               </FormLabel>
               <Input
+                isRequired
                 bg="white"
                 borderRadius='15px'
                 mb='24px'
@@ -60,6 +61,7 @@ function Login() {
                 Password
               </FormLabel>
               <Input
+                isRequired
                 bg="white"
                 borderRadius='15px'
                 mb='36px'
@@ -94,7 +96,7 @@ function Login() {
               mt='0px'>
               <Text color={textColor} fontWeight='medium'>
                 Don't have an account?
-                <RouterLink to="/register" style={{color: "#564c95", marginLeft: '5px', fontWeight: 'bold'}}>
+                <RouterLink to="/register" style={{ color: "#564c95", marginLeft: '5px', fontWeight: 'bold' }}>
                   Sign Up
                 </RouterLink>
               </Text>

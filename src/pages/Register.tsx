@@ -44,10 +44,11 @@ function Register() {
               Register to Access Various Premium Course
             </Text>
             <FormControl>
-            <FormLabel ms='4px' fontSize='sm' fontWeight='bold'>
+              <FormLabel ms='4px' fontSize='sm' fontWeight='bold'>
                 Full Name
               </FormLabel>
               <Input
+                isRequired
                 bg="white"
                 borderRadius='15px'
                 mb='24px'
@@ -60,6 +61,7 @@ function Register() {
                 Username
               </FormLabel>
               <Input
+                isRequired
                 bg="white"
                 borderRadius='15px'
                 mb='24px'
@@ -72,6 +74,7 @@ function Register() {
                 Password
               </FormLabel>
               <Input
+                isRequired
                 bg="white"
                 borderRadius='15px'
                 mb='36px'
@@ -106,7 +109,7 @@ function Register() {
               mt='0px'>
               <Text color={textColor} fontWeight='medium'>
                 Already have an account?
-                <RouterLink to="/login" style={{color: "#564c95", marginLeft: '5px', fontWeight: 'bold'}}>
+                <RouterLink to="/login" style={{ color: "#564c95", marginLeft: '5px', fontWeight: 'bold' }}>
                   Sign In
                 </RouterLink>
               </Text>
