@@ -11,6 +11,7 @@ import Request from "./pages/admin/Request";
 import Profile from "./pages/Profile";
 import Materials from "./pages/Materials";
 import Navbar from "./components/navbar/Navbar";
+import FormAddCourse from "./pages/admin/FormAddCourse";
 function App() {
   return (
     <Container
@@ -32,6 +33,7 @@ function App() {
         <Route path="/premium-courses" element={<Courses />} />
         <Route path="/premium-users" element={<Users />} />
         <Route path="/materials" element={<Materials />} />
+        <Route path="/add-courses" element={<FormAddCourse />} />
       </Routes>
     </Container>
   );
