@@ -36,3 +36,10 @@
     transform: rotate(360deg);
   }
 }
+
+.custom-header {
+  background-color: #564c95; /* Change the text color to red */
+  /* You can add more styles as needed */
+  color: white;
+  font-weight: bold;
+}

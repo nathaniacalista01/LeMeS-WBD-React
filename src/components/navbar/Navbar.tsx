@@ -1,4 +1,4 @@
-import { BiHome, BiLogOut, BiBookAdd, BiGroup } from "react-icons/bi";
+import { BiHome, BiLogOut, BiBookAdd, BiGroup, BiUserPlus } from "react-icons/bi";
 import { Outlet } from "react-router-dom";
 import {
   Provider,
@@ -18,6 +18,7 @@ export default function Navbar() {
 
   const navItems: Item[] = [
     { icon: BiHome, label: "Home", to: "" },
+    { icon: BiUserPlus, label: "Upgrade Request", to: "request" },
     { icon: BiBookAdd, label: "Premium Courses", to: "premium-courses" },
     { icon: BiGroup, label: "Premium Users", to: "premium-users" },
     { icon: BiLogOut, label: "Logout", to: "logout" }
