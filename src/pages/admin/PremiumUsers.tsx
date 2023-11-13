@@ -7,6 +7,14 @@ import {
     Flex,
     TableContainer,
     Icon,
+    useDisclosure,
+    AlertDialog,
+    AlertDialogOverlay,
+    AlertDialogContent,
+    AlertDialogHeader,
+    AlertDialogCloseButton,
+    AlertDialogBody,
+    AlertDialogFooter,
 } from '@chakra-ui/react';
 import {
     BiSolidTrash,
@@ -26,6 +34,9 @@ const UsersList = () => {
         role: string;
     };
 
+    const cancelRef = React.useRef<HTMLButtonElement | null>(null);
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    
     const [users, setUsers] = useState([
         { user_id: 1, username: 'User1', fullname: 'user1', role: "student" },
         { user_id: 5, username: 'User2', fullname: 'Courszxcze5zxczxczxczxczx', role: "student" },
@@ -73,8 +84,75 @@ const UsersList = () => {
                             <Column field="role" header="Role" headerClassName="custom-header"></Column>
                             <Column header="Action" headerClassName="custom-header" body={rowData => (
                                 <span>
-                                    <Icon as={BiSolidEdit} fontSize={"24"} color={"#564c95"} _hover={{ color: "green" }} cursor={"pointer"}></Icon>
-                                    <Icon as={BiSolidTrash} fontSize={"24"} color={"#564c95"} _hover={{ color: "red" }} cursor={"pointer"}></Icon>
+                                    <Icon 
+                                        as={BiSolidEdit} 
+                                        fontSize={"24"} 
+                                        color={"#564c95"} 
+                                        _hover={{ color: "green" }} 
+                                        cursor={"pointer"}
+                                        onClick={onOpen}>
+                                    </Icon>
+                                        <AlertDialog
+                                            motionPreset='slideInBottom'
+                                            leastDestructiveRef={cancelRef}
+                                            onClose={onClose}
+                                            isOpen={isOpen}
+                                            isCentered
+                                            >
+                                            <AlertDialogOverlay />
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>Edit User Confirmation</AlertDialogHeader>
+                                                        <AlertDialogCloseButton />
+                                                            <AlertDialogBody>
+                                                                Are you sure want to edit this user?
+                                                            </AlertDialogBody>
+                                                        <AlertDialogFooter>
+                                                    <Button ref={cancelRef} onClick={onClose}>
+                                                        No
+                                                     </Button>
+                                                     <Button colorScheme='blue' ml={3}>
+                                                        <Link to="/admin/editusers">
+                                                            Yes
+                                                        </Link>
+                                                    </Button>
+                                                        </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                    
+                                    <Icon 
+                                        as={BiSolidTrash} 
+                                        fontSize={"24"} 
+                                        color={"#564c95"} 
+                                        _hover={{ color: "red" }} 
+                                        cursor={"pointer"}
+                                        onClick={onOpen}>
+                                    </Icon>
+                                        <AlertDialog
+                                            motionPreset='slideInBottom'
+                                            leastDestructiveRef={cancelRef}
+                                            onClose={onClose}
+                                            isOpen={isOpen}
+                                            isCentered
+                                            >
+                                        <AlertDialogOverlay />
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>Delete User Confirmation</AlertDialogHeader>
+                                                    <AlertDialogCloseButton />
+                                                        <AlertDialogBody>
+                                                            Are you sure want to delete this user?
+                                                        </AlertDialogBody>
+                                                    <AlertDialogFooter>
+                                                <Button ref={cancelRef} onClick={onClose}>
+                                                    No
+                                                </Button>
+                                                <Button colorScheme='red' ml={3}>
+                                                    <Link to="/admin/deleteusers">
+                                                        Yes
+                                                    </Link>
+                                                </Button>
+                                                    </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
                                 </span>
                             )} >
                             </Column>

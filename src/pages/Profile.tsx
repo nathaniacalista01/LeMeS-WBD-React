@@ -7,9 +7,20 @@ import {
     FormLabel,
     Input,
     Text,
+    AlertDialog,
+    AlertDialogBody,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogContent,
+    AlertDialogOverlay,
+    AlertDialogCloseButton,
+    useDisclosure,
 } from "@chakra-ui/react";
 
 function Profile() {
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const cancelRef = React.useRef<HTMLButtonElement | null>(null);
+
     return (
         <Container display={"flex"} flexDir={"column"}>
             <Flex
@@ -83,23 +94,47 @@ function Profile() {
                                 mb='24px'
                                 size='lg'
                             />
-                            <Button
+                            <Button 
                                 type='submit'
                                 bg='purple.500'
-                                fontSize='16px'
+                                fontSize='16 px'
                                 color='white'
                                 fontWeight='bold'
                                 w='100%'
                                 h='45'
                                 mb='24px'
                                 _hover={{
-                                    bg: "purple.200",
+                                    bg: "purple.200"
                                 }}
                                 _active={{
-                                    bg: "purple.300",
-                                }}>
-                                Edit Profile
-                            </Button>
+                                    bg: "purple.300"
+                                }}
+                                onClick={onOpen}>Edit Profile</Button>
+                            <AlertDialog
+                                motionPreset='slideInBottom'
+                                leastDestructiveRef={cancelRef}
+                                onClose={onClose}
+                                isOpen={isOpen}
+                                isCentered
+                            >
+                                <AlertDialogOverlay />
+
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>Edit Profile</AlertDialogHeader>
+                                    <AlertDialogCloseButton />
+                                    <AlertDialogBody>
+                                        Are you sure want to edit profile?
+                                    </AlertDialogBody>
+                                    <AlertDialogFooter>
+                                        <Button ref={cancelRef} onClick={onClose}>
+                                            No
+                                        </Button>
+                                        <Button colorScheme='blue' ml={3}>
+                                            Yes
+                                        </Button>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
                         </FormControl>
                     </Flex>
                 </Flex>

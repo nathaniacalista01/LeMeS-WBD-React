@@ -7,6 +7,13 @@ import {
     Flex,
     TableContainer,
     Icon,
+    AlertDialog,
+    AlertDialogOverlay,
+    AlertDialogContent,
+    AlertDialogHeader,
+    AlertDialogCloseButton,
+    AlertDialogBody,
+    AlertDialogFooter,
 } from '@chakra-ui/react';
 import {
     BiSolidTrash,
@@ -17,6 +24,7 @@ import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+import { useDisclosure } from '@chakra-ui/react';
 
 const CoursesList = () => {
     type courses = {
@@ -26,6 +34,8 @@ const CoursesList = () => {
         course_password: number;
         release_date: string;
     };
+    const cancelRef = React.useRef<HTMLButtonElement | null>(null);
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const [courses, setCourses] = useState([
         { course_id: 1, title: 'Course 1', description: 'Course1', course_password: 12347, release_date: "1-1-2023" },
@@ -66,11 +76,39 @@ const CoursesList = () => {
                             Premium Courses
                         </Heading>
                         <Box>
-                            <Button bg="#9d4bff" textColor="white" _hover={{ bg: "#23004d" }} my="5">
-                                <Link to="/admin/addcourse">
-                                    Add Course
-                                </Link>
-                            </Button>
+                        <Button 
+                            bg="#9d4bff"
+                            textColor="white"
+                            _hover={{ bg: "#23004d "}}
+                            my="5"
+                            onClick={onOpen}>Add Course</Button>
+                        <AlertDialog
+                            motionPreset='slideInBottom'
+                            leastDestructiveRef={cancelRef}
+                            onClose={onClose}
+                            isOpen={isOpen}
+                            isCentered
+                        >
+                            <AlertDialogOverlay />
+    
+                        <AlertDialogContent>
+                        <AlertDialogHeader>Add Course Confirmation</AlertDialogHeader>
+                        <AlertDialogCloseButton />
+                        <AlertDialogBody>
+                            Are you sure want to add premium course?
+                            </AlertDialogBody>
+                        <AlertDialogFooter>
+                        <Button ref={cancelRef} onClick={onClose}>
+                            No
+                        </Button>
+                        <Button colorScheme='blue' ml={3}>
+                            <Link to="/admin/addcourse">
+                                Yes
+                            </Link>
+                        </Button>
+                        </AlertDialogFooter>
+                        </AlertDialogContent>
+                        </AlertDialog>
                         </Box>
                     </Box>
                     <TableContainer width="80vw">
@@ -86,8 +124,77 @@ const CoursesList = () => {
                             <Column field="release_date" header="Release Date" headerClassName="custom-header"></Column>
                             <Column header="Action" headerClassName="custom-header" body={rowData => (
                                 <span>
-                                    <Icon as={BiSolidEdit} fontSize={"24"} color={"#564c95"} _hover={{ color: "green" }} cursor={"pointer"}></Icon>
-                                    <Icon as={BiSolidTrash} fontSize={"24"} color={"#564c95"} _hover={{ color: "red" }} cursor={"pointer"}></Icon>
+                                    <Icon 
+                                        as={BiSolidEdit} 
+                                        fontSize={"24"} 
+                                        color={"#564c95"} 
+                                        _hover={{ color: "green" }} 
+                                        cursor={"pointer"}
+                                        onClick={onOpen}>
+                                    </Icon>
+                                    <AlertDialog
+                                        motionPreset='slideInBottom'
+                                        leastDestructiveRef={cancelRef}
+                                        onClose={onClose}
+                                        isOpen={isOpen}
+                                        isCentered
+                                    >
+                                    <AlertDialogOverlay />
+    
+                                    <AlertDialogContent>
+                                    <AlertDialogHeader>Edit Course Confirmation</AlertDialogHeader>
+                                    <AlertDialogCloseButton />
+                                    <AlertDialogBody>
+                                        Are you sure want to edit this course?
+                                    </AlertDialogBody>
+                                    <AlertDialogFooter>
+                                    <Button ref={cancelRef} onClick={onClose}>
+                                        No
+                                    </Button>
+                                    <Button colorScheme='blue' ml={3}>
+                                    <Link to="/admin/editcourse">
+                                        Yes
+                                    </Link>
+                                    </Button>
+                                    </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                    </AlertDialog>
+                                    
+                                    <Icon 
+                                        as={BiSolidTrash} 
+                                        fontSize={"24"} 
+                                        color={"#564c95"} 
+                                        _hover={{ color: "red" }} 
+                                        cursor={"pointer"}
+                                        onClick={onOpen}>
+                                    </Icon>
+                                    <AlertDialog
+                                        motionPreset='slideInBottom'
+                                        leastDestructiveRef={cancelRef}
+                                        onClose={onClose}
+                                        isOpen={isOpen}
+                                        isCentered
+                                    >
+                                    <AlertDialogOverlay />
+    
+                                    <AlertDialogContent>
+                                    <AlertDialogHeader>Delete Course Confirmation</AlertDialogHeader>
+                                    <AlertDialogCloseButton />
+                                    <AlertDialogBody>
+                                        Are you sure want to delete this course?
+                                    </AlertDialogBody>
+                                    <AlertDialogFooter>
+                                    <Button ref={cancelRef} onClick={onClose}>
+                                        No
+                                    </Button>
+                                    <Button colorScheme='red' ml={3}>
+                                    <Link to="/admin/deletecourse">
+                                        Yes
+                                    </Link>
+                                    </Button>
+                                    </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                    </AlertDialog>
                                 </span>
                             )} >
                             </Column>
