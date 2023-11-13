@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Drawer,
     DrawerContent,
@@ -8,11 +8,12 @@ import {
     VStack,
     DrawerBody,
     Text,
-    IconButton
+    IconButton,
 } from "@chakra-ui/react";
 import { useSidenav } from "../context/context";
 import Items, { Item, Profile } from "../items/items";
-import { BiMenu } from "react-icons/bi";
+import LogoutDialog from "../LogoutPopup";
+import { BiMenu, BiLogOut, BiSad } from "react-icons/bi";
 
 export interface SidenavProps {
     navItems: Item[];
@@ -21,6 +22,7 @@ export interface SidenavProps {
 
 export function Sidenav({ navItems, pict }: SidenavProps) {
     const { isOpen, onClose, onOpen } = useSidenav();
+
     return (
         <React.Fragment>
             <VStack spacing="3" as="nav" display="flex">

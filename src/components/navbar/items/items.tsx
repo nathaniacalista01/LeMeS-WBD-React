@@ -10,8 +10,12 @@ import {
     Tooltip,
     IconButton,
     Avatar,
-    WrapItem
+    WrapItem,
+    Button
 } from "@chakra-ui/react";
+import { BiLogOut } from "react-icons/bi";
+import LogoutDialog from "../LogoutPopup";
+import { useState } from "react";
 
 export interface Item {
     icon: IconType;
@@ -33,6 +37,14 @@ export interface ItemsProps {
 }
 
 export function Items({ navItems, mode = "semi", pict }: ItemsProps) {
+    const [isModalLogoutOpen, setIsModalLogoutOpen] = useState(false);
+    const openModalLogout = () => {
+        setIsModalLogoutOpen(true);
+    };
+    const closeModalLogout = () => {
+        setIsModalLogoutOpen(false);
+    };
+
     const sidebarItemInOverMode = (item: Item, index: number) => (
         <ListItem key={index}>
             <Link
@@ -78,6 +90,10 @@ export function Items({ navItems, mode = "semi", pict }: ItemsProps) {
     if (mode === "semi") {
         return (
             <List spacing={3}>
+                <LogoutDialog
+                    isOpen={isModalLogoutOpen}
+                    onClose={closeModalLogout}
+                />
                 <Tooltip label={pict.label} placement="right" bg="purple.500" color="white">
                     <NavLink to={pict.to} style={{ textDecoration: 'none' }}>
                         <Avatar
@@ -86,16 +102,29 @@ export function Items({ navItems, mode = "semi", pict }: ItemsProps) {
                             size="l"
                             bg="transparent"
                             _hover={{ cursor: 'pointer' }}
-                            />
+                        />
                         <Text>{pict.role}</Text>
                     </NavLink>
                 </Tooltip>
                 {navItems.map((item, index) => sidebarItemInSemiMode(item, index))}
+                <Tooltip label={"Logout"} placement="right" bg="purple.500" color="white">
+                    <IconButton
+                        fontSize={"30"}
+                        aria-label="logout"
+                        onClick={openModalLogout}
+                        icon={<BiLogOut />}
+                        bg="transparent"
+                    />
+                </Tooltip>
             </List>
         );
     } else {
         return (
             <List spacing={3}>
+                <LogoutDialog
+                    isOpen={isModalLogoutOpen}
+                    onClose={closeModalLogout}
+                />
                 <WrapItem>
                     <Link
                         display="block"
@@ -119,6 +148,23 @@ export function Items({ navItems, mode = "semi", pict }: ItemsProps) {
                     </Link>
                 </WrapItem>
                 {navItems.map((item, index) => sidebarItemInOverMode(item, index))}
+                <WrapItem>
+                    <Button
+                        display="block"
+                        _hover={{
+                            bg: "gray.200"
+                        }}
+                        bg="transparent"
+                        w="full"
+                        borderRadius="md"
+                        onClick={openModalLogout}
+                    >
+                        <Flex alignItems="left">
+                            <Icon as={BiLogOut} fontSize={"30"} ml="-2" />
+                            <Text ml={2} p="1">Logout</Text>
+                        </Flex>
+                    </Button>
+                </WrapItem>
             </List>
         );
     };
