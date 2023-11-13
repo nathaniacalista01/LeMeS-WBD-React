@@ -58,7 +58,8 @@ const Request = () => {
                             value={users}
                             paginator
                             paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageInput"
-                            rows={5}>
+                            rows={5}
+                            selectionMode="single">
                             <Column field="user_id" header="UserID" headerClassName="custom-header"></Column>
                             <Column field="username" header="Username" headerClassName="custom-header"></Column>
                             <Column field="fullname" header="Full Name" headerClassName="custom-header"></Column>
