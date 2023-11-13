@@ -11,7 +11,6 @@ import Request from "./pages/admin/Request";
 import Profile from "./pages/Profile";
 import Materials from "./pages/Materials";
 import Navbar from "./components/navbar/Navbar";
-import FormAddCourse from "./pages/admin/FormAddCourse";
 function App() {
   return (
     <Container
