@@ -824,16 +824,16 @@ const NotFound = (props: IconProps) => {
 
 export default function callNotFound() {
   return (
-    <Container maxW={'5xl'}>
+    <Container maxW="100vw" maxH="100vh" overflow={"hidden"}>
       <Stack
         textAlign={'center'}
         align={'center'}
         spacing={{ base: 8, md: 10 }}
-        py={{ base: 20, md: 28 }}>
+        py={{ base: 4, md: 10 }}>
         <Heading
           fontWeight={600}
-          fontSize={{ base: '3xl', sm: '4xl', md: '6xl' }}
-          lineHeight={'110%'}>
+          fontSize={{ base: '2xl', sm: '3xl', md: '4xl' }}
+          lineHeight={'100%'}>
           I have bad news{' '}
           <Text as={'span'} color={'purple.500'}>
             for you
@@ -853,7 +853,7 @@ export default function callNotFound() {
           </Button>
         </Stack>
         <Flex w={'full'}>
-          <NotFound height={{ sm: '24rem', lg: '28rem' }} mt={{ base: 12, sm: 16 }} />
+          <NotFound height={{ sm: '20rem', lg: '24rem' }} mt={{ base: 3, sm: 6 }} />
         </Flex>
       </Stack>
     </Container>
