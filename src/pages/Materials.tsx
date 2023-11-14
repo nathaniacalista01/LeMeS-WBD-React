@@ -1,6 +1,6 @@
-import { Container, HStack, VStack, Text, TableContainer, Table, Tr, Tbody, Td, Icon, Box, Divider, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Image } from "@chakra-ui/react";
+import { Container, HStack, VStack, Text, TableContainer, Table, Tr, Tbody, Td, Icon, Box, Divider, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Image, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, FormControl, FormLabel, Input, Textarea, ModalFooter, ButtonGroup, Button } from "@chakra-ui/react";
 import { useState } from "react";
-import { BiSolidEdit, BiSolidTrash, BiPlusCircle } from "react-icons/bi";
+import { BiSolidEdit, BiSolidTrash, BiPlusCircle, BiError } from "react-icons/bi";
 import { Link } from 'react-router-dom';
 import ReactPlayer from "react-player";
 import PdfViewer from "../components/pdfviewer/pdfviewer";
@@ -9,6 +9,62 @@ const Materials = () => {
     type module = {
         module_id: number;
         title: string;
+    };
+
+    const item = {
+        module_id: 1,
+        title: 'Title',
+    };
+
+    const [isModalEditOpen, setIsModalEditOpen] = useState(false);
+    const [editedTitle, setEditedTitle] = useState('');
+    const [editedDescription, setEditedDescription] = useState('');
+    const openModalEdit = (id: number, title: string) => {
+        setIsModalEditOpen(true);
+        setEditedTitle(title);
+        // setEditedDescription(description);
+    };
+    const closeModalEdit = () => {
+        setIsModalEditOpen(false);
+    };
+    const handleEdit = () => {
+        // Handle the editing action here, e.g., send an API request to update the data
+        // You can use the editedTitle and editedDescription state variables
+        // to send the updated data.
+        // After editing is complete, close the modal.
+        closeModalEdit();
+    }
+    
+    const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+    const [deletedID, setDeletedID] = useState(0);
+    const openModalDelete = (id: number) => {
+        setIsModalDeleteOpen(true);
+        setDeletedID(id);
+    };
+    const closeModalDelete = () => {
+        setIsModalDeleteOpen(false);
+    };
+    const handleDelete = () => {
+        // Handle the Deleteing action here, e.g., send an API request to update the data
+        // You can use the DeleteedTitle and DeleteedDescription state variables
+        // to send the updated data.
+        // After Deleteing is complete, close the modal.
+        closeModalDelete();
+    };
+
+    const [isModalAddOpen, setIsModalAddOpen] = useState(false);
+    const openModalAdd = (module_id: number, title: string) => {
+        setIsModalAddOpen(true);
+    };
+    const closeModalAdd = () => {
+        setIsModalAddOpen(false);
+    };
+    const handleAdd = () => {
+        // Handle the Adding action here, e.g., send an API request to update the data
+        // You can use the AddedTitle and AddedDescription state variables
+        // to send the updated data.
+        // After Adding is complete, close the modal.
+        closeModalAdd();
     };
 
     const [module, setModule] = useState([
@@ -23,12 +79,35 @@ const Materials = () => {
         <Container overflow="auto"
             maxW={"100vw"}
             maxH={"100vh"}>
+             {/* Render the EditMaterialModal component conditionally */}
+             <EditMaterialModal
+                isOpen={isModalEditOpen}
+                onClose={closeModalEdit}
+                title={editedTitle}
+                description={editedDescription}
+                handleEdit={handleEdit}
+            />
+
+            {/* Render the DeleteMaterialModal component conditionally */}
+            <DeleteMaterialModal
+                isOpen={isModalDeleteOpen}
+                onClose={closeModalDelete}
+                course_id={deletedID}
+                handleDelete={handleDelete}
+            />
+
+            {/* Render the DeleteMaterialModal component conditionally */}
+            <AddMaterialModal
+                isOpen={isModalAddOpen}
+                onClose={closeModalAdd}
+                handleAdd={handleAdd}
+            />
             <HStack
                 align="start"
                 justify="center">
                 <VStack maxW="20%" maxH="95vh" mt="1rem">
                     <Text whiteSpace='normal' wordBreak='break-all' fontWeight={"bold"}>
-                        Course Title
+                        Material Title
                     </Text>
                     <Container
                         overflow="auto"
@@ -58,8 +137,24 @@ const Materials = () => {
                                                     </Link>
                                                 </Td>
                                                 <Td width="5%" p="2">
-                                                    <Icon as={BiSolidEdit} fontSize={"18"} color={"#564c95"} _hover={{ color: "green" }} cursor={"pointer"}></Icon>
-                                                    <Icon as={BiSolidTrash} fontSize={"18"} color={"#564c95"} _hover={{ color: "red" }} cursor={"pointer"}></Icon>
+                                                    <Icon 
+                                                        as={BiSolidEdit} 
+                                                        fontSize={"18"} 
+                                                        color={"#564c95"} 
+                                                        _hover={{ color: "green" }} 
+                                                        cursor={"pointer"}
+                                                        onClick={() => openModalEdit(item.module_id, item.title)}
+                                                        >
+                                                        </Icon>
+                                                    <Icon 
+                                                        as={BiSolidTrash} 
+                                                        fontSize={"18"} 
+                                                        color={"#564c95"} 
+                                                        _hover={{ color: "red" }} 
+                                                        cursor={"pointer"}
+                                                        onClick={() => openModalDelete(item.module_id)}
+                                                        >
+                                                        </Icon>
                                                 </Td>
                                             </Tr>
                                         ))}
@@ -72,7 +167,15 @@ const Materials = () => {
                             </Table>
                         </TableContainer>
                     </Container>
-                    <Icon as={BiPlusCircle} fontSize={"26"} color={"#564c95"} _hover={{ color: "green" }} cursor={"pointer"}></Icon>
+                    <Icon 
+                        as={BiPlusCircle} 
+                        fontSize={"26"} 
+                        color={"#564c95"} 
+                        _hover={{ color: "green" }} 
+                        cursor={"pointer"}
+                        onClick={() => openModalAdd(item.module_id, item.title)}
+                        >
+                        </Icon>
                 </VStack>
                 <VStack w="80%" h="95vh" mt="1rem" bg="white">
                     <Box w="full" p="3">
@@ -100,8 +203,24 @@ const Materials = () => {
                                         Material Title
                                     </Box>
                                     <AccordionIcon />
-                                    <Icon as={BiSolidEdit} fontSize={"18"} color={"#564c95"} _hover={{ color: "green" }} cursor={"pointer"}></Icon>
-                                    <Icon as={BiSolidTrash} fontSize={"18"} color={"#564c95"} _hover={{ color: "red" }} cursor={"pointer"}></Icon>
+                                    <Icon 
+                                        as={BiSolidEdit} 
+                                        fontSize={"18"} 
+                                        color={"#564c95"} 
+                                        _hover={{ color: "green" }} 
+                                        cursor={"pointer"}
+                                        onClick={() => openModalEdit(item.module_id, item.title)}
+                                        >
+                                        </Icon>
+                                    <Icon 
+                                        as={BiSolidTrash} 
+                                        fontSize={"18"} 
+                                        color={"#564c95"} 
+                                        _hover={{ color: "red" }} 
+                                        cursor={"pointer"}
+                                        onClick={() => openModalDelete(item.module_id)}
+                                        >
+                                        </Icon>
                                 </AccordionButton>
                                 <AccordionPanel>
                                     <Text align="left">
@@ -114,11 +233,222 @@ const Materials = () => {
 
                         </Accordion>
                     </Box>
-                    <Icon as={BiPlusCircle} fontSize={"26"} color={"#564c95"} _hover={{ color: "green" }} cursor={"pointer"}></Icon>
+                    <Icon 
+                        as={BiPlusCircle} 
+                        fontSize={"26"} 
+                        color={"#564c95"} 
+                        _hover={{ color: "green" }} 
+                        cursor={"pointer"}
+                        onClick={() => openModalAdd(item.module_id, item.title)}
+                        >
+                    </Icon>
                 </VStack>
             </HStack>
         </Container>
     );
 }
+
+
+{/* Modal Edit */ }
+interface EditMaterialModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    title: string;
+    description: string;
+    handleEdit: () => void;
+}
+
+function EditMaterialModal({
+    isOpen,
+    onClose,
+    title,
+    description,
+    handleEdit,
+}: EditMaterialModalProps) {
+    return (
+        <Modal isOpen={isOpen} onClose={onClose}>
+            <ModalOverlay />
+            <ModalContent>
+                <ModalHeader bg="#d78dff" textAlign={"center"}>Edit Material</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                    <FormControl>
+                        <FormLabel ms='4px' fontSize='sm' fontWeight='bold'>
+                            Material Title
+                        </FormLabel>
+                        <Input
+                            isRequired
+                            variant='outline'
+                            bg="white"
+                            borderRadius='15px'
+                            mb="5"
+                            fontSize='sm'
+                            placeholder={title}
+                            size='lg'
+                        />
+
+                        <FormLabel ms='4px' fontSize='sm' fontWeight='bold'>
+                            Material Description
+                        </FormLabel>
+                        <Textarea
+                            isRequired
+                            h="50"
+                            maxHeight={"150"}
+                            bg="white"
+                            borderRadius='15px'
+                            mb="5"
+                            fontSize='sm'
+                            placeholder={description}
+                            size='lg'
+                        />
+                        <FormLabel ms='4px' fontSize='sm' fontWeight='bold'>
+                            Material File 
+                        </FormLabel>
+                        <Input
+                            fontSize='sm'
+                            border='none'
+                            type='file'
+                            accept="image/*"
+                            size='lg'
+                        />
+                    </FormControl>
+                </ModalBody>
+
+                <ModalFooter justifyContent={"center"}>
+                    <ButtonGroup>
+                        <Button colorScheme='gray' flex="1" onClick={onClose}>
+                            Cancel
+                        </Button>
+                        <Button colorScheme='purple' flex="1" ml={3} onClick={handleEdit}>
+                            Edit
+                        </Button>
+                    </ButtonGroup>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
+    );
+};
+
+{/* Modal Delete */ }
+interface DeleteMaterialModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    course_id: number;
+    handleDelete: () => void;
+}
+
+function DeleteMaterialModal({
+    isOpen,
+    onClose,
+    course_id,
+    handleDelete,
+}: DeleteMaterialModalProps) {
+    return (
+        < Modal isOpen={isOpen} onClose={onClose} >
+            <ModalOverlay />
+            <ModalContent>
+                <ModalHeader textAlign={"center"}>Delete Material</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody textAlign={"center"}>
+                    <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+                        <Text as={BiError} fontSize={"150px"} color="red" />
+                        <Text>
+                            Are you sure want to delete this material?
+                        </Text>
+                    </Box>
+                </ModalBody>
+
+                <ModalFooter justifyContent={"center"}>
+                    <ButtonGroup>
+                        <Button colorScheme='gray' flex="1" onClick={onClose}>
+                            Cancel
+                        </Button>
+                        <Button colorScheme='red' flex="1" ml={3} onClick={handleDelete}>
+                            Delete
+                        </Button>
+                    </ButtonGroup>
+                </ModalFooter>
+            </ModalContent>
+        </Modal >
+    );
+};
+
+{/* Modal Add */ }
+interface AddMaterialModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    handleAdd: () => void;
+}
+
+function AddMaterialModal({
+    isOpen,
+    onClose,
+    handleAdd,
+}: AddMaterialModalProps) {
+    return (
+        <Modal isOpen={isOpen} onClose={onClose}>
+            <ModalOverlay />
+            <ModalContent>
+                <ModalHeader bg="#d78dff" textAlign={"center"}>Add New Material</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                    <FormControl>
+                        <FormLabel ms='4px' fontSize='sm' fontWeight='bold'>
+                            Material Title
+                        </FormLabel>
+                        <Input
+                            isRequired
+                            variant='outline'
+                            bg="white"
+                            borderRadius='15px'
+                            mb="5"
+                            fontSize='sm'
+                            size='lg'
+                            placeholder={'Insert Title Here'}
+                        />
+
+                        <FormLabel ms='4px' fontSize='sm' fontWeight='bold'>
+                            Material Description
+                        </FormLabel>
+                        <Textarea
+                            isRequired
+                            h="50"
+                            maxHeight={"150"}
+                            bg="white"
+                            borderRadius='15px'
+                            mb="5"
+                            fontSize='sm'
+                            size='lg'
+                            placeholder={'Insert Description Here'}
+                        />
+
+                        <FormLabel ms='4px' fontSize='sm' fontWeight='bold'>
+                            File
+                        </FormLabel>
+                        <Input
+                            isRequired
+                            fontSize='sm'
+                            border='none'
+                            type='file'
+                            accept="image/*"
+                            size='lg'
+                        />
+                    </FormControl>
+                </ModalBody>
+
+                <ModalFooter justifyContent={"center"}>
+                    <ButtonGroup>
+                        <Button colorScheme='gray' flex="1" onClick={onClose}>
+                            Cancel
+                        </Button>
+                        <Button colorScheme='purple' flex="1" ml={3} onClick={handleAdd}>
+                            Add
+                        </Button>
+                    </ButtonGroup>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
+    );
+};
 
 export default Materials;
