@@ -46,6 +46,7 @@ import config from "../config/config";
 import { Modules, Materials } from "../types"
 
 const ModuleMaterials = () => {
+    // Handling list of modules for a course
     const { course_id } = useParams();
     const initialModules: Modules[] = [];
     const [modules, setModules] = useState(initialModules);
@@ -53,11 +54,65 @@ const ModuleMaterials = () => {
     const newAxiosInstance = axios.create(axiosConfig());
     const navigate = useNavigate();
     const location = useLocation();
+    useEffect(() => {
+        const getModules = async (course_id: number) => {
+            try {
+                setIsLoading(true);
+                const res = await newAxiosInstance.get(`${config.REST_API_URL}/modul/course/${course_id}`);
+                const ModulesData: Modules[] = res.data.data.map((module: any) => {
+                    return {
+                        id: module.id,
+                        title: module.title,
+                        description: module.description,
+                        course_id: module.course_id,
+                    };
+                });
+                setModules(ModulesData);
+                setIsLoading(false);
+                console.log("berhasil yeah");
+            } catch (error) {
+                console.error('Axios Error:', error);
+                setIsLoading(false);
+            }
+        }
 
-    const item = {
-        module_id: 1,
-        title: "Title",
-    };
+        if (course_id === undefined || course_id === null) {
+            console.error('Course ID is undefined or null');
+        } else {
+            const courseIdAsString: string = course_id.toString();
+            const courseIdAsInt = parseInt(courseIdAsString, 10);
+
+            if (isNaN(courseIdAsInt)) {
+                console.error('Invalid course_id:', courseIdAsString);
+            } else {
+                getModules(courseIdAsInt);
+            }
+        }
+    }, [course_id]);
+
+    // Handling list of materials for a module
+    const initialMaterials: Materials[] = [];
+    const [materials, setMaterials] = useState(initialMaterials);
+    const getMaterials = async (module_id: number) => {
+        try {
+            setIsLoading(true);
+            const res = await newAxiosInstance.get(`${config.REST_API_URL}/modul/course/${module_id}`);
+            const MaterialsData: Materials[] = res.data.data.map((module: any) => {
+                return {
+                    id: module.id,
+                    title: module.title,
+                    description: module.description,
+                    module_id: module.module_id,
+                };
+            });
+            setMaterials(MaterialsData);
+            setIsLoading(false);
+            console.log("berhasil yeah");
+        } catch (error) {
+            console.error('Axios Error:', error);
+            setIsLoading(false);
+        }
+    }
 
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const [editedTitle, setEditedTitle] = useState("");
@@ -110,41 +165,7 @@ const ModuleMaterials = () => {
         closeModalAdd();
     };
 
-    useEffect(() => {
-        const getModules = async (course_id: number) => {
-            try {
-                setIsLoading(true);
-                const res = await newAxiosInstance.get(`${config.REST_API_URL}/modul/course/${course_id}`);
-                const ModulesData: Modules[] = res.data.data.map((module: any) => {
-                    return {
-                        id: module.id,
-                        title: module.title,
-                        description: module.description,
-                        course_id: module.course_id,
-                    };
-                });
-                setModules(ModulesData);
-                setIsLoading(false);
-                console.log("berhasil yeah");
-            } catch (error) {
-                console.error('Axios Error:', error);
-                setIsLoading(false);
-            }
-        }
 
-        if (course_id === undefined || course_id === null) {
-            console.error('Course ID is undefined or null');
-        } else {
-            const courseIdAsString: string = course_id.toString();
-            const courseIdAsInt = parseInt(courseIdAsString, 10);
-
-            if (isNaN(courseIdAsInt)) {
-                console.error('Invalid course_id:', courseIdAsString);
-            } else {
-                getModules(courseIdAsInt);
-            }
-        }
-    }, [course_id]);
 
     return (
         <Container overflow="auto" maxW={"100vw"} maxH={"100vh"}>
@@ -208,7 +229,7 @@ const ModuleMaterials = () => {
                                                         justifyContent={"left"}
                                                         w="100%"
                                                         bg="transparent"
-                                                        onClick={() => navigate(`${location.pathname}/${item.id}`, { replace: true })}
+                                                        onClick={() => getMaterials(item.id)}
                                                         style={{ textDecoration: 'none' }}
                                                     >
                                                         <Text fontSize={"sm"}>
@@ -253,76 +274,92 @@ const ModuleMaterials = () => {
                         color={"#564c95"}
                         _hover={{ color: "green" }}
                         cursor={"pointer"}
-                        onClick={() => openModalAdd(item.module_id, item.title)}
+                    // onClick={() => openModalAdd(item.module_id, item.title)}
                     ></Icon>
                 </VStack>
-                <VStack w="80%" h="95vh" mt="1rem" bg="white">
-                    <Box w="full" p="3">
-                        <Text align="left" fontWeight={"bold"}>
-                            Module Title
-                        </Text>
-                        <Divider mt="1" borderColor="black.500" borderWidth="1" />
+                <VStack w="80%" h="95vh" mt="1rem" bg="white" >
+                    {materials.length > 0 ? (
+                        <Box w="100%" h="94%" overflow={"hidden"}>
+                            <Box w="full" p="3">
+                                <Text align="left" fontWeight={"bold"}>
+                                    Materials
+                                </Text>
+                                <Divider mt="1" borderColor="black.500" borderWidth="1" />
+                            </Box>
+                            <Box
+                                px="5"
+                                w="100%"
+                                h="95%"
+                                overflow="auto"
+                                css={{
+                                    "::-webkit-scrollbar": {
+                                        width: "3px",
+                                    },
+                                    "::-webkit-scrollbar-thumb": {
+                                        background: "rgb(206, 207, 211)",
+                                    },
+                                    "::-webkit-scrollbar-track": {
+                                        background: "rgba(255, 255, 255, 0.8)",
+                                    },
+                                }}>
+                                {materials.map((item) => (
+                                    <Accordion allowToggle>
+                                        <AccordionItem>
+                                            <AccordionButton bg="#f0f0f0" borderRadius={"5"}>
+                                                <Box flex="1" textAlign="left">
+                                                    {item.title}
+                                                </Box>
+                                                <AccordionIcon />
+                                                <Icon
+                                                    as={BiSolidEdit}
+                                                    fontSize={"18"}
+                                                    color={"#564c95"}
+                                                    _hover={{ color: "green" }}
+                                                    cursor={"pointer"}
+                                                    onClick={() => openModalEdit(item.id, item.title)}
+                                                ></Icon>
+                                                <Icon
+                                                    as={BiSolidTrash}
+                                                    fontSize={"18"}
+                                                    color={"#564c95"}
+                                                    _hover={{ color: "red" }}
+                                                    cursor={"pointer"}
+                                                    onClick={() => openModalDelete(item.id)}
+                                                ></Icon>
+                                            </AccordionButton>
+                                            <AccordionPanel>
+                                                <Text align="left" fontSize={"sm"}>{item.description}</Text>
+                                                <PdfViewer pdfPath={"/Quiz-1.pdf"} />
+                                            </AccordionPanel>
+                                        </AccordionItem>
+                                        <Divider mt="3" borderColor="transparent" />
+                                    </Accordion>
+                                ))}
+                            </Box>
+                        </Box>
+                    ) : (<Box
+                        px="5"
+                        w="100%"
+                        h="94%">
+                        <Box w="full" p="3">
+                            <Text align="left" fontWeight={"bold"}>
+                                No Material Available for This Module
+                            </Text>
+                            <Divider mt="1" borderColor="black.500" borderWidth="1" />
+                        </Box>
                     </Box>
-                    <Box
-                        w="98%"
-                        h="86%"
-                        px="8"
-                        overflow="auto"
-                        css={{
-                            "::-webkit-scrollbar": {
-                                width: "3px",
-                            },
-                            "::-webkit-scrollbar-thumb": {
-                                background: "rgb(206, 207, 211)",
-                            },
-                            "::-webkit-scrollbar-track": {
-                                background: "rgba(255, 255, 255, 0.8)",
-                            },
-                        }}
-                    >
-                        <Accordion allowToggle>
-                            <AccordionItem>
-                                <AccordionButton bg="#f0f0f0" borderRadius={"5"}>
-                                    <Box flex="1" textAlign="left">
-                                        Material Title
-                                    </Box>
-                                    <AccordionIcon />
-                                    <Icon
-                                        as={BiSolidEdit}
-                                        fontSize={"18"}
-                                        color={"#564c95"}
-                                        _hover={{ color: "green" }}
-                                        cursor={"pointer"}
-                                        onClick={() => openModalEdit(item.module_id, item.title)}
-                                    ></Icon>
-                                    <Icon
-                                        as={BiSolidTrash}
-                                        fontSize={"18"}
-                                        color={"#564c95"}
-                                        _hover={{ color: "red" }}
-                                        cursor={"pointer"}
-                                        onClick={() => openModalDelete(item.module_id)}
-                                    ></Icon>
-                                </AccordionButton>
-                                <AccordionPanel>
-                                    <Text align="left">Material Description</Text>
-                                    <PdfViewer pdfPath={"/Quiz-1.pdf"} />
-                                </AccordionPanel>
-                            </AccordionItem>
-                            <Divider mt="3" borderColor="transparent" />
-                        </Accordion>
-                    </Box>
+                    )}
                     <Icon
                         as={BiPlusCircle}
                         fontSize={"26"}
                         color={"#564c95"}
                         _hover={{ color: "green" }}
                         cursor={"pointer"}
-                        onClick={() => openModalAdd(item.module_id, item.title)}
+                    // onClick={() => openModalAdd(item.module_id, item.title)}
                     ></Icon>
                 </VStack>
             </HStack>
-        </Container>
+        </Container >
     );
 };
 
