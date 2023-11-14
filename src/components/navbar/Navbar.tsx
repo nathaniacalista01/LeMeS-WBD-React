@@ -1,12 +1,13 @@
-import { BiHome, BiLogOut, BiBookAdd, BiGroup, BiUserPlus, BiSad} from "react-icons/bi";
-import { Outlet } from "react-router-dom";
 import {
-  Provider,
-  Container,
-  Item,
-  Profile,
-  Sidenav
-} from ".";
+  BiHome,
+  BiLogOut,
+  BiBookAdd,
+  BiGroup,
+  BiUserPlus,
+  BiSad,
+} from "react-icons/bi";
+import { Outlet } from "react-router-dom";
+import { Provider, Container, Item, Profile, Sidenav } from ".";
 import React from "react";
 
 export default function Navbar() {
@@ -14,7 +15,7 @@ export default function Navbar() {
     image_path: "defaultprofile.jpg",
     label: "username",
     role: "admin",
-    to: "profile"
+    to: "profile",
   };
 
   const navItems: Item[] = [
@@ -23,7 +24,6 @@ export default function Navbar() {
     { icon: BiBookAdd, label: "Premium Courses", to: "premium-courses" },
     { icon: BiGroup, label: "Premium Users", to: "premium-users" },
     // { icon: BiLogOut, label: "Logout", to: "logout" }
-    // Add more button if needed
   ];
 
   return (

@@ -12,30 +12,29 @@ import AdminRegister from "./pages/admin/AdminRegister";
 import Profile from "./pages/Profile";
 import Materials from "./pages/Materials";
 import Navbar from "./components/navbar/Navbar";
+import { Layout } from "./components/layout";
+import NotFound from "./pages/NotFound";
 function App() {
   return (
-    <Container
-      maxW={"100vw"}
-      maxH={"100vh"}
-      display={"flex"}
-      flexDirection={"row"}
-      className="App"
-      bg={"#ffeaff"}
-    >
-      <Navbar />
-      <Routes>
-        {/* Contoh react router */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/admin/register" element={<AdminRegister />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/request" element={<Request />} />
-        <Route path="/premium-courses" element={<Courses />} />
-        <Route path="/premium-users" element={<Users />} />
-        <Route path="/materials/:course_id" element={<Materials />} />
-      </Routes>
-    </Container>
+    <Routes>
+      {/* Contoh react router */}
+      <Route path="/" element={<Layout children={<Home />} />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/admin/register" element={<AdminRegister />} />
+      <Route path="/profile" element={<Layout children={<Profile />} />} />
+      <Route path="/request" element={<Layout children={<Request />} />} />
+      <Route
+        path="/premium-courses"
+        element={<Layout children={<Courses />} />}
+      />
+      <Route path="/premium-users" element={<Layout children={<Users />} />} />
+      <Route
+        path="/materials/:course_id"
+        element={<Layout children={<Materials />} />}
+      />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 

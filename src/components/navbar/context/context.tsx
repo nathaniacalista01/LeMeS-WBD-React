@@ -1,9 +1,7 @@
 import { useDisclosure } from "@chakra-ui/react";
 import { createContext, useContext } from "react";
 
-const Context = createContext<ReturnType<typeof useDisclosure> | null>(
-  null
-);
+const Context = createContext<ReturnType<typeof useDisclosure> | null>(null);
 
 export function useSidenav() {
   const sidebar = useContext(Context);
