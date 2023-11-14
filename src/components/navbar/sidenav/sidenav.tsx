@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { useSidenav } from "../context/context";
 import Items, { Item, Profile } from "../items/items";
-import LogoutDialog from "../LogoutPopup";
+import {LogoutDialog} from "../LogoutPopup";
 import { BiMenu, BiLogOut, BiSad } from "react-icons/bi";
 
 export interface SidenavProps {

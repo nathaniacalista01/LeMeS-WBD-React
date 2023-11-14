@@ -18,7 +18,7 @@ interface LogoutDialogProps {
   onClose: () => void;
 }
 
-function LogoutDialog({ isOpen, onClose }: LogoutDialogProps) {
+export const LogoutDialog = ({ isOpen, onClose }: LogoutDialogProps)=>{
   const cancelRef = React.useRef<HTMLButtonElement | null>(null);
   const handleLogout = () => {
     // Handle the Logout action here, e.g., send an API request to update the data
@@ -60,5 +60,3 @@ function LogoutDialog({ isOpen, onClose }: LogoutDialogProps) {
     </AlertDialog>
   );
 }
-
-export default LogoutDialog;

@@ -8,7 +8,6 @@ import {
 } from "react-icons/bi";
 import { Outlet } from "react-router-dom";
 import { Provider, Container, Item, Profile, Sidenav } from ".";
-import React from "react";
 
 export default function Navbar() {
   const pict: Profile = {

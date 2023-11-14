@@ -1,14 +1,9 @@
 // src/components/NotFound.tsx
 
-import { Button, Container, Heading, Text } from "@chakra-ui/react";
+import { Button, Container, Heading, Link, Text } from "@chakra-ui/react";
 import React from "react";
 
 const NotFound: React.FC = () => {
-  const handleBackToHomepage = () => {
-    // Ganti dengan logika navigasi kembali ke homepage
-    console.log("Navigasi kembali ke homepage");
-  };
-
   return (
     <Container
       display={"flex"}
@@ -40,17 +35,10 @@ const NotFound: React.FC = () => {
           outline={"none"}
           transition={"background-color 0.3s"}
         >
-          Back to homepage
+          <Link href="/">Back to homepage</Link>
         </Button>
       </Container>
     </Container>
-    // <div style={containerStyle}>
-    //   <h1 style={headingStyle}>404 - Not Found</h1>
-    //   <p style={paragraphStyle}>Maaf, halaman yang Anda cari tidak ditemukan.</p>
-    //   <button style={buttonStyle} onClick={handleBackToHomepage}>
-    //     Back to Homepage
-    //   </button>
-    // </div>
   );
 };
 
