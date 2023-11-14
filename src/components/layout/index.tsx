@@ -1,6 +1,5 @@
 import { Container } from "@chakra-ui/react";
 import Navbar from "../navbar/Navbar";
-import { Outlet } from "react-router-dom";
 import React from "react";
 
 

@@ -15,7 +15,6 @@ import {
 import axios from "axios";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { BiShow, BiHide } from "react-icons/bi";
-import { Fetch } from "../utils/fetch";
 import { axiosConfig } from "../utils/axios";
 import config from "../config/config";
 

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BACKEND_REST_API_URL = "http://localhost:8000/api";
+const BACKEND_REST_API_URL = process.env.REST_URL;
 
 const axiosInstance = axios.create({
     baseURL: BACKEND_REST_API_URL,
