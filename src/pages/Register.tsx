@@ -11,9 +11,12 @@ import {
   InputGroup,
   InputRightElement,
 } from "@chakra-ui/react";
+import axios from "axios";
 import { Link as RouterLink } from "react-router-dom";
 import { BiShow, BiHide } from "react-icons/bi";
 import { Fetch } from "../utils/fetch";
+import { axiosConfig } from "../utils/axios";
+import config from "../config/config";
 
 function Register() {
   const [username, setUsername] = useState("");
@@ -22,7 +25,6 @@ function Register() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const [usernameError, setUsernameError] = useState("");
-  const [usernameUnique, setUsernameUnique] = useState(false);
   const [isAllValid, setIsAllValid] = useState({
     username: false,
     fullname: false,
@@ -63,14 +65,28 @@ function Register() {
     if (username.length < 5) {
       setUsernameError("Username minimum length is 5");
       setIsAllValid({ ...isAllValid, username: false });
-      return false;
+    } else if (username.includes(" ")) {
+      setUsernameError("Username should not have a whitespace");
+      setIsAllValid({ ...isAllValid, username: false });
     } else {
-      console.log("Masuk sini");
-      const url = `/user/username/${username}`
-      const util = new Fetch();
-      util.searchUser(username,url);
-      setUsernameError("");
-      setIsAllValid({ ...isAllValid, username: true });
+      const axiosInstance = axios.create(axiosConfig());
+      try {
+        axiosInstance
+          .post(`${config.REST_API_URL}/user/username`, {
+            username: username,
+          })
+          .then((res) => {
+            const { result } = res["data"];
+            if (!result) {
+              setIsAllValid({ ...isAllValid, username: true });
+            } else {
+              setUsernameError("Username must be unique ");
+              setIsAllValid({ ...isAllValid, username: false });
+            }
+          });
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -82,23 +98,6 @@ function Register() {
       setIsAllValid({ ...isAllValid, password: false });
     }
   };
-
-  // const validate = () => {
-  //   if (
-  //     checkFullname() &&
-  //     checkUsername() &&
-  //     checkPassword() &&
-  //     usernameUnique
-  //   ) {
-  //     setIsDisabled(false);
-  //   } else {
-  //     setIsDisabled(true);
-  //   }
-  // };
-  // useEffect(() => {
-  //   console.log("Masuk use effect");
-  //   validate();
-  // }, [fullname, username, password, usernameUnique]);
 
   const handleSubmit = () => {
     console.log(username, fullname, password);
@@ -235,6 +234,11 @@ function Register() {
                   bg: "purple.400",
                 }}
                 onClick={handleSubmit}
+                isDisabled={
+                  !(isAllValid.fullname &&
+                  isAllValid.username &&
+                  isAllValid.password)
+                }
               >
                 Register
               </Button>
