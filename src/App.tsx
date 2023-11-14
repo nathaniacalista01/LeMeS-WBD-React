@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.css";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import { Container } from "@chakra-ui/react";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -14,11 +14,16 @@ import Materials from "./pages/Materials";
 import Navbar from "./components/navbar/Navbar";
 import { Layout } from "./components/layout";
 import NotFound from "./pages/NotFound";
+
 function App() {
   return (
     <Routes>
+      <Route
+        path="/"
+        element={<Navigate to="/course?page=1" replace />}
+      />
       {/* Contoh react router */}
-      <Route path="/" element={<Layout children={<Home />} />} />
+      <Route path="/course" element={<Layout children={<Home />} />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/admin/register" element={<AdminRegister />} />

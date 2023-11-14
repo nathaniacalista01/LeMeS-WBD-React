@@ -14,60 +14,58 @@ import { Card, CardBody, CardFooter } from "@chakra-ui/react";
 import ReactPaginate from "react-paginate";
 import { IconContext } from "react-icons";
 import { BiChevronLeftCircle, BiChevronRightCircle } from "react-icons/bi";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { axiosConfig } from "../utils/axios";
 import axios from "axios";
 import config from "../config/config";
 import { Courses } from "../types";
 
 const Home = () => {
+  const { page: pageNumber } = useParams();
   const initialCourses: Courses[] = [];
   const [courses, setCourses] = useState(initialCourses);
-  const [isloading, setIsloading] = useState(false);
+  const [totalPages, setTotalPages] = useState(1); // Initialize with 1 as default
+  const [isLoading, setIsLoading] = useState(false);
   const newAxiosInstance = axios.create(axiosConfig());
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const page = parseInt(queryParams.get('page') || '1', 10);
+  const navigate = useNavigate();
+  const n = 8;
 
   useEffect(() => {
-    const getCourses = async () => {
+    const getCourses = async (pageNumber: number) => {
       try {
-        setIsloading(true);
-        newAxiosInstance
-          .get(`${config.REST_API_URL}/course`)
-          .then((res) => {
-            const coursesData: Courses[] = res.data.data.map((course: any) => {
-              const releaseDate = new Date(course.release_date);
-              const formattedDate = releaseDate.toLocaleDateString();
-              return {
-                id: course.id,
-                title: course.title,
-                description: course.description,
-                image_path: course.image_path,
-                release_date: formattedDate,
-              };
-            });
-            setCourses(coursesData);
-            setIsloading(false);
-            console.log("berhasil yeah");
-          });
+        setIsLoading(true);
+        const res = await newAxiosInstance.get(`${config.REST_API_URL}/course?page=${pageNumber}`);
+        setTotalPages(Math.ceil(res.data.total/n));
+
+        const coursesData: Courses[] = res.data.data.map((course: any) => {
+          const releaseDate = new Date(course.release_date);
+          const formattedDate = releaseDate.toLocaleDateString();
+          return {
+            id: course.id,
+            title: course.title,
+            description: course.description,
+            image_path: course.image_path,
+            release_date: formattedDate,
+          };
+        });
+        setCourses(coursesData);
+        setIsLoading(false);
+        console.log("berhasil yeah");
       } catch (error) {
         console.error('Axios Error:', error);
-        setIsloading(false);
+        setIsLoading(false);
       }
     }
 
-    getCourses();
-  }, []);
-
-  const n = 4;
-  const [page, setPage] = useState(0);
-  const filterData = useMemo(() => {
-    return courses.filter((item, index) => {
-      return index >= page * n && index < (page + 1) * n;
-    });
-  }, [page, courses]);
+    getCourses(page);
+  }, [page]);
 
   return (
     <>
-      {!isloading && (
+      {!isLoading && (
         <Container
           overflow={"auto"}
           px="20"
@@ -79,14 +77,14 @@ const Home = () => {
           <Heading size="lg">
             Select a Premium Course to Get Premium Knowledges!
           </Heading>
-          {filterData.length > 0 ? (
+          {courses.length > 0 ? (
             <SimpleGrid
               columns={{ base: 1, md: 2, lg: 4 }}
               spacing={"30px"}
               mt={10}
               justifyItems="space-between"
             >
-              {filterData.map((item, index) => (
+              {courses.map((item, index) => (
                 <Card maxW="sm">
                   <CardBody>
                     <Image
@@ -126,8 +124,14 @@ const Home = () => {
                 containerClassName={"pagination"}
                 pageClassName={"page-item"}
                 activeClassName={"active-page"}
-                onPageChange={(event) => setPage(event.selected)}
-                pageCount={Math.ceil(courses.length / n)}
+                onPageChange={(selectedItem) => {
+                  if ('selected' in selectedItem) {
+                    const nextPage = selectedItem.selected + 1;
+                    navigate(`/course?page=${nextPage}`);
+                  }
+                }}
+                pageCount={totalPages}
+                initialPage={page - 1}
                 breakLabel="..."
                 previousLabel={
                   <IconContext.Provider value={{ size: "36px" }}>
