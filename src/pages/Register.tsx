@@ -10,20 +10,23 @@ import {
   Container,
   InputGroup,
   InputRightElement,
+  useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { BiShow, BiHide } from "react-icons/bi";
 import { Fetch } from "../utils/fetch";
 import { axiosConfig } from "../utils/axios";
 import config from "../config/config";
 
 function Register() {
+  const axiosInstance = axios.create(axiosConfig());
+  const toast = useToast();
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [fullname, setFullname] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [isDisabled, setIsDisabled] = useState(true);
   const [usernameError, setUsernameError] = useState("");
   const [isAllValid, setIsAllValid] = useState({
     username: false,
@@ -35,22 +38,22 @@ function Register() {
   const handleChangeFullname: React.ChangeEventHandler<HTMLInputElement> = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    checkFullname();
     setFullname(e.target.value);
+    checkFullname();
   };
 
   const handleChangeUsername: React.ChangeEventHandler<HTMLInputElement> = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    checkUsername();
     setUsername(e.target.value);
+    checkUsername(e.target.value);
   };
 
   const handleChangePassword: React.ChangeEventHandler<HTMLInputElement> = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    checkPassword();
     setPassword(e.target.value);
+    checkPassword();
   };
 
   const checkFullname = () => {
@@ -61,19 +64,18 @@ function Register() {
     }
   };
 
-  const checkUsername = () => {
-    if (username.length < 5) {
+  const checkUsername = (current_username: string) => {
+    if (current_username.length < 5) {
       setUsernameError("Username minimum length is 5");
       setIsAllValid({ ...isAllValid, username: false });
-    } else if (username.includes(" ")) {
+    } else if (current_username.includes(" ")) {
       setUsernameError("Username should not have a whitespace");
       setIsAllValid({ ...isAllValid, username: false });
     } else {
-      const axiosInstance = axios.create(axiosConfig());
       try {
         axiosInstance
           .post(`${config.REST_API_URL}/user/username`, {
-            username: username,
+            username: current_username,
           })
           .then((res) => {
             const { result } = res["data"];
@@ -100,7 +102,41 @@ function Register() {
   };
 
   const handleSubmit = () => {
-    console.log(username, fullname, password);
+    try {
+      axiosInstance
+        .post(`${config.REST_API_URL}/user`, {
+          username: username,
+          fullname: fullname,
+          password: password,
+        })
+        .then((res) => {
+          console.log(res, res["data"]);
+          const { status } = res["data"];
+          console.log(status);
+          if (status === 200) {
+            toast({
+              title: "Register success!",
+              description: "Your account has been registered",
+              status: "success",
+              duration: 5000,
+              isClosable: true,
+              position: "top",
+            });
+            navigate("/login");
+          } else {
+            toast({
+              title: "Register failed!",
+              description: "Your account can't be registered",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+              position: "top",
+            });
+          }
+        });
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <Container display={"flex"} flexDir={"column"}>
@@ -235,9 +271,11 @@ function Register() {
                 }}
                 onClick={handleSubmit}
                 isDisabled={
-                  !(isAllValid.fullname &&
-                  isAllValid.username &&
-                  isAllValid.password)
+                  !(
+                    isAllValid.fullname &&
+                    isAllValid.username &&
+                    isAllValid.password
+                  )
                 }
               >
                 Register
