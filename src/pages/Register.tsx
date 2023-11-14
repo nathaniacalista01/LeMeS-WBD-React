@@ -109,9 +109,7 @@ function Register() {
           password: password,
         })
         .then((res) => {
-          console.log(res, res["data"]);
           const { status } = res["data"];
-          console.log(status);
           if (status === 200) {
             toast({
               title: "Register success!",
@@ -131,6 +129,7 @@ function Register() {
               isClosable: true,
               position: "top",
             });
+            
           }
         });
     } catch (error) {
