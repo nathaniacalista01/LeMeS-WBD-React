@@ -9,6 +9,7 @@ import {
   Image,
   Heading,
   Box,
+  useToast,
 } from "@chakra-ui/react";
 import { Card, CardBody, CardFooter } from "@chakra-ui/react";
 import ReactPaginate from "react-paginate";
@@ -22,6 +23,7 @@ import { Courses } from "../types";
 
 const Home = () => {
   const { page: pageNumber } = useParams();
+  const toast = useToast();
   const initialCourses: Courses[] = [];
   const [courses, setCourses] = useState(initialCourses);
   const [totalPages, setTotalPages] = useState(1); // Initialize with 1 as default
@@ -38,6 +40,18 @@ const Home = () => {
       try {
         setIsLoading(true);
         const res = await newAxiosInstance.get(`${config.REST_API_URL}/course?page=${pageNumber}`);
+        const {status} = res["data"];
+        if(status === 401){
+          toast({
+            title : "Unathorized user",
+            description : "You have to log in",
+            status : "error",
+            duration:3000,
+            isClosable : true,
+            position : "top"
+          })
+          navigate("/login");
+        }
         setTotalPages(Math.ceil(res.data.total/n));
 
         const coursesData: Courses[] = res.data.data.map((course: any) => {

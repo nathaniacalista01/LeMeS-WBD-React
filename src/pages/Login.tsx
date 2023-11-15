@@ -31,6 +31,8 @@ function Login() {
         .post(`${config.REST_API_URL}/auth/login`, {
           username: username,
           password: password,
+        },{
+          withCredentials : true,
         })
         .then((res) => {
           const { status } = res["data"];

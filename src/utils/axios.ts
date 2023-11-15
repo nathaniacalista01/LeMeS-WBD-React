@@ -20,7 +20,7 @@ const axiosConfig = () => {
             // 'Access-Control-Allow-Credentials': 'true',
             'Access-Control-Allow-Origin': '*',
         },
-        withCredentials: false,
+        withCredentials: true,
     }
 }
 
