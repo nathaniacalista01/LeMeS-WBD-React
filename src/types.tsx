@@ -21,3 +21,9 @@ export type Materials = {
     material_path: string;
   };
 
+export type users = {
+    user_id: number;
+    username: string;
+    fullname: string;
+    role: string;
+  };

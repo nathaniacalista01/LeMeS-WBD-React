@@ -24,6 +24,7 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { BiSolidTrash, BiSolidEdit, BiError } from "react-icons/bi";
+import { users } from "../../types";
 import { Link } from "react-router-dom";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
@@ -31,12 +32,6 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 
 const UsersList = () => {
-  type users = {
-    user_id: number;
-    username: string;
-    fullname: string;
-    role: string;
-  };
 
   const cancelRef = React.useRef<HTMLButtonElement | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
