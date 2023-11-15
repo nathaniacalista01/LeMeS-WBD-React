@@ -63,6 +63,8 @@ export function AddModuleModal({
             setDescription('');
             setIsLoading(false);
             successAdd(); // Refresh new data without reloading page
+            setIsAllValid({ ...isAllValid, title: false });
+            setIsAllValid({ ...isAllValid, description: false });
         } catch (error) {
             console.error('Error adding module:', error);
         }
