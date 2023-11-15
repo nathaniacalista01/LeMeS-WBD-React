@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Flex,
   Button,
@@ -128,8 +128,7 @@ function Register() {
               duration: 3000,
               isClosable: true,
               position: "top",
-            });
-            
+            }); 
           }
         });
     } catch (error) {

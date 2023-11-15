@@ -29,7 +29,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { useDisclosure } from "@chakra-ui/react";
 
-const CoursesList = () => {
+export const CoursesList = () => {
   type courses = {
     course_id: number;
     title: string;
@@ -543,5 +543,3 @@ function AddCourseModal({ isOpen, onClose, handleAdd }: AddCourseModalProps) {
     </Modal>
   );
 }
-
-export default CoursesList;

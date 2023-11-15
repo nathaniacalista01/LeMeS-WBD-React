@@ -1,42 +1,65 @@
 import React, { useEffect } from "react";
 import "./App.css";
 import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
-import { Container } from "@chakra-ui/react";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Courses from "./pages/admin/PremiumCourses";
+import { CoursesList } from "./pages/admin/PremiumCourses";
 import Users from "./pages/admin/PremiumUsers";
 import Request from "./pages/admin/Request";
 import AdminRegister from "./pages/admin/AdminRegister";
 import Profile from "./pages/Profile";
 import Materials from "./pages/Materials";
-import Navbar from "./components/navbar/Navbar";
-import { Layout } from "./components/layout";
 import NotFound from "./pages/NotFound";
+import { AdminLayout } from "./components/layout/AdminLayout";
+import { TeacherLayout } from "./components/layout/TeacherLayout";
 
 function App() {
+  // const LoggedInRoutes = (children) => {
+
+  // };
   return (
     <Routes>
-      <Route
-        path="/"
-        element={<Navigate to="/course?page=1" replace />}
-      />
+      <Route path="/" element={<Navigate to="/course?page=1" replace />} />
+      <Route path="/admin">
+        <Route
+          path="register"
+          element={
+            <AdminLayout redirect="/not-found">
+              <AdminRegister />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="courses"
+          element={
+            <AdminLayout redirect="/not-found" children={<CoursesList />} />
+          }
+        />
+        <Route
+          path="request"
+          element={<AdminLayout redirect="/not-found" children={<Request />} />}
+        />
+        <Route
+          path="users"
+          element={<AdminLayout redirect="/not-found" children={<Users />} />}
+        />
+      </Route>
       {/* Contoh react router */}
-      <Route path="/course" element={<Layout children={<Home />} />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/admin/register" element={<AdminRegister />} />
-      <Route path="/profile" element={<Layout children={<Profile />} />} />
-      <Route path="/request" element={<Layout children={<Request />} />} />
+
       <Route
-        path="/premium-courses"
-        element={<Layout children={<Courses />} />}
+        path="/course"
+        element={<TeacherLayout redirect="/not-found" children={<Home />} />}
       />
-      <Route path="/premium-users" element={<Layout children={<Users />} />} />
+      <Route
+        path="/profile"
+        element={<TeacherLayout redirect="/not-found" children={<Profile />} />}
+      />
       <Route
         path="/materials/:course_id"
-        element={<Layout children={<Materials />} />}
+        element={<TeacherLayout children={<Materials />} />}
       />
       <Route path="*" element={<NotFound />} />
     </Routes>
