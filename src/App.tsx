@@ -18,12 +18,13 @@ function App() {
     <Routes>
       <Route path="/" element={<Navigate to="/course?page=1" replace />} />
       <Route path="/admin">
-        <Route path="register" element={<AdminRegister />} />
+      <Route path="register" element={<AdminRegister />} />
         <Route path="courses" element={<Layout children={<CoursesList />} />} />
         <Route path="request" element={<Layout children={<Request />} />} />
         <Route path="users" element={<Layout children={<Users />} />} />
       </Route>
       {/* Contoh react router */}
+
       <Route path="/course" element={<Layout children={<Home />} />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
