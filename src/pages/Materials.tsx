@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
     Container,
     HStack,
@@ -18,35 +19,38 @@ import {
     AccordionPanel,
     Button,
 } from "@chakra-ui/react";
-import { FormEvent, useEffect, useState } from "react";
 import {
     BiSolidEdit,
     BiSolidTrash,
     BiPlusCircle,
     BiError,
 } from "react-icons/bi";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import ReactPlayer from "react-player";
+import { useParams } from "react-router-dom";
+import { Modules, Materials } from "../types"
 import { EditModuleModal, AddModuleModal, DeleteModuleModal } from "../components/modals/module";
 // import {  } from "../components/modals/material";
+import { axiosConfig } from "../utils/axios";
+import config from "../config/config";
+import axios from "axios";
+import ReactPlayer from "react-player";
 import PdfViewer from "../components/pdfviewer/pdfviewer";
 import Loading from "../components/loading/Loading";
-import { axiosConfig } from "../utils/axios";
-import axios from "axios";
-import config from "../config/config";
-import { Modules, Materials } from "../types"
 
 const ModuleMaterials = () => {
-    // Handling list of modules for a course
+
     const { course_id } = useParams();
-    const [ course_id_int, setCourseIDInt ] = useState(0);
-    const [ refresh, setRefresh ] = useState(false);
-    const initialModules: Modules[] = [];
-    const [modules, setModules] = useState(initialModules);
+    const [course_id_int, setCourseIDInt] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const newAxiosInstance = axios.create(axiosConfig());
-    const navigate = useNavigate();
-    const location = useLocation();
+
+    // -------------------------------------- HANDLING LIST OF MODULES OF A COURSE ---------------------------------
+
+    const initialModules: Modules[] = [];
+    const [modules, setModules] = useState(initialModules);
+    const [idSelectedModules, setIdSelectedModules] = useState(0);
+    const [refreshModule, setRefreshModule] = useState(false);
+
+    // FETCH DATA FROM SERVER
     useEffect(() => {
         const getModules = async (course_id: number) => {
             try {
@@ -62,7 +66,6 @@ const ModuleMaterials = () => {
                 });
                 setModules(ModulesData);
                 setIsLoading(false);
-                console.log("berhasil yeah");
             } catch (error) {
                 console.error('Axios Error:', error);
                 setIsLoading(false);
@@ -82,9 +85,58 @@ const ModuleMaterials = () => {
                 getModules(courseIdAsInt);
             }
         }
-    }, [refresh]);
+    }, [refreshModule]);
 
-    // Handling list of materials for a module
+    const handleClickModule = (id: number) => {
+        getMaterials(id);
+    }
+
+    // HANDLING ADD MODULE
+    const [isModalAddModuleOpen, setIsModalAddModuleOpen] = useState(false);
+    const openModalAddModule = () => {
+        setIsModalAddModuleOpen(true);
+    };
+    const closeModalAddModule = () => {
+        setIsModalAddModuleOpen(false);
+    };
+    const successAddModule = () => {
+        setIsModalAddModuleOpen(false);
+        setRefreshModule((prevRefresh) => !prevRefresh);
+    }
+
+    // HANDLING EDIT MODULE
+    const [isModalEditModuleOpen, setIsModalEditModuleOpen] = useState(false);
+
+    const handleOpenEdit = (id: number) => {
+        setIdSelectedModules(id);
+        openModalEditModule();
+    }
+    const openModalEditModule = () => {
+        setIsModalEditModuleOpen(true);
+    };
+    const closeModalEditModule = () => {
+        setIsModalEditModuleOpen(false);
+        setRefreshModule(true);
+    };
+    const successEditModule = () => {
+        setIsModalEditModuleOpen(false);
+        setRefreshModule((prevRefresh) => !prevRefresh);
+    }
+
+    // HANDLING DELETE MODULE
+    const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+    const [deletedID, setDeletedID] = useState(0);
+    const openModalDelete = (id: number) => {
+        setIsModalDeleteOpen(true);
+        setDeletedID(id);
+    };
+    const closeModalDelete = () => {
+        setIsModalDeleteOpen(false);
+    };
+
+
+    // -------------------------------------- HANDLING LIST OF MATERIALS OF A MODULE ---------------------------------
+
     const initialMaterials: Materials[] = [];
     const [materials, setMaterials] = useState(initialMaterials);
     const getMaterials = async (module_id: number) => {
@@ -101,73 +153,29 @@ const ModuleMaterials = () => {
             });
             setMaterials(MaterialsData);
             setIsLoading(false);
-            console.log("berhasil yeah");
         } catch (error) {
             console.error('Axios Error:', error);
             setIsLoading(false);
         }
     }
 
-    const [isModalEditOpen, setIsModalEditOpen] = useState(false);
-    const [editedTitle, setEditedTitle] = useState("");
-    const [editedDescription, setEditedDescription] = useState("");
-    const openModalEdit = (id: number, title: string) => {
-        setIsModalEditOpen(true);
-        setEditedTitle(title);
-        // setEditedDescription(description);
-    };
-    const closeModalEdit = () => {
-        setIsModalEditOpen(false);
-        setRefresh(true);
-    };
-    const handleEdit = () => {
-        // Handle the editing action here, e.g., send an API request to update the data
-        // You can use the editedTitle and editedDescription state variables
-        // to send the updated data.
-        // After editing is complete, close the modal.
-        closeModalEdit();
-    };
-
-    const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
-    const [deletedID, setDeletedID] = useState(0);
-    const openModalDelete = (id: number) => {
-        setIsModalDeleteOpen(true);
-        setDeletedID(id);
-    };
-    const closeModalDelete = () => {
-        setIsModalDeleteOpen(false);
-    };
-    const handleDelete = () => {
-        // Handle the Deleteing action here, e.g., send an API request to update the data
-        // You can use the DeleteedTitle and DeleteedDescription state variables
-        // to send the updated data.
-        // After Deleteing is complete, close the modal.
-        closeModalDelete();
-    };
-
-    const [isModalAddModuleOpen, setIsModalAddModuleOpen] = useState(false);
-    const openModalAddModule = () => {
-        setIsModalAddModuleOpen(true);
-    };
-    const closeModalAddModule = () => {
-        setIsModalAddModuleOpen(false);
-    };
-    const successAddModule = () => {
-        setIsModalAddModuleOpen(false);
-        setRefresh((prevRefresh) => !prevRefresh);
-    }
-
     return (
         <Container overflow="auto" maxW={"100vw"} maxH={"100vh"}>
             <Loading loading={isLoading} />
-            {/* Render the EditMaterialModal component conditionally */}
-            {/* <EditMaterialModal
-                isOpen={isModalEditOpen}
-                onClose={closeModalEdit}
-                title={editedTitle}
-                description={editedDescription}
-                handleEdit={handleEdit}
-            /> */}
+
+            {/* --------------- MODULE POPUPS -------------------- */}
+            <AddModuleModal
+                isOpen={isModalAddModuleOpen}
+                onClose={closeModalAddModule}
+                successAdd={successAddModule}
+                courseId={course_id_int}
+            />
+            <EditModuleModal
+                isOpen={isModalEditModuleOpen}
+                onClose={closeModalEditModule}
+                successEdit={successEditModule}
+                moduleId={idSelectedModules}
+            />
 
             {/* Render the DeleteMaterialModal component conditionally */}
             {/* <DeleteMaterialModal
@@ -177,14 +185,8 @@ const ModuleMaterials = () => {
                 handleDelete={handleDelete}
             /> */}
 
-            {/* Render the Add Module component conditionally */}
-            <AddModuleModal
-                isOpen={isModalAddModuleOpen}
-                onClose={closeModalAddModule}
-                successAdd={successAddModule}
-                courseId={course_id_int}
-            />
 
+            {/* --------------- MATERIAL POPUPS -------------------- */}
             {/* Render the Add Material component conditionally */}
             {/* <AddMaterialModal
                 isOpen={isModalAddOpen}
@@ -215,49 +217,49 @@ const ModuleMaterials = () => {
                                 {modules.length > 0 ? (
                                     <Tbody>
                                         {/* ITERATE HERE LOOPING DATABASE TO FILL TABLE */}
-                                        {modules.map((item) => (
-                                            <Tr key={item.id}>
-                                                <Td
-                                                    height="auto"
-                                                    maxWidth="95%"
-                                                    p="2"
-                                                    whiteSpace="normal"
-                                                    wordBreak="break-all"
-                                                >
-                                                    <Button
-                                                        justifyContent={"left"}
-                                                        w="100%"
-                                                        bg="transparent"
-                                                        onClick={() => getMaterials(item.id)}
-                                                        style={{ textDecoration: 'none' }}
+                                        {modules
+                                            .sort((a, b) => a.id - b.id)
+                                            .map((item) => (
+                                                <Tr key={item.id}>
+                                                    <Td
+                                                        height="auto"
+                                                        maxWidth="95%"
+                                                        p="2"
+                                                        whiteSpace="normal"
+                                                        wordBreak="break-all"
                                                     >
-                                                        <Text fontSize={"sm"}>
-                                                            {item.title}
-                                                        </Text>
-                                                    </Button>
-                                                </Td>
-                                                <Td width="5%" p="2">
-                                                    <Icon
-                                                        as={BiSolidEdit}
-                                                        fontSize={"18"}
-                                                        color={"#564c95"}
-                                                        _hover={{ color: "green" }}
-                                                        cursor={"pointer"}
-                                                        onClick={() =>
-                                                            openModalEdit(item.id, item.title)
-                                                        }
-                                                    ></Icon>
-                                                    <Icon
-                                                        as={BiSolidTrash}
-                                                        fontSize={"18"}
-                                                        color={"#564c95"}
-                                                        _hover={{ color: "red" }}
-                                                        cursor={"pointer"}
-                                                        onClick={() => openModalDelete(item.id)}
-                                                    ></Icon>
-                                                </Td>
-                                            </Tr>
-                                        ))}
+                                                        <Button
+                                                            justifyContent={"left"}
+                                                            w="100%"
+                                                            bg="transparent"
+                                                            onClick={() => handleClickModule(item.id)}
+                                                            style={{ textDecoration: 'none' }}
+                                                        >
+                                                            <Text fontSize={"sm"}>
+                                                                {item.title}
+                                                            </Text>
+                                                        </Button>
+                                                    </Td>
+                                                    <Td width="5%" p="2">
+                                                        <Icon
+                                                            as={BiSolidEdit}
+                                                            fontSize={"18"}
+                                                            color={"#564c95"}
+                                                            _hover={{ color: "green" }}
+                                                            cursor={"pointer"}
+                                                            onClick={() => handleOpenEdit(item.id)}
+                                                        ></Icon>
+                                                        <Icon
+                                                            as={BiSolidTrash}
+                                                            fontSize={"18"}
+                                                            color={"#564c95"}
+                                                            _hover={{ color: "red" }}
+                                                            cursor={"pointer"}
+                                                            onClick={() => openModalDelete(item.id)}
+                                                        ></Icon>
+                                                    </Td>
+                                                </Tr>
+                                            ))}
                                     </Tbody>
                                 ) : (
                                     <Tr>
@@ -301,39 +303,41 @@ const ModuleMaterials = () => {
                                         background: "rgba(255, 255, 255, 0.8)",
                                     },
                                 }}>
-                                {materials.map((item) => (
-                                    <Accordion allowToggle>
-                                        <AccordionItem>
-                                            <AccordionButton bg="#f0f0f0" borderRadius={"5"}>
-                                                <Box flex="1" textAlign="left">
-                                                    {item.title}
-                                                </Box>
-                                                <AccordionIcon />
-                                                <Icon
-                                                    as={BiSolidEdit}
-                                                    fontSize={"18"}
-                                                    color={"#564c95"}
-                                                    _hover={{ color: "green" }}
-                                                    cursor={"pointer"}
-                                                    onClick={() => openModalEdit(item.id, item.title)}
-                                                ></Icon>
-                                                <Icon
-                                                    as={BiSolidTrash}
-                                                    fontSize={"18"}
-                                                    color={"#564c95"}
-                                                    _hover={{ color: "red" }}
-                                                    cursor={"pointer"}
-                                                    onClick={() => openModalDelete(item.id)}
-                                                ></Icon>
-                                            </AccordionButton>
-                                            <AccordionPanel>
-                                                <Text align="left" fontSize={"sm"}>{item.description}</Text>
-                                                <PdfViewer pdfPath={"/Quiz-1.pdf"} />
-                                            </AccordionPanel>
-                                        </AccordionItem>
-                                        <Divider mt="3" borderColor="transparent" />
-                                    </Accordion>
-                                ))}
+                                {materials
+                                    .sort((a, b) => a.id - b.id)
+                                    .map((item) => (
+                                        <Accordion allowToggle>
+                                            <AccordionItem>
+                                                <AccordionButton bg="#f0f0f0" borderRadius={"5"}>
+                                                    <Box flex="1" textAlign="left">
+                                                        {item.title}
+                                                    </Box>
+                                                    <AccordionIcon />
+                                                    <Icon
+                                                        as={BiSolidEdit}
+                                                        fontSize={"18"}
+                                                        color={"#564c95"}
+                                                        _hover={{ color: "green" }}
+                                                        cursor={"pointer"}
+                                                    // onClick={() => openModalEditModule(item.id, item.title, item.description)}
+                                                    ></Icon>
+                                                    <Icon
+                                                        as={BiSolidTrash}
+                                                        fontSize={"18"}
+                                                        color={"#564c95"}
+                                                        _hover={{ color: "red" }}
+                                                        cursor={"pointer"}
+                                                        onClick={() => openModalDelete(item.id)}
+                                                    ></Icon>
+                                                </AccordionButton>
+                                                <AccordionPanel>
+                                                    <Text align="left" fontSize={"sm"}>{item.description}</Text>
+                                                    <PdfViewer pdfPath={"/Quiz-1.pdf"} />
+                                                </AccordionPanel>
+                                            </AccordionItem>
+                                            <Divider mt="3" borderColor="transparent" />
+                                        </Accordion>
+                                    ))}
                             </Box>
                         </Box>
                     ) : (<Box
