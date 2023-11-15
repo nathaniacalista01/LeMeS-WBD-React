@@ -16,10 +16,10 @@ import ReactPaginate from "react-paginate";
 import { IconContext } from "react-icons";
 import { BiChevronLeftCircle, BiChevronRightCircle } from "react-icons/bi";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { axiosConfig } from "../utils/axios";
 import axios from "axios";
-import config from "../config/config";
 import { Courses } from "../types";
+import { axiosConfig } from "../utils/axios";
+import config from "../config/config";
 
 const Home = () => {
   const { page: pageNumber } = useParams();

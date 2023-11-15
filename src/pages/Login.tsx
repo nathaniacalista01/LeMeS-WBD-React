@@ -15,8 +15,8 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { BiHide, BiShow } from "react-icons/bi";
-import { axiosConfig } from "../utils/axios";
 import config from "../config/config";
+import { axiosConfig } from "../utils/axios";
 
 function Login() {
   const axiosInstance = axios.create(axiosConfig());
