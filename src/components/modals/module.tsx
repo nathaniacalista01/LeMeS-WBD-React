@@ -14,10 +14,8 @@ import {
     ModalFooter,
     ButtonGroup,
     Button,
-    Container
 } from "@chakra-ui/react";
-import { FormEvent, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { BiError } from "react-icons/bi";
 import { axiosConfig } from "../../utils/axios";
 import axios from "axios";
@@ -210,7 +208,7 @@ export function EditModuleModal({
                     setEditedDescription(res.data.data.description);
                     setTitle(res.data.data.title);
                     setDescription(res.data.data.description);
-                } else {}
+                } else { }
                 setIsLoading(false);
             } catch (error) {
                 console.error('Error fetching module data:', error);
@@ -256,7 +254,7 @@ export function EditModuleModal({
             setIsAllValid({ ...isAllValid, title: false });
         }
     };
-    
+
     const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         if (e.target.value.length > 0) {
             setDescription(e.target.value);
@@ -266,7 +264,7 @@ export function EditModuleModal({
             setIsAllValid({ ...isAllValid, description: false });
         }
     };
-    
+
     return (
         <>
             <Loading loading={isLoading} />
@@ -342,45 +340,67 @@ export function EditModuleModal({
 interface DeleteModuleModalProps {
     isOpen: boolean;
     onClose: () => void;
-    course_id: number;
-    handleDelete: () => void;
+    successDelete: () => void;
+    moduleId: number;
 }
 
 export function DeleteModuleModal({
     isOpen,
     onClose,
-    course_id,
-    handleDelete,
+    successDelete,
+    moduleId,
 }: DeleteModuleModalProps) {
-    return (
-        <Modal isOpen={isOpen} onClose={onClose}>
-            <ModalOverlay />
-            <ModalContent>
-                <ModalHeader textAlign={"center"}>Delete Module</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody textAlign={"center"}>
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="center"
-                        justifyContent="center"
-                    >
-                        <Text as={BiError} fontSize={"150px"} color="red" />
-                        <Text>Are you sure want to delete this module?</Text>
-                    </Box>
-                </ModalBody>
+    const [isLoading, setIsLoading] = useState(false);
+    const newAxiosInstance = axios.create(axiosConfig());
 
-                <ModalFooter justifyContent={"center"}>
-                    <ButtonGroup>
-                        <Button colorScheme="gray" flex="1" onClick={onClose}>
-                            Cancel
-                        </Button>
-                        <Button colorScheme="red" flex="1" ml={3} onClick={handleDelete}>
-                            Delete
-                        </Button>
-                    </ButtonGroup>
-                </ModalFooter>
-            </ModalContent>
-        </Modal>
+    const handleDeleteModule = async () => {
+        try {
+            setIsLoading(true);
+            const response = await newAxiosInstance.delete(`${config.REST_API_URL}/modul/${moduleId}`);
+
+            console.log('Module Deleted successfully:', response.data.message);
+
+            setIsLoading(false);
+            successDelete(); // Refresh new data without reloading page
+        } catch (error) {
+            console.error('Error deleting module:', error);
+        }
+        // window.location.reload(); // refresh to see new module added (should change to not reloading)
+    };
+    return (
+        <>
+            <Loading loading={isLoading} />
+            <Modal isOpen={isOpen} onClose={onClose}>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader textAlign={"center"}>Delete Module</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody textAlign={"center"}>
+                        <Box
+                            display="flex"
+                            flexDirection="column"
+                            alignItems="center"
+                            justifyContent="center"
+                        >
+                            <Text as={BiError} fontSize={"150px"} color="red" />
+                            <Text>Are you sure want to delete this module?</Text>
+                        </Box>
+                    </ModalBody>
+
+                    <ModalFooter justifyContent={"center"}>
+                        <ButtonGroup>
+                            <Button colorScheme="gray" flex="1" onClick={onClose}>
+                                Cancel
+                            </Button>
+                            <Button colorScheme="red" flex="1" ml={3}
+                            onClick={handleDeleteModule}
+                            >
+                                Delete
+                            </Button>
+                        </ButtonGroup>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+        </>
     );
 }

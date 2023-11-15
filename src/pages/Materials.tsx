@@ -107,7 +107,7 @@ const ModuleMaterials = () => {
     // HANDLING EDIT MODULE
     const [isModalEditModuleOpen, setIsModalEditModuleOpen] = useState(false);
 
-    const handleOpenEdit = (id: number) => {
+    const handleOpenEditModule = (id: number) => {
         setIdSelectedModules(id);
         openModalEditModule();
     }
@@ -124,15 +124,21 @@ const ModuleMaterials = () => {
     }
 
     // HANDLING DELETE MODULE
-    const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
-    const [deletedID, setDeletedID] = useState(0);
-    const openModalDelete = (id: number) => {
-        setIsModalDeleteOpen(true);
-        setDeletedID(id);
+    const [isModalDeleteOpen, setIsModalDeleteModuleOpen] = useState(false);
+    const handleOpenDeleteModule = (id: number) => {
+        setIdSelectedModules(id);
+        openModalDeleteModule();
+    }
+    const openModalDeleteModule = () => {
+        setIsModalDeleteModuleOpen(true);
     };
-    const closeModalDelete = () => {
-        setIsModalDeleteOpen(false);
+    const closeModalDeleteModule = () => {
+        setIsModalDeleteModuleOpen(false);
     };
+    const successDeleteModule = () => {
+        setIsModalDeleteModuleOpen(false);
+        setRefreshModule((prevRefresh) => !prevRefresh);
+    }
 
 
     // -------------------------------------- HANDLING LIST OF MATERIALS OF A MODULE ---------------------------------
@@ -175,24 +181,24 @@ const ModuleMaterials = () => {
                 onClose={closeModalEditModule}
                 successEdit={successEditModule}
                 moduleId={idSelectedModules}
-            />
+                />
 
-            {/* Render the DeleteMaterialModal component conditionally */}
-            {/* <DeleteMaterialModal
+            <DeleteModuleModal
                 isOpen={isModalDeleteOpen}
-                onClose={closeModalDelete}
-                course_id={deletedID}
-                handleDelete={handleDelete}
-            /> */}
+                onClose={closeModalDeleteModule}
+                successDelete={successDeleteModule}
+                moduleId={idSelectedModules}
+            />
 
 
             {/* --------------- MATERIAL POPUPS -------------------- */}
-            {/* Render the Add Material component conditionally */}
             {/* <AddMaterialModal
                 isOpen={isModalAddOpen}
                 onClose={closeModalAdd}
                 handleAdd={handleAdd}
             /> */}
+
+
             <HStack align="start" justify="center">
                 <VStack maxW="20%" maxH="95vh" mt="1rem">
                     <Text whiteSpace="normal" wordBreak="break-all" fontWeight={"bold"}>
@@ -247,7 +253,7 @@ const ModuleMaterials = () => {
                                                             color={"#564c95"}
                                                             _hover={{ color: "green" }}
                                                             cursor={"pointer"}
-                                                            onClick={() => handleOpenEdit(item.id)}
+                                                            onClick={() => handleOpenEditModule(item.id)}
                                                         ></Icon>
                                                         <Icon
                                                             as={BiSolidTrash}
@@ -255,7 +261,7 @@ const ModuleMaterials = () => {
                                                             color={"#564c95"}
                                                             _hover={{ color: "red" }}
                                                             cursor={"pointer"}
-                                                            onClick={() => openModalDelete(item.id)}
+                                                            onClick={() => handleOpenDeleteModule(item.id)}
                                                         ></Icon>
                                                     </Td>
                                                 </Tr>
@@ -327,7 +333,7 @@ const ModuleMaterials = () => {
                                                         color={"#564c95"}
                                                         _hover={{ color: "red" }}
                                                         cursor={"pointer"}
-                                                        onClick={() => openModalDelete(item.id)}
+                                                        // onClick={() => openModalDelete(item.id)}
                                                     ></Icon>
                                                 </AccordionButton>
                                                 <AccordionPanel>
