@@ -60,19 +60,25 @@ export function AddModuleModal({
             setDescription('');
             setIsLoading(false);
             successAdd(); // Refresh new data without reloading page
-            setIsAllValid({ ...isAllValid, title: false });
-            setIsAllValid({ ...isAllValid, description: false });
         } catch (error) {
             console.error('Error adding module:', error);
         }
         // window.location.reload(); // refresh to see new module added (should change to not reloading)
+        setIsAllValid(prevState => ({
+            ...prevState,
+            title: false,
+            description: false,
+        }));
     };
 
     const handleClose = () => {
         setTitle("");
         setDescription("");
-        setIsAllValid({ ...isAllValid, title: false });
-        setIsAllValid({ ...isAllValid, description: false });
+        setIsAllValid(prevState => ({
+            ...prevState,
+            title: false,
+            description: false,
+        }));
         onClose();
     };
 
@@ -226,42 +232,59 @@ export function EditModuleModal({
             });
 
             console.log('Module edited successfully:', response.data.message);
-
             setIsLoading(false);
             successEdit(); // Refresh new data without reloading page
-            setIsAllValid({ ...isAllValid, title: false });
-            setIsAllValid({ ...isAllValid, description: false });
         } catch (error) {
             console.error('Error editing module:', error);
         }
         // window.location.reload(); // refresh to see new module added (should change to not reloading)
+        setIsAllValid(prevState => ({
+            ...prevState,
+            title: false,
+            description: false,
+        }));
     };
 
     const handleClose = () => {
         setTitle(editedTitle);
         setDescription(editedDescription);
-        setIsAllValid({ ...isAllValid, title: false });
-        setIsAllValid({ ...isAllValid, description: false });
+        setIsAllValid(prevState => ({
+            ...prevState,
+            title: false,
+            description: false,
+        }));
         onClose();
     };
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.value.length > 0) {
             setTitle(e.target.value);
-            setIsAllValid({ ...isAllValid, title: true });
+            setIsAllValid(prevState => ({
+                ...prevState,
+                title: true,
+            }));
         } else {
             setTitle(editedTitle);
-            setIsAllValid({ ...isAllValid, title: false });
+            setIsAllValid(prevState => ({
+                ...prevState,
+                title: false,
+            }));
         }
     };
 
     const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         if (e.target.value.length > 0) {
             setDescription(e.target.value);
-            setIsAllValid({ ...isAllValid, description: true });
+            setIsAllValid(prevState => ({
+                ...prevState,
+                description: true,
+            }));
         } else {
             setDescription(editedDescription);
-            setIsAllValid({ ...isAllValid, description: false });
+            setIsAllValid(prevState => ({
+                ...prevState,
+                description: false,
+            }));
         }
     };
 
@@ -320,9 +343,9 @@ export function EditModuleModal({
                             <Button colorScheme="purple" flex="1" ml={3}
                                 onClick={handleEditModule}
                                 isDisabled={
-                                    !(
-                                        isAllValid.title ||
-                                        isAllValid.description
+                                    !((
+                                        (isAllValid.title && isAllValid.description) ||
+                                        (isAllValid.title || isAllValid.description))
                                     )
                                 }
                             >
@@ -393,7 +416,7 @@ export function DeleteModuleModal({
                                 Cancel
                             </Button>
                             <Button colorScheme="red" flex="1" ml={3}
-                            onClick={handleDeleteModule}
+                                onClick={handleDeleteModule}
                             >
                                 Delete
                             </Button>
