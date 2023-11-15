@@ -18,10 +18,10 @@ export default function Navbar() {
   };
 
   const navItems: Item[] = [
-    { icon: BiHome, label: "Home", to: "" },
-    { icon: BiUserPlus, label: "Upgrade Request", to: "request" },
-    { icon: BiBookAdd, label: "Premium Courses", to: "premium-courses" },
-    { icon: BiGroup, label: "Premium Users", to: "premium-users" },
+    { icon: BiHome, label: "Home", to: "/course?page=1" },
+    { icon: BiUserPlus, label: "Upgrade Request", to: "/request" },
+    { icon: BiBookAdd, label: "Premium Courses", to: "/premium-courses" },
+    { icon: BiGroup, label: "Premium Users", to: "/premium-users" },
     // { icon: BiLogOut, label: "Logout", to: "logout" }
   ];
 
