@@ -41,7 +41,7 @@ export function AddMaterialModal({
     const [isLoading, setIsLoading] = useState(false);
     const newAxiosInstance = axios.create(axiosConfig());
     const [fileType, setFileType] = useState("");
-    const [nameFile, setNameFile] = useState("");
+    const [filePath, setFilePath] = useState("");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isAllValid, setIsAllValid] = useState({
         title: false,
@@ -60,7 +60,7 @@ export function AddMaterialModal({
                     title: title,
                     description: description,
                     source_type: fileType,
-                    material_path: nameFile,
+                    material_path: filePath,
                     modul_id: moduleId,
                 });
 
@@ -108,7 +108,7 @@ export function AddMaterialModal({
                 } else {
                     setFileType('PDF');
                 }
-                setNameFile(file.name.replace(/\s/g, ''));
+                setFilePath(process.env.URL_PATH_FILE + file.name.replace(/\s/g, ''));
                 setIsAllValid({ ...isAllValid, file: true });
             } else {
                 setIsAllValid({ ...isAllValid, file: false });
@@ -263,7 +263,7 @@ export function EditMaterialModal({
     const newAxiosInstance = axios.create(axiosConfig());
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [fileType, setFileType] = useState("");
-    const [nameFile, setNameFile] = useState("");
+    const [filePath, setFilePath] = useState("");
     const [oldFile, setOldFile] = useState("");
     const [isAllValid, setIsAllValid] = useState({
         title: false,
@@ -281,6 +281,7 @@ export function EditMaterialModal({
                     setEditedDescription(res.data.data.description);
                     setTitle(res.data.data.title);
                     setDescription(res.data.data.description);
+                    setOldFile(res.data.data.material_path);
                 } else { }
                 setIsLoading(false);
             } catch (error) {
@@ -296,6 +297,8 @@ export function EditMaterialModal({
             try {
                 if (isAllValid.file) {
                     upload();
+                } else {
+                    setFilePath(oldFile);
                 }
             } catch (error) {
                 console.error('Error uploading:', error);
@@ -304,7 +307,7 @@ export function EditMaterialModal({
                     title: title,
                     description: description,
                     source_type: fileType,
-                    material_path: nameFile,
+                    material_path: filePath,
                 });
 
                 console.log('Material edited successfully:', response.data.message);
@@ -347,7 +350,7 @@ export function EditMaterialModal({
                 } else {
                     setFileType('PDF');
                 }
-                setNameFile(file.name.replace(/\s/g, ''));
+                setFilePath(process.env.URL_PATH_FILE + file.name.replace(/\s/g, ''));
                 setIsAllValid({ ...isAllValid, file: true });
             } else {
                 setIsAllValid({ ...isAllValid, file: false });
