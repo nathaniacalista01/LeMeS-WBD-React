@@ -15,14 +15,214 @@ import {
     ButtonGroup,
     Button,
     Select,
+    Container,
+    Flex,
+    Heading,
+    TableContainer,
+    Icon,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { BiError } from "react-icons/bi";
+import { BiError, BiSolidEdit, BiSolidTrash } from "react-icons/bi";
 import { axiosConfig } from "../../utils/axios";
 import axios from "axios";
 import config from "../../config/config";
 import Loading from "../loading/Loading";
+import { Link } from 'react-router-dom';
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
 
+{ /* Modal Add User */ }
+interface AddUserModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    successAdd: () => void;
+    user_id: number;
+}
+
+export function AddUserModal({
+    isOpen,
+    onClose,
+    successAdd,
+    user_id,
+}: AddUserModalProps) {
+    const [username, setUsername] = useState("");
+    const [fullname, setFullname] = useState("");
+    const [role, setRole] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const newAxiosInstance = axios.create(axiosConfig());
+    const [isAllValid, setIsAllValid] = useState({
+        username: false,
+        fullname: false,
+        role: false,
+    });
+    
+    const handleAddUser = async () => {
+        try {
+            setIsLoading(true);
+            const response = await newAxiosInstance.post(`${config.REST_API_URL}/user`, {
+                username: username,
+                fullname: fullname,
+                role: role,
+            });
+
+            console.log('User added successfully:', response.data.message);
+
+            // Clear the form after successful submission if needed
+            setUsername('');
+            setFullname('');
+            setRole('');
+            setIsLoading(false);
+            successAdd(); // Refresh new data without reloading page
+            setIsAllValid({ ...isAllValid, username: false });
+            setIsAllValid({ ...isAllValid, fullname: false });
+            setIsAllValid({ ...isAllValid, role: false });
+        } catch (error) {
+            console.log('Error adding user:', error);
+        }
+        // window.location.reload(); // refresh to see new user added (should change to not reloading)
+    };
+
+    const handleClose = () => {
+        setUsername("");
+        setFullname("");
+        setRole("");
+        setIsAllValid({ ...isAllValid, username: false });
+        setIsAllValid({ ...isAllValid, fullname: false });
+        setIsAllValid({ ...isAllValid, role: false });
+        onClose();
+    };
+
+    const checkUsername = () => {
+        setUsername((prevUsername) => {
+            const isValid = prevUsername.trim().length > 0;
+            setIsAllValid((prev) => ({ ...prev, username: isValid }));;
+            return prevUsername;
+        });
+    };
+
+    const checkFullname = () => {
+        setFullname((prevFullname) => {
+            const isValid = prevFullname.trim().length > 0;
+            setIsAllValid((prev) => ({ ...prev, fullname: isValid }));
+            return prevFullname;
+        });
+    };
+
+    const checkRole = () => {
+        setRole((prevRole) => {
+            const isValid = prevRole.trim().length > 0;
+            setIsAllValid((prev) => ({ ...prev, role: isValid }));
+            return prevRole;
+        });
+    };
+
+    const handleUsernameChange =  (e: React.ChangeEvent<HTMLInputElement>) => {
+        setUsername(e.target.value);
+        checkUsername();
+    };
+
+    const handleFullnameChange =  (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFullname(e.target.value);
+        checkFullname();
+    };
+
+    const handleRoleChange =  (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setRole(e.target.value);
+        checkRole();
+    };
+
+    return (
+        <Container overflow="auto" maxW={"100vw"} maxH={"100vh"}>
+          <Flex alignItems="center" justifyContent="center" mb="20px" mt="50px">
+            <Flex
+              direction="column"
+              background="transparent"
+              borderRadius="15px"
+              p="30px"
+              // mx={{ base: "100px" }}
+              bg={"#f2f2f2"}
+              boxShadow="0 20px 27px 0 rgb(0 0 0 / 15%)"
+            >
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                mt="-5"
+              >
+                <Heading as="h1">Premium Users</Heading>
+                <Box>
+                  <Button
+                    bg="#9d4bff"
+                    textColor="white"
+                    _hover={{ bg: "#23004d" }}
+                    my="5"
+                  >
+                    <Link to="/admin/register">Add Users</Link>
+                  </Button>
+                </Box>
+              </Box>
+              <TableContainer width="80vw">
+                <DataTable
+                  stripedRows
+                //   value={users}
+                  paginator
+                  paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageInput"
+                  rows={5}
+                  selectionMode="single"
+                >
+                  <Column
+                    field="user_id"
+                    header="UserID"
+                    headerClassName="custom-header"
+                  ></Column>
+                  <Column
+                    field="username"
+                    header="Username"
+                    headerClassName="custom-header"
+                  ></Column>
+                  <Column
+                    field="fullname"
+                    header="Full Name"
+                    headerClassName="custom-header"
+                  ></Column>
+                  <Column
+                    field="role"
+                    header="Role"
+                    headerClassName="custom-header"
+                  ></Column>
+                  <Column
+                    header="Action"
+                    headerClassName="custom-header"
+                    body={(rowData) => (
+                      <span>
+                        <Icon
+                          as={BiSolidEdit}
+                          fontSize={"24"}
+                          color={"#564c95"}
+                          _hover={{ color: "green" }}
+                          cursor={"pointer"}
+                        //   onClick={() => handleEditUser}
+                        ></Icon>
+    
+                        <Icon
+                          as={BiSolidTrash}
+                          fontSize={"24"}
+                          color={"#564c95"}
+                          _hover={{ color: "red" }}
+                          cursor={"pointer"}
+                        //   onClick={() => handleDeleteUser}
+                        ></Icon>
+                      </span>
+                    )}
+                  ></Column>
+                </DataTable>
+              </TableContainer>
+            </Flex>
+          </Flex>
+        </Container>
+      );
+    };    
+    
 { /* Modal Edit User */ }
 interface EditUserModalProps {
     isOpen: boolean;
@@ -91,7 +291,7 @@ export function EditUserModal({
         } catch (error) {
             console.error('Error editing user:', error);
         }
-        // window.location.reload(); // refresh to see new module added (should change to not reloading)
+        // window.location.reload(); // refresh to see new user added (should change to not reloading)
     };
 
     const handleClose = () => {
