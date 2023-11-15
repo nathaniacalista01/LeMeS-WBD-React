@@ -109,13 +109,13 @@ export function AddMaterialModal({
                     setFileType('PDF');
                 }
                 setNameFile(file.name.replace(/\s/g, ''));
-                setIsAllValid({...isAllValid, file: true});
+                setIsAllValid({ ...isAllValid, file: true });
             } else {
-                setIsAllValid({...isAllValid, file: false});
+                setIsAllValid({ ...isAllValid, file: false });
             }
         } else {
             setSelectedFile(null);
-            setIsAllValid({...isAllValid, file: false});
+            setIsAllValid({ ...isAllValid, file: false });
         }
     };
 
@@ -261,6 +261,10 @@ export function EditMaterialModal({
     const [description, setDescription] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const newAxiosInstance = axios.create(axiosConfig());
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [fileType, setFileType] = useState("");
+    const [nameFile, setNameFile] = useState("");
+    const [oldFile, setOldFile] = useState("");
     const [isAllValid, setIsAllValid] = useState({
         title: false,
         description: false,
@@ -271,7 +275,7 @@ export function EditMaterialModal({
         const fetchData = async () => {
             try {
                 setIsLoading(true);
-                const res = await newAxiosInstance.get(`${config.REST_API_URL}/modul/${materialId}`);
+                const res = await newAxiosInstance.get(`${config.REST_API_URL}/material/${materialId}`);
                 if (res.data.status === 200) {
                     setEditedTitle(res.data.data.title);
                     setEditedDescription(res.data.data.description);
@@ -289,24 +293,69 @@ export function EditMaterialModal({
     const handleEditMaterial = async () => {
         try {
             setIsLoading(true);
-            const response = await newAxiosInstance.put(`${config.REST_API_URL}/modul/${materialId}`, {
-                title: title,
-                description: description,
-            });
+            try {
+                if (isAllValid.file) {
+                    upload();
+                }
+            } catch (error) {
+                console.error('Error uploading:', error);
+            } finally {
+                const response = await newAxiosInstance.put(`${config.REST_API_URL}/material/${materialId}`, {
+                    title: title,
+                    description: description,
+                    source_type: fileType,
+                    material_path: nameFile,
+                });
 
-            console.log('Material edited successfully:', response.data.message);
-            setIsLoading(false);
-            successEdit(); // Refresh new data without reloading page
+                console.log('Material edited successfully:', response.data.message);
+                setIsLoading(false);
+                successEdit(); // Refresh new data without reloading page
+            }
         } catch (error) {
             console.error('Error editing material:', error);
+        } finally {
+            // window.location.reload(); // refresh to see new material added (should change to not reloading)
+            setIsAllValid(prevState => ({
+                ...prevState,
+                title: false,
+                description: false,
+                file: false,
+            }));
         }
-        // window.location.reload(); // refresh to see new material added (should change to not reloading)
-        setIsAllValid(prevState => ({
-            ...prevState,
-            title: false,
-            description: false,
-            file: false,
-        }));
+    };
+
+    const upload = () => {
+        const formData = new FormData()
+        if (selectedFile) {
+            formData.append('file', selectedFile)
+        }
+        newAxiosInstance.post(`${config.REST_API_URL}/material/upload`, formData)
+            .then(res => { })
+            .catch(er => console.log(er))
+    }
+
+    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            const file = event.target.files?.[0];
+
+            if (file) {
+                // const name = file.name;
+                // const type = file.type;
+                setSelectedFile(file);
+                if (file.type.startsWith('video')) {
+                    setFileType('VIDEO');
+                } else {
+                    setFileType('PDF');
+                }
+                setNameFile(file.name.replace(/\s/g, ''));
+                setIsAllValid({ ...isAllValid, file: true });
+            } else {
+                setIsAllValid({ ...isAllValid, file: false });
+            }
+        } else {
+            setSelectedFile(null);
+            setIsAllValid({ ...isAllValid, file: false });
+        }
     };
 
     const handleClose = () => {
@@ -397,6 +446,18 @@ export function EditMaterialModal({
                                 // value={editedDescription}
                                 onChange={handleDescriptionChange}
                             />
+
+                            <FormLabel ms="4px" fontSize="sm" fontWeight="bold">
+                                Material File
+                            </FormLabel>
+                            <Input
+                                fontSize="sm"
+                                border="none"
+                                type="file"
+                                accept=".pdf, video/*"
+                                size="lg"
+                                onChange={handleFileChange}
+                            />
                         </FormControl>
                     </ModalBody>
 
@@ -408,9 +469,10 @@ export function EditMaterialModal({
                             <Button colorScheme="purple" flex="1" ml={3}
                                 onClick={handleEditMaterial}
                                 isDisabled={
-                                    !((
-                                        (isAllValid.title && isAllValid.description) ||
-                                        (isAllValid.title || isAllValid.description))
+                                    !(
+                                        isAllValid.title ||
+                                        isAllValid.description ||
+                                        isAllValid.file
                                     )
                                 }
                             >

@@ -89,7 +89,7 @@ const ModuleMaterials = () => {
 
     const handleClickModule = (id: number) => {
         setIdSelectedModules((prevId) => {
-            console.log(prevId); // This will log the previous state
+            // console.log(prevId); // This will log the previous state
             return id;
         });
         getMaterials(id);
@@ -150,6 +150,7 @@ const ModuleMaterials = () => {
     const initialMaterials: Materials[] = [];
     const [materials, setMaterials] = useState(initialMaterials);
     const [refreshMaterial, setRefreshMaterial] = useState(false);
+    const [idSelectedMaterials, setIdSelectedMaterials] = useState(0);
 
     // FETCH DATA FROM SERVER
     const getMaterials = async (module_id: number) => {
@@ -172,7 +173,6 @@ const ModuleMaterials = () => {
         }
     }
 
-
     // HANDLING ADD MATERIAL
     const [isModalAddMaterialOpen, setIsModalAddMaterialOpen] = useState(false);
     const openModalAddMaterial = () => {
@@ -183,29 +183,25 @@ const ModuleMaterials = () => {
     };
     const successAddMaterial = () => {
         setIsModalAddMaterialOpen(false);
-        setRefreshMaterial((prevRefresh) => !prevRefresh);
-        console.log("ngeteesssssss", idSelectedModules);
         getMaterials(idSelectedModules);
     }
 
-    // // HANDLING EDIT MATERIAL
-    // const [isModalEditMaterialOpen, setIsModalEditMaterialOpen] = useState(false);
-
-    // const handleOpenEditMaterial = (id: number) => {
-    //     setIdSelectedMaterials(id);
-    //     openModalEditMaterial();
-    // }
-    // const openModalEditMaterial = () => {
-    //     setIsModalEditMaterialOpen(true);
-    // };
-    // const closeModalEditMaterial = () => {
-    //     setIsModalEditMaterialOpen(false);
-    //     setRefreshMaterial(true);
-    // };
-    // const successEditMaterial = () => {
-    //     setIsModalEditMaterialOpen(false);
-    //     setRefreshMaterial((prevRefresh) => !prevRefresh);
-    // }
+    // HANDLING EDIT MATERIAL
+    const [isModalEditMaterialOpen, setIsModalEditMaterialOpen] = useState(false);
+    const handleOpenEditMaterial = (id: number) => {
+        setIdSelectedMaterials(id);
+        openModalEditMaterial();
+    }
+    const openModalEditMaterial = () => {
+        setIsModalEditMaterialOpen(true);
+    };
+    const closeModalEditMaterial = () => {
+        setIsModalEditMaterialOpen(false);
+    };
+    const successEditMaterial = () => {
+        setIsModalEditMaterialOpen(false);
+        getMaterials(idSelectedModules);
+    }
 
     // // HANDLING DELETE MATERIAL
     // const [isModalDeleteOpen, setIsModalDeleteMaterialOpen] = useState(false);
@@ -241,7 +237,6 @@ const ModuleMaterials = () => {
                 successEdit={successEditModule}
                 moduleId={idSelectedModules}
             />
-
             <DeleteModuleModal
                 isOpen={isModalDeleteOpen}
                 onClose={closeModalDeleteModule}
@@ -257,7 +252,12 @@ const ModuleMaterials = () => {
                 successAdd={successAddMaterial}
                 moduleId={idSelectedModules}
             />
-
+            <EditMaterialModal
+                isOpen={isModalEditMaterialOpen}
+                onClose={closeModalEditMaterial}
+                successEdit={successEditMaterial}
+                materialId={idSelectedMaterials}
+            />
 
             <HStack align="start" justify="center">
                 <VStack maxW="20%" maxH="95vh" mt="1rem">
@@ -385,7 +385,7 @@ const ModuleMaterials = () => {
                                                         color={"#564c95"}
                                                         _hover={{ color: "green" }}
                                                         cursor={"pointer"}
-                                                    // onClick={() => openModalEditModule(item.id, item.title, item.description)}
+                                                        onClick={() => handleOpenEditMaterial(item.id)}
                                                     ></Icon>
                                                     <Icon
                                                         as={BiSolidTrash}
