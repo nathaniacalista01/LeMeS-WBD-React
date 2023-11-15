@@ -14,7 +14,7 @@ export default function Navbar() {
     image_path: "defaultprofile.jpg",
     label: "username",
     role: "admin",
-    to: "profile",
+    to: "/profile",
   };
 
   const navItems: Item[] = [

@@ -78,6 +78,10 @@ const Home = () => {
     getCourses(page);
   }, [page]);
 
+  const gradientStyles = {
+    background: 'linear-gradient(to right, #fcbcd7, #ffcee6)',
+  };
+
   return (
     <>
       <Loading loading={isLoading} />
@@ -101,13 +105,15 @@ const Home = () => {
             justifyItems="space-between"
           >
             {courses.map((item, index) => (
-              <Card maxW="sm">
-                <CardBody>
+              <Card maxW="sm" boxShadow="0 20px 27px 0 rgb(0 0 0 / 15%)">
+                <CardBody style={gradientStyles}>
                   <Image
                     w="50"
                     src={item.image_path ? item.image_path.toString() : 'premiumlogo.png'}
                     alt="Course Image"
                     borderRadius="lg"
+                    border="1px"
+                    borderColor="purple"
                   />
                   <Stack mt="6" spacing="3">
                     <Heading size="sm">{item.title}</Heading>
