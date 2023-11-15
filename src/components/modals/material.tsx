@@ -109,7 +109,7 @@ export function AddMaterialModal({
                     setFileType('PDF');
                 }
 
-                setFileName(file.name);
+                setFileName(file.name.replace(/\s/g, ''));
 
                 setIsAllValid({ ...isAllValid, file: true });
             } else {
@@ -363,7 +363,7 @@ export function EditMaterialModal({
                     setFileType('PDF');
                 }
 
-                setFileName(file.name);
+                setFileName(file.name.replace(/\s/g, ''));
 
                 setIsAllValid({ ...isAllValid, file: true });
             } else {

@@ -33,6 +33,8 @@ import { axiosConfig } from "../utils/axios";
 import config from "../config/config";
 import axios from "axios";
 import ReactPlayer from "react-player";
+import { Document, Page } from 'react-pdf'
+import 'pdfjs-dist/build/pdf.worker.entry';
 import PdfViewer from "../components/pdfviewer/pdfviewer";
 import Loading from "../components/loading/Loading";
 
@@ -157,12 +159,15 @@ const ModuleMaterials = () => {
         try {
             setIsLoading(true);
             const res = await newAxiosInstance.get(`${config.REST_API_URL}/material/module/${module_id}`);
-            const MaterialsData: Materials[] = res.data.data.map((module: any) => {
+            // console.log(res);
+            const MaterialsData: Materials[] = res.data.data.map((material: any) => {
                 return {
-                    id: module.id,
-                    title: module.title,
-                    description: module.description,
-                    module_id: module.module_id,
+                    id: material.id,
+                    title: material.title,
+                    description: material.description,
+                    source_type: material.source_type,
+                    material_path: material.material_path,
+                    module_id: material.modul_id,
                 };
             });
             setMaterials(MaterialsData);
@@ -351,93 +356,137 @@ const ModuleMaterials = () => {
                     ></Icon>
                 </VStack>
                 <VStack w="80%" h="95vh" mt="1rem" bg="white" >
-                    {materials.length > 0 ? (
-                        <Box w="100%" h="94%" overflow={"hidden"}>
-                            <Box w="full" p="3" px="8">
-                                <Text align="left" fontWeight={"bold"}>
-                                    Materials
-                                </Text>
-                                <Divider mt="1" borderColor="black.500" borderWidth="1" />
-                            </Box>
-                            <Box
+                    {idSelectedModules != 0 ? (
+                        <>
+                            {materials.length > 0 ? (
+                                <Box w="100%" h="94%" overflow={"hidden"}>
+                                    <Box w="full" p="3" px="8">
+                                        <Text align="left" fontWeight={"bold"}>
+                                            Materials
+                                        </Text>
+                                        <Divider mt="1" borderColor="black.500" borderWidth="1" />
+                                    </Box>
+                                    <Box
+                                        px="10"
+                                        w="100%"
+                                        h="95%"
+                                        overflow="auto"
+                                        css={{
+                                            "::-webkit-scrollbar": {
+                                                width: "10px",
+                                            },
+                                            "::-webkit-scrollbar-thumb": {
+                                                background: "rgb(206, 207, 211)",
+                                            },
+                                            "::-webkit-scrollbar-track": {
+                                                background: "rgba(255, 255, 255, 0.8)",
+                                            },
+                                        }}>
+                                        {materials
+                                            .sort((a, b) => a.id - b.id)
+                                            .map((item) => (
+                                                <Accordion key={item.id} allowToggle>
+                                                    <AccordionItem>
+                                                        <AccordionButton bg="#f0f0f0" borderRadius={"5"}>
+                                                            <Box flex="1" textAlign="left">
+                                                                {item.title}
+                                                            </Box>
+                                                            <AccordionIcon />
+                                                            <Icon
+                                                                as={BiSolidEdit}
+                                                                fontSize={"18"}
+                                                                color={"#564c95"}
+                                                                _hover={{ color: "green" }}
+                                                                cursor={"pointer"}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation(); // Stop event propagation
+                                                                    handleOpenEditMaterial(item.id);
+                                                                }}
+                                                            ></Icon>
+                                                            <Icon
+                                                                as={BiSolidTrash}
+                                                                fontSize={"18"}
+                                                                color={"#564c95"}
+                                                                _hover={{ color: "red" }}
+                                                                cursor={"pointer"}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation(); // Stop event propagation
+                                                                    handleOpenDeleteMaterial(item.id);
+                                                                }}
+                                                            ></Icon>
+                                                        </AccordionButton>
+                                                        {item.source_type === "PDF" ? (
+                                                            <AccordionPanel>
+                                                                <Text align="left" fontSize={"md"} fontWeight={"bold"}>Deskripsi Materi:</Text>
+                                                                <Text mb="5" align="left" fontSize={"sm"}>{item.description}</Text>
+                                                                <div>
+                                                                    <iframe
+                                                                        src={`http://localhost:8000/file/${item.material_path}`}
+                                                                        width="100%"
+                                                                        height="500px" />
+                                                                </div>
+                                                            </AccordionPanel>
+                                                        ) : (
+                                                            <AccordionPanel>
+                                                                <Text align="left" fontSize={"md"} fontWeight={"bold"}>Deskripsi Materi:</Text>
+                                                                <Text mb="5" align="left" fontSize={"sm"}>{item.description}</Text>
+                                                                <div>
+                                                                    <ReactPlayer
+                                                                        url={`http://localhost:8000/file/${item.material_path}`}
+                                                                        width="100%"
+                                                                        height="500px"
+                                                                        controls
+                                                                        />
+                                                                </div>
+                                                            </AccordionPanel>
+                                                        )}
+                                                    </AccordionItem>
+                                                    <Divider mt="3" borderColor="transparent" />
+                                                </Accordion>
+                                            ))}
+                                    </Box>
+                                </Box>
+                            ) : (<Box
                                 px="5"
                                 w="100%"
-                                h="95%"
-                                overflow="auto"
-                                css={{
-                                    "::-webkit-scrollbar": {
-                                        width: "3px",
-                                    },
-                                    "::-webkit-scrollbar-thumb": {
-                                        background: "rgb(206, 207, 211)",
-                                    },
-                                    "::-webkit-scrollbar-track": {
-                                        background: "rgba(255, 255, 255, 0.8)",
-                                    },
-                                }}>
-                                {materials
-                                    .sort((a, b) => a.id - b.id)
-                                    .map((item) => (
-                                        <Accordion allowToggle>
-                                            <AccordionItem>
-                                                <AccordionButton bg="#f0f0f0" borderRadius={"5"}>
-                                                    <Box flex="1" textAlign="left">
-                                                        {item.title}
-                                                    </Box>
-                                                    <AccordionIcon />
-                                                    <Icon
-                                                        as={BiSolidEdit}
-                                                        fontSize={"18"}
-                                                        color={"#564c95"}
-                                                        _hover={{ color: "green" }}
-                                                        cursor={"pointer"}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation(); // Stop event propagation
-                                                            handleOpenEditMaterial(item.id);
-                                                        }}
-                                                    ></Icon>
-                                                    <Icon
-                                                        as={BiSolidTrash}
-                                                        fontSize={"18"}
-                                                        color={"#564c95"}
-                                                        _hover={{ color: "red" }}
-                                                        cursor={"pointer"}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation(); // Stop event propagation
-                                                            handleOpenDeleteMaterial(item.id);
-                                                        }}
-                                                    ></Icon>
-                                                </AccordionButton>
-                                                <AccordionPanel>
-                                                    <Text align="left" fontSize={"sm"}>{item.description}</Text>
-                                                    <PdfViewer pdfPath={"/Quiz-1.pdf"} />
-                                                </AccordionPanel>
-                                            </AccordionItem>
-                                            <Divider mt="3" borderColor="transparent" />
-                                        </Accordion>
-                                    ))}
+                                h="94%">
+                                <Box w="full" p="3">
+                                    <Text align="left" fontWeight={"bold"}>
+                                        No Material Available for This Module
+                                    </Text>
+                                    <Divider mt="1" borderColor="black.500" borderWidth="1" />
+                                </Box>
+                            </Box>
+                            )
+                            }
+                            < Icon
+                                as={BiPlusCircle}
+                                fontSize={"26"}
+                                color={"#564c95"}
+                                _hover={{ color: "green" }}
+                                cursor={"pointer"}
+                                onClick={() => openModalAddMaterial()}
+                            ></Icon>
+                        </>
+                    ) : (
+                        <Box
+                            px="5"
+                            w="100%"
+                            h="94%"
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                        >
+                            <Box w="full" p="3">
+                                <Text align="center" fontWeight={"bold"} fontSize={"30"}>
+                                    Welcome To This Course!
+                                </Text>
+                                <Text align="center" fontSize={"24"}>
+                                    Please Select a Module to See the Materials
+                                </Text>
                             </Box>
                         </Box>
-                    ) : (<Box
-                        px="5"
-                        w="100%"
-                        h="94%">
-                        <Box w="full" p="3">
-                            <Text align="left" fontWeight={"bold"}>
-                                No Material Available for This Module
-                            </Text>
-                            <Divider mt="1" borderColor="black.500" borderWidth="1" />
-                        </Box>
-                    </Box>
                     )}
-                    <Icon
-                        as={BiPlusCircle}
-                        fontSize={"26"}
-                        color={"#564c95"}
-                        _hover={{ color: "green" }}
-                        cursor={"pointer"}
-                        onClick={() => openModalAddMaterial()}
-                    ></Icon>
                 </VStack>
             </HStack>
         </Container >
