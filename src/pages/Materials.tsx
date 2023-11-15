@@ -40,6 +40,7 @@ const ModuleMaterials = () => {
     // Handling list of modules for a course
     const { course_id } = useParams();
     const [ course_id_int, setCourseIDInt ] = useState(0);
+    const [ refresh, setRefresh ] = useState(false);
     const initialModules: Modules[] = [];
     const [modules, setModules] = useState(initialModules);
     const [isLoading, setIsLoading] = useState(false);
@@ -81,7 +82,7 @@ const ModuleMaterials = () => {
                 getModules(courseIdAsInt);
             }
         }
-    }, [course_id_int]);
+    }, [refresh]);
 
     // Handling list of materials for a module
     const initialMaterials: Materials[] = [];
@@ -117,6 +118,7 @@ const ModuleMaterials = () => {
     };
     const closeModalEdit = () => {
         setIsModalEditOpen(false);
+        setRefresh(true);
     };
     const handleEdit = () => {
         // Handle the editing action here, e.g., send an API request to update the data
@@ -150,6 +152,10 @@ const ModuleMaterials = () => {
     const closeModalAddModule = () => {
         setIsModalAddModuleOpen(false);
     };
+    const successAddModule = () => {
+        setIsModalAddModuleOpen(false);
+        setRefresh((prevRefresh) => !prevRefresh);
+    }
 
     return (
         <Container overflow="auto" maxW={"100vw"} maxH={"100vh"}>
@@ -175,6 +181,7 @@ const ModuleMaterials = () => {
             <AddModuleModal
                 isOpen={isModalAddModuleOpen}
                 onClose={closeModalAddModule}
+                successAdd={successAddModule}
                 courseId={course_id_int}
             />
 

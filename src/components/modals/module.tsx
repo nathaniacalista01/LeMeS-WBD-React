@@ -28,12 +28,14 @@ import Loading from "../loading/Loading";
 interface AddModuleModalProps {
     isOpen: boolean;
     onClose: () => void;
+    successAdd: () => void;
     courseId: number;
 }
 
 export function AddModuleModal({
     isOpen,
     onClose,
+    successAdd,
     courseId,
 }: AddModuleModalProps) {
     const [title, setTitle] = useState("");
@@ -56,11 +58,11 @@ export function AddModuleModal({
             setTitle('');
             setDescription('');
             setIsLoading(false);
+            successAdd();
         } catch (error) {
             console.error('Error adding module:', error);
         }
-        window.location.reload(); // refresh to see new module added (should change to not reloading)
-        onClose();
+        // window.location.reload(); // refresh to see new module added (should change to not reloading)
     };
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
