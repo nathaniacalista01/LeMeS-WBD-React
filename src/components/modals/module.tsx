@@ -42,6 +42,10 @@ export function AddModuleModal({
     const [description, setDescription] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const newAxiosInstance = axios.create(axiosConfig());
+    const [isAllValid, setIsAllValid] = useState({
+        title: false,
+        description: false,
+    });
     const handleAddModule = async () => {
         try {
             setIsLoading(true);
@@ -58,19 +62,37 @@ export function AddModuleModal({
             setTitle('');
             setDescription('');
             setIsLoading(false);
-            successAdd();
+            successAdd(); // Refresh new data without reloading page
         } catch (error) {
             console.error('Error adding module:', error);
         }
         // window.location.reload(); // refresh to see new module added (should change to not reloading)
     };
 
+    const checkTitle = () => {
+        setTitle((prevTitle) => {
+            const isValid = prevTitle.trim().length > 0;
+            setIsAllValid((prev) => ({ ...prev, title: isValid }));
+            return prevTitle;
+        });
+    };
+
+    const checkDescription = () => {
+        setDescription((prevDescription) => {
+            const isValid = prevDescription.trim().length > 0;
+            setIsAllValid((prev) => ({ ...prev, description: isValid }));
+            return prevDescription;
+        });
+    };
+
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
+        checkTitle();
     };
 
     const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setDescription(e.target.value);
+        checkDescription();
     };
 
     return (
@@ -127,6 +149,12 @@ export function AddModuleModal({
                             </Button>
                             <Button colorScheme="purple" flex="1" ml={3}
                                 onClick={handleAddModule}
+                                isDisabled={
+                                    !(
+                                        isAllValid.title &&
+                                        isAllValid.description
+                                    )
+                                }
                             >
                                 Add
                             </Button>
