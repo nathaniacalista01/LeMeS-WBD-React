@@ -39,7 +39,7 @@ const Home = () => {
     const getCourses = async (pageNumber: number) => {
       try {
         setIsLoading(true);
-        const res = await newAxiosInstance.get(`${config.REST_API_URL}/course?page=${pageNumber}`);
+        const res = await newAxiosInstance.get(`${config.REST_API_URL}/course/teacher?page=${pageNumber}`);
         const {status} = res["data"];
         if(status === 401){
           toast({

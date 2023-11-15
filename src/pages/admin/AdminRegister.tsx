@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Flex,
   Button,
@@ -17,6 +17,7 @@ import { axiosInstance } from "../../utils/axios";
 import config from "../../config/config";
 import { useNavigate } from "react-router-dom";
 import { BiHide, BiShow } from "react-icons/bi";
+import Cookies from "js-cookie";
 
 function AdminRegister() {
   const titleColor = "purple.500";
@@ -34,6 +35,10 @@ function AdminRegister() {
     fullname: false,
     password: false,
   });
+  useEffect(() => {
+    const cookie = Cookies.get("user");
+    console.log(cookie);
+  }, []);
   const handleChangeFullname: React.ChangeEventHandler<HTMLInputElement> = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
