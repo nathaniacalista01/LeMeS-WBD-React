@@ -506,7 +506,7 @@ export function DeleteMaterialModal({
     const handleDeleteMaterial = async () => {
         try {
             setIsLoading(true);
-            const response = await newAxiosInstance.delete(`${config.REST_API_URL}/modul/${materialId}`);
+            const response = await newAxiosInstance.delete(`${config.REST_API_URL}/material/${materialId}`);
 
             console.log('Material Deleted successfully:', response.data.message);
 

@@ -128,7 +128,7 @@ const ModuleMaterials = () => {
     }
 
     // HANDLING DELETE MODULE
-    const [isModalDeleteOpen, setIsModalDeleteModuleOpen] = useState(false);
+    const [isModalDeleteModuleOpen, setIsModalDeleteModuleOpen] = useState(false);
     const handleOpenDeleteModule = (id: number) => {
         setIdSelectedModules(id);
         openModalDeleteModule();
@@ -203,22 +203,22 @@ const ModuleMaterials = () => {
         getMaterials(idSelectedModules);
     }
 
-    // // HANDLING DELETE MATERIAL
-    // const [isModalDeleteOpen, setIsModalDeleteMaterialOpen] = useState(false);
-    // const handleOpenDeleteMaterial = (id: number) => {
-    //     setIdSelectedMaterials(id);
-    //     openModalDeleteMaterial();
-    // }
-    // const openModalDeleteMaterial = () => {
-    //     setIsModalDeleteMaterialOpen(true);
-    // };
-    // const closeModalDeleteMaterial = () => {
-    //     setIsModalDeleteMaterialOpen(false);
-    // };
-    // const successDeleteMaterial = () => {
-    //     setIsModalDeleteMaterialOpen(false);
-    //     setRefreshMaterial((prevRefresh) => !prevRefresh);
-    // }
+    // HANDLING DELETE MATERIAL
+    const [isModalDeleteMaterialOpen, setIsModalDeleteMaterialOpen] = useState(false);
+    const handleOpenDeleteMaterial = (id: number) => {
+        setIdSelectedMaterials(id);
+        openModalDeleteMaterial();
+    }
+    const openModalDeleteMaterial = () => {
+        setIsModalDeleteMaterialOpen(true);
+    };
+    const closeModalDeleteMaterial = () => {
+        setIsModalDeleteMaterialOpen(false);
+    };
+    const successDeleteMaterial = () => {
+        setIsModalDeleteMaterialOpen(false);
+        getMaterials(idSelectedModules);
+    }
 
     return (
         <Container overflow="auto" maxW={"100vw"} maxH={"100vh"}>
@@ -238,7 +238,7 @@ const ModuleMaterials = () => {
                 moduleId={idSelectedModules}
             />
             <DeleteModuleModal
-                isOpen={isModalDeleteOpen}
+                isOpen={isModalDeleteModuleOpen}
                 onClose={closeModalDeleteModule}
                 successDelete={successDeleteModule}
                 moduleId={idSelectedModules}
@@ -256,6 +256,12 @@ const ModuleMaterials = () => {
                 isOpen={isModalEditMaterialOpen}
                 onClose={closeModalEditMaterial}
                 successEdit={successEditMaterial}
+                materialId={idSelectedMaterials}
+            />
+            <DeleteMaterialModal
+                isOpen={isModalDeleteMaterialOpen}
+                onClose={closeModalDeleteMaterial}
+                successDelete={successDeleteMaterial}
                 materialId={idSelectedMaterials}
             />
 
@@ -385,7 +391,10 @@ const ModuleMaterials = () => {
                                                         color={"#564c95"}
                                                         _hover={{ color: "green" }}
                                                         cursor={"pointer"}
-                                                        onClick={() => handleOpenEditMaterial(item.id)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation(); // Stop event propagation
+                                                            handleOpenEditMaterial(item.id);
+                                                        }}
                                                     ></Icon>
                                                     <Icon
                                                         as={BiSolidTrash}
@@ -393,7 +402,10 @@ const ModuleMaterials = () => {
                                                         color={"#564c95"}
                                                         _hover={{ color: "red" }}
                                                         cursor={"pointer"}
-                                                    // onClick={() => openModalDelete(item.id)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation(); // Stop event propagation
+                                                            handleOpenDeleteMaterial(item.id);
+                                                        }}
                                                     ></Icon>
                                                 </AccordionButton>
                                                 <AccordionPanel>
