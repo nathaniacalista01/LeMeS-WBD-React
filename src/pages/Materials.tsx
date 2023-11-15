@@ -280,7 +280,7 @@ const ModuleMaterials = () => {
                 <VStack w="80%" h="95vh" mt="1rem" bg="white" >
                     {materials.length > 0 ? (
                         <Box w="100%" h="94%" overflow={"hidden"}>
-                            <Box w="full" p="3">
+                            <Box w="full" p="3" px="8">
                                 <Text align="left" fontWeight={"bold"}>
                                     Materials
                                 </Text>
