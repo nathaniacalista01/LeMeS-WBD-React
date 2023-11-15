@@ -34,7 +34,7 @@ const Home = () => {
   const queryParams = new URLSearchParams(location.search);
   const page = parseInt(queryParams.get('page') || '1', 10);
   const navigate = useNavigate();
-  const n = 8;
+  const n = 4;
 
   useEffect(() => {
     const getCourses = async (pageNumber: number) => {
@@ -88,6 +88,7 @@ const Home = () => {
         maxW={"100vw"}
         maxH={"100vh"}
         justifyContent={"space-between"}
+        mt="10"
       >
         <Heading size="lg">
           Select a Premium Course to Get Premium Knowledges!
