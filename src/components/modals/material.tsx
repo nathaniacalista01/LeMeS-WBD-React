@@ -41,7 +41,7 @@ export function AddMaterialModal({
     const [isLoading, setIsLoading] = useState(false);
     const newAxiosInstance = axios.create(axiosConfig());
     const [fileType, setFileType] = useState("");
-    const [filePath, setFilePath] = useState("");
+    const [fileName, setFileName] = useState("");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isAllValid, setIsAllValid] = useState({
         title: false,
@@ -60,7 +60,7 @@ export function AddMaterialModal({
                     title: title,
                     description: description,
                     source_type: fileType,
-                    material_path: filePath,
+                    material_path: fileName,
                     modul_id: moduleId,
                 });
 
@@ -108,7 +108,9 @@ export function AddMaterialModal({
                 } else {
                     setFileType('PDF');
                 }
-                setFilePath(process.env.URL_PATH_FILE + file.name.replace(/\s/g, ''));
+
+                setFileName(file.name);
+
                 setIsAllValid({ ...isAllValid, file: true });
             } else {
                 setIsAllValid({ ...isAllValid, file: false });
@@ -263,7 +265,7 @@ export function EditMaterialModal({
     const newAxiosInstance = axios.create(axiosConfig());
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [fileType, setFileType] = useState("");
-    const [filePath, setFilePath] = useState("");
+    const [fileName, setFileName] = useState("");
     const [oldFile, setOldFile] = useState("");
     const [isAllValid, setIsAllValid] = useState({
         title: false,
@@ -298,7 +300,7 @@ export function EditMaterialModal({
                 if (isAllValid.file) {
                     upload();
                 } else {
-                    setFilePath(oldFile);
+                    setFileName(oldFile);
                 }
             } catch (error) {
                 console.error('Error uploading:', error);
@@ -307,7 +309,7 @@ export function EditMaterialModal({
                     title: title,
                     description: description,
                     source_type: fileType,
-                    material_path: filePath,
+                    material_path: fileName,
                 });
 
                 console.log('Material edited successfully:', response.data.message);
@@ -329,6 +331,16 @@ export function EditMaterialModal({
 
     const upload = () => {
         const formData = new FormData()
+        if (oldFile) {
+            // Make a delete request to remove the old file
+            newAxiosInstance.delete(`${config.REST_API_URL}/material/deleteFile/${oldFile}`)
+                .then(() => {
+                    console.log('Old file deleted successfully');
+                })
+                .catch((error) => {
+                    console.error('Error deleting old file:', error);
+                });
+        }
         if (selectedFile) {
             formData.append('file', selectedFile)
         }
@@ -350,7 +362,9 @@ export function EditMaterialModal({
                 } else {
                     setFileType('PDF');
                 }
-                setFilePath(process.env.URL_PATH_FILE + file.name.replace(/\s/g, ''));
+
+                setFileName(file.name);
+
                 setIsAllValid({ ...isAllValid, file: true });
             } else {
                 setIsAllValid({ ...isAllValid, file: false });
@@ -504,11 +518,37 @@ export function DeleteMaterialModal({
     materialId,
 }: DeleteMaterialModalProps) {
     const [isLoading, setIsLoading] = useState(false);
+    const [oldFile, setOldFile] = useState("");
     const newAxiosInstance = axios.create(axiosConfig());
+
+    useEffect(() => { // Fetch Data to Get Material Detail
+        const fetchData = async () => {
+            try {
+                setIsLoading(true);
+                const res = await newAxiosInstance.get(`${config.REST_API_URL}/material/${materialId}`);
+                if (res.data.status === 200) {
+                    setOldFile(res.data.data.material_path);
+                } else { }
+                setIsLoading(false);
+            } catch (error) {
+                console.error('Error fetching material data:', error);
+            }
+        };
+        fetchData();
+    }, [materialId]);
 
     const handleDeleteMaterial = async () => {
         try {
             setIsLoading(true);
+            // Make a delete request to remove the old file
+            newAxiosInstance.delete(`${config.REST_API_URL}/material/deleteFile/${oldFile}`)
+                .then(() => {
+                    console.log('Old file deleted successfully');
+                })
+                .catch((error) => {
+                    console.error('Error deleting old file:', error);
+                });
+
             const response = await newAxiosInstance.delete(`${config.REST_API_URL}/material/${materialId}`);
 
             console.log('Material Deleted successfully:', response.data.message);
