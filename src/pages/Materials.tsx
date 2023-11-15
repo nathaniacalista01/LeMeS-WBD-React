@@ -28,7 +28,7 @@ import {
 import { useParams } from "react-router-dom";
 import { Modules, Materials } from "../types"
 import { EditModuleModal, AddModuleModal, DeleteModuleModal } from "../components/modals/module";
-// import {  } from "../components/modals/material";
+import { EditMaterialModal, AddMaterialModal, DeleteMaterialModal } from "../components/modals/material";
 import { axiosConfig } from "../utils/axios";
 import config from "../config/config";
 import axios from "axios";
@@ -88,6 +88,10 @@ const ModuleMaterials = () => {
     }, [refreshModule]);
 
     const handleClickModule = (id: number) => {
+        setIdSelectedModules((prevId) => {
+            console.log(prevId); // This will log the previous state
+            return id;
+        });
         getMaterials(id);
     }
 
@@ -145,10 +149,13 @@ const ModuleMaterials = () => {
 
     const initialMaterials: Materials[] = [];
     const [materials, setMaterials] = useState(initialMaterials);
+    const [refreshMaterial, setRefreshMaterial] = useState(false);
+
+    // FETCH DATA FROM SERVER
     const getMaterials = async (module_id: number) => {
         try {
             setIsLoading(true);
-            const res = await newAxiosInstance.get(`${config.REST_API_URL}/modul/course/${module_id}`);
+            const res = await newAxiosInstance.get(`${config.REST_API_URL}/material/module/${module_id}`);
             const MaterialsData: Materials[] = res.data.data.map((module: any) => {
                 return {
                     id: module.id,
@@ -164,6 +171,58 @@ const ModuleMaterials = () => {
             setIsLoading(false);
         }
     }
+
+
+    // HANDLING ADD MATERIAL
+    const [isModalAddMaterialOpen, setIsModalAddMaterialOpen] = useState(false);
+    const openModalAddMaterial = () => {
+        setIsModalAddMaterialOpen(true);
+    };
+    const closeModalAddMaterial = () => {
+        setIsModalAddMaterialOpen(false);
+    };
+    const successAddMaterial = () => {
+        setIsModalAddMaterialOpen(false);
+        setRefreshMaterial((prevRefresh) => !prevRefresh);
+        console.log("ngeteesssssss", idSelectedModules);
+        getMaterials(idSelectedModules);
+    }
+
+    // // HANDLING EDIT MATERIAL
+    // const [isModalEditMaterialOpen, setIsModalEditMaterialOpen] = useState(false);
+
+    // const handleOpenEditMaterial = (id: number) => {
+    //     setIdSelectedMaterials(id);
+    //     openModalEditMaterial();
+    // }
+    // const openModalEditMaterial = () => {
+    //     setIsModalEditMaterialOpen(true);
+    // };
+    // const closeModalEditMaterial = () => {
+    //     setIsModalEditMaterialOpen(false);
+    //     setRefreshMaterial(true);
+    // };
+    // const successEditMaterial = () => {
+    //     setIsModalEditMaterialOpen(false);
+    //     setRefreshMaterial((prevRefresh) => !prevRefresh);
+    // }
+
+    // // HANDLING DELETE MATERIAL
+    // const [isModalDeleteOpen, setIsModalDeleteMaterialOpen] = useState(false);
+    // const handleOpenDeleteMaterial = (id: number) => {
+    //     setIdSelectedMaterials(id);
+    //     openModalDeleteMaterial();
+    // }
+    // const openModalDeleteMaterial = () => {
+    //     setIsModalDeleteMaterialOpen(true);
+    // };
+    // const closeModalDeleteMaterial = () => {
+    //     setIsModalDeleteMaterialOpen(false);
+    // };
+    // const successDeleteMaterial = () => {
+    //     setIsModalDeleteMaterialOpen(false);
+    //     setRefreshMaterial((prevRefresh) => !prevRefresh);
+    // }
 
     return (
         <Container overflow="auto" maxW={"100vw"} maxH={"100vh"}>
@@ -181,7 +240,7 @@ const ModuleMaterials = () => {
                 onClose={closeModalEditModule}
                 successEdit={successEditModule}
                 moduleId={idSelectedModules}
-                />
+            />
 
             <DeleteModuleModal
                 isOpen={isModalDeleteOpen}
@@ -192,11 +251,12 @@ const ModuleMaterials = () => {
 
 
             {/* --------------- MATERIAL POPUPS -------------------- */}
-            {/* <AddMaterialModal
-                isOpen={isModalAddOpen}
-                onClose={closeModalAdd}
-                handleAdd={handleAdd}
-            /> */}
+            <AddMaterialModal
+                isOpen={isModalAddMaterialOpen}
+                onClose={closeModalAddMaterial}
+                successAdd={successAddMaterial}
+                moduleId={idSelectedModules}
+            />
 
 
             <HStack align="start" justify="center">
@@ -333,7 +393,7 @@ const ModuleMaterials = () => {
                                                         color={"#564c95"}
                                                         _hover={{ color: "red" }}
                                                         cursor={"pointer"}
-                                                        // onClick={() => openModalDelete(item.id)}
+                                                    // onClick={() => openModalDelete(item.id)}
                                                     ></Icon>
                                                 </AccordionButton>
                                                 <AccordionPanel>
@@ -364,7 +424,7 @@ const ModuleMaterials = () => {
                         color={"#564c95"}
                         _hover={{ color: "green" }}
                         cursor={"pointer"}
-                    // onClick={() => openModalAdd(item.module_id, item.title)}
+                        onClick={() => openModalAddMaterial()}
                     ></Icon>
                 </VStack>
             </HStack>
