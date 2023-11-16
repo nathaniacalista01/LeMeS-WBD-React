@@ -380,10 +380,10 @@ function ModalAdd({
               }));
             }
           });
-        } catch (error) {
-          console.log(error);
-        };
-      } else {
+      } catch (error) {
+        console.log(error);
+      };
+    } else {
       setTeacherError("Teacher with this ID is not available");
       setIsAllValid((prevState) => ({
         ...prevState,
@@ -445,7 +445,7 @@ function ModalAdd({
         <ModalOverlay />
         <ModalContent>
           <ModalHeader bg="#d78dff" textAlign={"center"}>
-            Edit Premium Course
+            Add Premium Course
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -875,7 +875,7 @@ function ModalDelete({
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader textAlign={"center"}>Delete User</ModalHeader>
+        <ModalHeader textAlign={"center"}>Delete Course</ModalHeader>
         <ModalCloseButton />
         <ModalBody textAlign={"center"}>
           <Box
@@ -885,7 +885,7 @@ function ModalDelete({
             justifyContent="center"
           >
             <Text as={BiError} fontSize={"150px"} color="red" />
-            <Text>Are you sure want to delete {title} ?</Text>
+            <Text>Are you sure want to delete course {title} ?</Text>
           </Box>
         </ModalBody>
 
