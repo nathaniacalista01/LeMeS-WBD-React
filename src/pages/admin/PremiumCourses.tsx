@@ -33,7 +33,7 @@ import Loading from "../../components/loading/Loading";
 import ReactPaginate from "react-paginate";
 import config from "../../config/config";
 import axios from "axios";
-import { axiosConfig } from "../../utils/axios";
+import { axiosConfig, axiosInstance } from "../../utils/axios";
 import { IconContext } from "react-icons";
 import { Courses } from "../../types"
 import { BiSolidTrash, BiError, BiChevronLeftCircle, BiChevronRightCircle, BiSolidEdit } from "react-icons/bi";
@@ -128,28 +128,21 @@ const CoursesList = () => {
   const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
   const [deleteID, setDeleteID] = useState(0);
   const [deleteTitle, setDeleteTitle] = useState("");
-  const openModalDelete = (id: number, title: string) => {
+  const [deletePath, setDeletePath] = useState("");
+  const openModalDelete = (id: number, title: string, image: string) => {
     setDeleteID(id);
     setDeleteTitle(title);
+    setDeletePath(image);
     setIsModalDeleteOpen(true);
   };
   const closeModalDelete = () => {
     setIsModalDeleteOpen(false);
   };
-  const handleDelete = async () => {
-    try {
-      setIsLoading(true);
-      const response = await newAxiosInstance.delete(`${config.REST_API_URL}/course/${deleteID}`);
 
-      console.log('Course deleted successfully:', response.data.message);
-
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error deleting course:', error);
-    }
+  const successDelete = () => {
     closeModalDelete();
     setRefresher((prevRefresh) => !prevRefresh) // lgsung request data baru tanpa hrus reload page (harusnya works)
-  };
+  }
 
   return (
     <Container overflow="auto" maxW={"100vw"} maxH={"100vh"}>
@@ -171,7 +164,9 @@ const CoursesList = () => {
         isOpen={isModalDeleteOpen}
         onClose={closeModalDelete}
         title={deleteTitle}
-        handleDelete={handleDelete}
+        oldFile={deletePath}
+        oldId={deleteID}
+        successDelete={successDelete}
       />
 
       <ModalAdd
@@ -253,7 +248,7 @@ const CoursesList = () => {
                           color={"#564c95"}
                           _hover={{ color: "red" }}
                           cursor={"pointer"}
-                          onClick={() => openModalDelete(item.id, item.title)}
+                          onClick={() => openModalDelete(item.id, item.title, item.image_path)}
                         ></Icon>
                       </Td>
                     </Tr>
@@ -419,21 +414,38 @@ function ModalAdd({
     setIsAllValid({ ...isAllValid, title: false, description: false, teacher: false, file: false })
   }
 
+  const upload = () => {
+    const formData = new FormData();
+    if (selectedFile) {
+      formData.append("file", selectedFile);
+    }
+    axiosInstance
+      .post(`${config.REST_API_URL}/course/image`, formData)
+      .then((res) => { })
+      .catch((er) => console.log(er));
+  };
+
   const handleAdd = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.post(`${config.REST_API_URL}/course`, {
-        title: newTitle,
-        description: newDescription,
-        image_path: fileName,
-        teacher_id: parseInt(newTeacher),
-      });
+      try {
+        upload();
+      } catch (error) {
+        console.error("Error uploading:", error);
+      } finally {
+        const response = await axiosInstance.post(`${config.REST_API_URL}/course`, {
+          title: newTitle,
+          description: newDescription,
+          image_path: fileName,
+          teacher_id: parseInt(newTeacher),
+        });
 
-      console.log('User added successfully:', response.data.message);
-      setIsLoading(false);
-      successAdd();
+        console.log('Course added successfully:', response.data.message);
+        setIsLoading(false);
+        successAdd();
+      }
     } catch (error) {
-      console.error('Error adding user:', error);
+      console.error('Error adding course:', error);
     }
     handleClose();
   };
@@ -711,32 +723,66 @@ function ModalEdit({
           setOldTeacher(res.data.data.teacher_id);
           setOldTitle(res.data.data.title);
           setOldDescription(res.data.data.description);
-          setOldFileName(res.data.data.material_path);
+          setOldFileName(res.data.data.image_path);
         } else {
+          console.log("No response")
         }
         setIsLoading(false);
       } catch (error) {
-        console.error("Error fetching material data:", error);
+        console.error("Error fetching data:", error);
       }
     };
     fetchData();
   }, [courseId]);
 
+  const upload = () => {
+    const formData = new FormData();
+    if (oldFileName) {
+      // Make a delete request to remove the old file
+      axiosInstance
+        .delete(`${config.REST_API_URL}/course/image/${oldFileName}`)
+        .then(() => {
+          console.log("Old file deleted successfully");
+        })
+        .catch((error) => {
+          console.error("Error deleting old file:", error);
+        });
+    }
+    if (selectedFile) {
+      formData.append("file", selectedFile);
+    }
+    axiosInstance
+      .post(`${config.REST_API_URL}/course/image`, formData)
+      .then((res) => { })
+      .catch((er) => console.log(er));
+  };
+
   const handleEdit = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.put(`${config.REST_API_URL}/course/${courseId}`, {
-        title: newTitle,
-        description: newDescription,
-        image_path: fileName,
-        teacher_id: newTeacher,
-      });
+      try {
+        if (isAllValid.file) {
+          upload();
+        } else {
+          setFileName(oldFileName);
+        }
+      } catch (error) {
+        console.error("Error uploading:", error);
+      } finally {
 
-      console.log('User edited successfully:', response.data.message);
-      setIsLoading(false);
-      successEdit();
+        const response = await axiosInstance.put(`${config.REST_API_URL}/course/${courseId}`, {
+          title: newTitle,
+          description: newDescription,
+          image_path: fileName,
+          teacher_id: newTeacher,
+        });
+
+        console.log('Course edited successfully:', response.data.message);
+        setIsLoading(false);
+        successEdit();
+      }
     } catch (error) {
-      console.error('Error editing user:', error);
+      console.error('Error editing course:', error);
     }
     handleClose();
   };
@@ -862,15 +908,35 @@ interface ModalDeleteProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  handleDelete: () => void;
+  oldFile: string;
+  oldId: number;
+  successDelete: () => void;
 }
 
 function ModalDelete({
   isOpen,
   onClose,
   title,
-  handleDelete,
+  oldFile,
+  oldId,
+  successDelete,
 }: ModalDeleteProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const handleDelete = async () => {
+    try {
+      setIsLoading(true);
+      axiosInstance.delete(`${config.REST_API_URL}/course/image/${oldFile}`)
+      const response = await axiosInstance.delete(`${config.REST_API_URL}/course/${oldId}`);
+
+      console.log('Course deleted successfully:', response.data.message);
+
+      setIsLoading(false);
+      successDelete();
+    } catch (error) {
+      console.error('Error deleting course:', error);
+
+    };
+  }
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />

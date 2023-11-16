@@ -53,7 +53,7 @@ const UsersList = () => {
   const n = 6;
 
   useEffect(() => {
-    const getCourses = async (pageNumber: number) => {
+    const getUsers = async (pageNumber: number) => {
       try {
         setIsLoading(true);
         const res = await newAxiosInstance.get(`${config.REST_API_URL}/user?page=${pageNumber}`);
@@ -87,7 +87,7 @@ const UsersList = () => {
       }
     }
 
-    getCourses(page);
+    getUsers(page);
   }, [page, refresher]);
 
   // HANDLING EDIT USER
