@@ -9,23 +9,51 @@ import {
   Button,
   Box,
   Text,
+  useToast,
 } from "@chakra-ui/react";
+import axios from "axios";
 import React from "react";
 import { BiSad } from "react-icons/bi";
+import { axiosConfig } from "../../utils/axios";
+import { useNavigate } from "react-router-dom";
+import config from "../../config/config";
 
 interface LogoutDialogProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export const LogoutDialog = ({ isOpen, onClose }: LogoutDialogProps)=>{
-  const cancelRef = React.useRef<HTMLButtonElement | null>(null);
+export const LogoutDialog = ({ isOpen, onClose }: LogoutDialogProps) => {
+  const axiosInstance = axios.create(axiosConfig());
+  const toast = useToast();
+  const navigate = useNavigate();
+
   const handleLogout = () => {
-    // Handle the Logout action here, e.g., send an API request to update the data
-    // You can use the Logout and Logout state variables
-    // to send the updated data.
-    // After Logout is complete, close the modal.
+    axiosInstance.post(`${config.REST_API_URL}/auth/logout`).then((res) => {
+      if (res.status === 200) {
+        toast({
+          title: "Logout Success!",
+          description: "You have been logged out!",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+          position: "top",
+        });
+        navigate("/login");
+      } else {
+        toast({
+          title: "Logout failed!",
+          description: "Your logout request has failed!",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+          position: "top",
+        });
+      }
+    });
+    onClose();
   };
+  const cancelRef = React.useRef<HTMLButtonElement | null>(null);
   return (
     <AlertDialog
       leastDestructiveRef={cancelRef}
@@ -52,11 +80,11 @@ export const LogoutDialog = ({ isOpen, onClose }: LogoutDialogProps)=>{
           <Button colorScheme="gray" ref={cancelRef} onClick={onClose} flex="1">
             Cancel
           </Button>
-          <Button colorScheme="red" ml={3} flex="1" onClick={onClose}>
+          <Button colorScheme="red" ml={3} flex="1" onClick={handleLogout}>
             Logout
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );
-}
+};

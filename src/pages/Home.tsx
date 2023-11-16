@@ -16,11 +16,11 @@ import ReactPaginate from "react-paginate";
 import { IconContext } from "react-icons";
 import { BiChevronLeftCircle, BiChevronRightCircle } from "react-icons/bi";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { axiosConfig } from "../utils/axios";
 import axios from "axios";
-import config from "../config/config";
 import { Courses } from "../types";
 import Loading from "../components/loading/Loading";
+import { axiosConfig } from "../utils/axios";
+import config from "../config/config";
 
 const Home = () => {
   const { page: pageNumber } = useParams();
@@ -40,7 +40,7 @@ const Home = () => {
     const getCourses = async (pageNumber: number) => {
       try {
         setIsLoading(true);
-        const res = await newAxiosInstance.get(`${config.REST_API_URL}/course?page=${pageNumber}`);
+        const res = await newAxiosInstance.get(`${config.REST_API_URL}/course/teacher?page=${pageNumber}`);
         const {status} = res["data"];
         if(status === 401){
           toast({

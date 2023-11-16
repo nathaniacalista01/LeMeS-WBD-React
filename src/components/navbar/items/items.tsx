@@ -1,5 +1,5 @@
 import { IconType } from "react-icons";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   List,
   ListItem,
@@ -12,11 +12,15 @@ import {
   Avatar,
   WrapItem,
   Button,
+  useToast,
 } from "@chakra-ui/react";
 import { BiLogOut } from "react-icons/bi";
 
 import { useState } from "react";
 import { LogoutDialog } from "../LogoutPopup";
+import axios from "axios";
+import { axiosConfig } from "../../../utils/axios";
+import config from "../../../config/config";
 
 export interface Item {
   icon: IconType;
@@ -34,15 +38,19 @@ export interface Profile {
 export interface ItemsProps {
   navItems: Item[];
   mode?: "semi" | "over";
-  pict: Profile;
+  pict?: Profile;
 }
 
 export function Items({ navItems, mode = "semi", pict }: ItemsProps) {
+  const axiosInstance = axios.create(axiosConfig());
+  const toast = useToast();
+  const navigate = useNavigate();
   const [isModalLogoutOpen, setIsModalLogoutOpen] = useState(false);
   const openModalLogout = () => {
     setIsModalLogoutOpen(true);
   };
   const closeModalLogout = () => {
+    
     setIsModalLogoutOpen(false);
   };
 
@@ -97,23 +105,26 @@ export function Items({ navItems, mode = "semi", pict }: ItemsProps) {
     return (
       <List spacing={3}>
         <LogoutDialog isOpen={isModalLogoutOpen} onClose={closeModalLogout} />
-        <Tooltip
-          label={pict.label}
-          placement="right"
-          bg="purple.500"
-          color="white"
-        >
-          <NavLink to={pict.to} style={{ textDecoration: "none" }}>
-            <Avatar
-              src={pict.image_path}
-              name={pict.label}
-              size="l"
-              bg="transparent"
-              _hover={{ cursor: "pointer" }}
-            />
-            <Text>{pict.role}</Text>
-          </NavLink>
-        </Tooltip>
+        {pict && (
+          <Tooltip
+            label={pict.label}
+            placement="right"
+            bg="purple.500"
+            color="white"
+          >
+            <NavLink to={pict.to} style={{ textDecoration: "none" }}>
+              <Avatar
+                src={pict.image_path}
+                name={pict.label}
+                size="l"
+                bg="transparent"
+                _hover={{ cursor: "pointer" }}
+              />
+              <Text>{pict.role}</Text>
+            </NavLink>
+          </Tooltip>
+        )}
+
         {navItems.map((item, index) => sidebarItemInSemiMode(item, index))}
         <Tooltip
           label={"Logout"}
@@ -135,30 +146,33 @@ export function Items({ navItems, mode = "semi", pict }: ItemsProps) {
     return (
       <List spacing={3}>
         <LogoutDialog isOpen={isModalLogoutOpen} onClose={closeModalLogout} />
-        <WrapItem>
-          <Link
-            display="block"
-            as={NavLink}
-            to={pict.to}
-            _focus={{ bg: "gray.100" }}
-            _hover={{
-              bg: "gray.200",
-            }}
-            _activeLink={{ bg: "purple.500", color: "white" }}
-            w="full"
-            borderRadius="md"
-          >
-            <Flex alignItems="center" p={2}>
-              <Avatar name={pict.label} src={pict.image_path} />
-              <Flex display={"block"}>
-                <Text ml={2} fontWeight={"bold"}>
-                  {pict.label}
-                </Text>
-                <Text ml={2}>{pict.role}</Text>
+        {pict && (
+          <WrapItem>
+            <Link
+              display="block"
+              as={NavLink}
+              to={pict.to}
+              _focus={{ bg: "gray.100" }}
+              _hover={{
+                bg: "gray.200",
+              }}
+              _activeLink={{ bg: "purple.500", color: "white" }}
+              w="full"
+              borderRadius="md"
+            >
+              <Flex alignItems="center" p={2}>
+                <Avatar name={pict.label} src={pict.image_path} />
+                <Flex display={"block"}>
+                  <Text ml={2} fontWeight={"bold"}>
+                    {pict.label}
+                  </Text>
+                  <Text ml={2}>{pict.role}</Text>
+                </Flex>
               </Flex>
-            </Flex>
-          </Link>
-        </WrapItem>
+            </Link>
+          </WrapItem>
+        )}
+
         {navItems.map((item, index) => sidebarItemInOverMode(item, index))}
         <WrapItem>
           <Button

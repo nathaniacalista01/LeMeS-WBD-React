@@ -13,6 +13,10 @@ export type Modules = {
     course_id: number;
   };
 
+export enum Status{
+  SUCCESS = "success",
+  ERROR = "error"
+} 
 export type Materials = {
     id: number;
     title: string;
