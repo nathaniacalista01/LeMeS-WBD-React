@@ -17,10 +17,10 @@ import { BiMenu, BiLogOut, BiSad } from "react-icons/bi";
 
 export interface SidenavProps {
   navItems: Item[];
-  pict: Profile;
+  pict?: Profile;
 }
 
-export function Sidenav({ navItems, pict }: SidenavProps) {
+export function Sidenav({ navItems, pict}: SidenavProps) {
   const { isOpen, onClose, onOpen } = useSidenav();
 
   return (

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 import {
   Flex,
   Button,
@@ -8,12 +9,56 @@ import {
   Input,
   Text,
   Container,
+  InputGroup,
+  InputRightElement,
+  useToast,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { BiHide, BiShow } from "react-icons/bi";
+import config from "../config/config";
+import { axiosConfig } from "../utils/axios";
 
 function Login() {
-  const titleColor = "purple.500";
-  const textColor = "black";
+  const axiosInstance = axios.create(axiosConfig());
+  const toast = useToast();
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const handleLogin = () => {
+    try {
+      axiosInstance
+        .post(`${config.REST_API_URL}/auth/login`, {
+          username: username,
+          password: password,
+        },{
+          withCredentials : true,
+        })
+        .then((res) => {
+          const { status } = res["data"];
+          if (status === 200) {
+            toast({
+              title: "Login success!",
+              description: "You have successfully log in!",
+              status: "success",
+              duration: 3000,
+              isClosable: true,
+              position: "top",
+            });
+            navigate("/");
+          } else {
+            toast({
+              title: "Login failed!",
+              description: "Username/password is invalid",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+              position: "top",
+            });
+          }
+        });
+    } catch (error) {}
+  };
   return (
     <Container display={"flex"} flexDir={"column"}>
       <Flex
@@ -34,7 +79,7 @@ function Login() {
             bg={"#f2f2f2"}
             boxShadow="0 20px 27px 0 rgb(0 0 0 / 15%)"
           >
-            <Heading color={titleColor} fontSize="32px" mb="10px">
+            <Heading color="purple.500" fontSize="32px" mb="10px">
               SIGN IN
             </Heading>
             <Text
@@ -59,20 +104,46 @@ function Login() {
                 type="text"
                 placeholder="Your username"
                 size="lg"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
+
               <FormLabel ms="4px" fontSize="sm" fontWeight="bold">
                 Password
               </FormLabel>
-              <Input
-                isRequired
-                bg="white"
-                borderRadius="15px"
-                mb="36px"
-                fontSize="sm"
-                type="password"
-                placeholder="Your password"
-                size="lg"
-              />
+              <InputGroup>
+                <Input
+                  isRequired
+                  bg="white"
+                  borderRadius="15px"
+                  mb="36px"
+                  fontSize="sm"
+                  type={passwordVisible ? "text" : "password"}
+                  placeholder="Your password"
+                  size="lg"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <InputRightElement
+                  display={"flex"}
+                  alignItems={"center"}
+                  justifyContent={"center"}
+                >
+                  {!passwordVisible ? (
+                    <BiHide
+                      cursor={"pointer"}
+                      size="24px"
+                      onClick={() => setPasswordVisible(true)}
+                    />
+                  ) : (
+                    <BiShow
+                      cursor={"pointer"}
+                      size={"24px"}
+                      onClick={() => setPasswordVisible(false)}
+                    />
+                  )}
+                </InputRightElement>
+              </InputGroup>
               <Button
                 fontSize="16px"
                 type="submit"
@@ -88,6 +159,7 @@ function Login() {
                 _active={{
                   bg: "purple.400",
                 }}
+                onClick={handleLogin}
               >
                 Login
               </Button>
@@ -99,7 +171,7 @@ function Login() {
               maxW="100%"
               mt="0px"
             >
-              <Text color={textColor} fontWeight="medium">
+              <Text color="black" fontWeight="medium">
                 Don't have an account?
                 <RouterLink
                   to="/register"
