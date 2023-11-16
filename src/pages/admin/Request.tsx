@@ -48,6 +48,7 @@ const Request = () => {
   const [requests, setRequests] = useState<RequestType[]>([]);
   const [refresher, setRefresher] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
   const newAxiosInstance = axios.create(axiosConfig());
@@ -79,10 +80,16 @@ const Request = () => {
         const res = await newAxiosInstance.get(
           `${config.REST_API_URL}/premium?page=${pageNumber}`
         );
-        setTotalPages(Math.ceil(totalRows / n));
-        setRequests(res.data.data);
-        setIsLoading(false);
+        const { status, data } = res["data"];
+        if (status === 200) {
+          setTotalPages(Math.ceil(totalRows / n));
+          setRequests(res.data.data);
+          setIsLoading(false);
+        }else{
+          setIsError(true)
+        }
       } catch (error) {
+        setIsError(true);
         console.error("Axios Error:", error);
         setIsLoading(false);
       }
@@ -182,6 +189,13 @@ const Request = () => {
     closeModalAccepting();
     setRefresher((prevRefresh) => !prevRefresh); // lgsung request data baru tanpa hrus reload page (harusnya works)
   };
+  if(isError){
+    return (
+      <Container>
+        Error...
+      </Container>
+    )
+  }
 
   return (
     <Container overflow="auto" maxW={"100vw"} maxH={"100vh"}>
