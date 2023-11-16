@@ -1,18 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Heading,
-  Button,
   Container,
   Flex,
   TableContainer,
   Icon,
-  useDisclosure,
-  Text,
+  Button,
   ButtonGroup,
-  FormControl,
-  FormLabel,
-  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -20,99 +15,147 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Textarea,
+  Text,
+  useToast,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  FormLabel,
+  FormControl,
+  Input,
   Select,
 } from "@chakra-ui/react";
-import { BiSolidTrash, BiSolidEdit, BiError } from "react-icons/bi";
-import { Link } from "react-router-dom";
+import { BiSolidTrash, BiCheckCircle, BiError, BiUpvote, BiChevronLeftCircle, BiChevronRightCircle, BiSolidEdit } from "react-icons/bi";
+import { Link, useNavigate } from "react-router-dom";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
+import { Users } from "../../types"
+import Loading from "../../components/loading/Loading";
+import { axiosConfig } from "../../utils/axios";
+import config from "../../config/config";
+import axios from "axios";
+import ReactPaginate from "react-paginate";
+import { IconContext } from "react-icons";
 
 const UsersList = () => {
+  const initialUsers: Users[] = [];
+  const [users, setUsers] = useState(initialUsers);
+  const [refresher, setRefresher] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [totalPages, setTotalPages] = useState(1);
+  const [page, setPage] = useState(1);
+  const newAxiosInstance = axios.create(axiosConfig());
+  const toast = useToast();
+  const navigate = useNavigate();
+  const n = 6;
 
-  const cancelRef = React.useRef<HTMLButtonElement | null>(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  useEffect(() => {
+    const getCourses = async (pageNumber: number) => {
+      try {
+        setIsLoading(true);
+        const res = await newAxiosInstance.get(`${config.REST_API_URL}/user?page=${pageNumber}`);
+        const { status } = res["data"];
+        // if (status === 401) {
+        //     toast({
+        //         title: "Unauthorized user",
+        //         description: "You have to log in",
+        //         status: "error",
+        //         duration: 3000,
+        //         isClosable: true,
+        //         position: "top"
+        //     })
+        //     navigate("/login");
+        // }
+        setTotalPages(Math.ceil(res.data.total / n));
 
-  const [users, setUsers] = useState([
-    { user_id: 1, username: "User1", fullname: "user1", role: "student" },
-    {
-      user_id: 5,
-      username: "User2",
-      fullname: "Courszxcze5zxczxczxczxczx",
-      role: "student",
-    },
-    {
-      user_id: 5,
-      username: "User12",
-      fullname: "Courszxcze5zxczxczxczxczx",
-      role: "admin",
-    },
-    { user_id: 2, username: "User4", fullname: "user2", role: "student" },
-    { user_id: 3, username: "User7", fullname: "user3", role: "teacher" },
-  ]);
+        const usersData: Users[] = res.data.data.map((user: any) => {
+          return {
+            id: user.id,
+            username: user.username,
+            fullname: user.fullname,
+            isAdmin: user.isAdmin,
+          };
+        });
+        setUsers(usersData);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Axios Error:', error);
+        setIsLoading(false);
+      }
+    }
 
+    getCourses(page);
+  }, [page, refresher]);
+
+  // HANDLING EDIT USER
   const [isModalEditOpen, setIsModalEditOpen] = useState(false);
-  const [editedUsername, setEditedUsername] = useState("");
-  const [editedFullname, setEditedFullname] = useState("");
-  const [editedRole, setEditedRole] = useState("");
-  const openModalEdit = (
-    id: number,
-    username: string,
-    fullname: string,
-    role: string
-  ) => {
+  const [editID, setEditID] = useState(0);
+  const [editUsername, setEditUsername] = useState("");
+  const [editFullname, setEditFullname] = useState("");
+  const [editRole, setEditRole] = useState("");
+  const openModalEdit = (id: number, username: string, fullname: string, role: string) => {
+    setEditID(id);
+    setEditUsername(username);
+    setEditFullname(fullname);
+    setEditRole(role);
     setIsModalEditOpen(true);
-    setEditedUsername(username);
-    setEditedFullname(fullname);
-    setEditedRole(role);
   };
   const closeModalEdit = () => {
     setIsModalEditOpen(false);
   };
-  const handleEdit = () => {
-    // Handle the editing action here, e.g., send an API request to update the data
-    // You can use the editedTitle and editedDescription state variables
-    // to send the updated data.
-    // After editing is complete, close the modal.
-    closeModalEdit();
+
+  const successEdit = () => {
+    setRefresher((prevRefresh) => !prevRefresh);
   };
 
+  // HANDLING DELETE USER
   const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
-  const [deletedID, setDeletedID] = useState(0);
-  const openModalDelete = (id: number) => {
+  const [deleteID, setDeleteID] = useState(0);
+  const [deleteUsername, setDeleteUsername] = useState("");
+  const openModalDelete = (id: number, username: string) => {
+    setDeleteID(id);
+    setDeleteUsername(username);
     setIsModalDeleteOpen(true);
-    setDeletedID(id);
   };
   const closeModalDelete = () => {
     setIsModalDeleteOpen(false);
   };
-  const handleDelete = () => {
-    // Handle the Deleteing action here, e.g., send an API request to update the data
-    // You can use the DeleteedTitle and DeleteedDescription state variables
-    // to send the updated data.
-    // After Deleteing is complete, close the modal.
+  const handleDelete = async () => {
+    try {
+      setIsLoading(true);
+      const response = await newAxiosInstance.delete(`${config.REST_API_URL}/user/${deleteID}`);
+
+      console.log('Module Deleted successfully:', response.data.message);
+
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error deleting module:', error);
+    }
     closeModalDelete();
+    setRefresher((prevRefresh) => !prevRefresh) // lgsung request data baru tanpa hrus reload page (harusnya works)
   };
 
   return (
     <Container overflow="auto" maxW={"100vw"} maxH={"100vh"}>
-      {/* Render the EditUserModal component conditionally */}
-      <EditUserModal
+      {/* Render the EditModal component conditionally */}
+      <Loading loading={isLoading} />
+      <ModalEdit
         isOpen={isModalEditOpen}
         onClose={closeModalEdit}
-        username={editedUsername}
-        fullname={editedFullname}
-        role={editedRole}
-        handleEdit={handleEdit}
+        successEdit={successEdit}
+        username={editUsername}
+        fullname={editFullname}
+        userId={editID}
       />
 
-      {/* Render the DeleteUserModal component conditionally */}
-      <DeleteUserModal
+      {/* Render the DeleteModal component conditionally */}
+      <ModalDelete
         isOpen={isModalDeleteOpen}
         onClose={closeModalDelete}
-        user_id={deletedID}
+        username={deleteUsername}
         handleDelete={handleDelete}
       />
       <Flex alignItems="center" justifyContent="center" mb="20px" mt="50px">
@@ -143,69 +186,93 @@ const UsersList = () => {
               </Button>
             </Box>
           </Box>
-          <TableContainer width="80vw">
-            <DataTable
-              stripedRows
-              value={users}
-              paginator
-              paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageInput"
-              rows={5}
-              selectionMode="single"
-            >
-              <Column
-                field="user_id"
-                header="UserID"
-                headerClassName="custom-header"
-              ></Column>
-              <Column
-                field="username"
-                header="Username"
-                headerClassName="custom-header"
-              ></Column>
-              <Column
-                field="fullname"
-                header="Full Name"
-                headerClassName="custom-header"
-              ></Column>
-              <Column
-                field="role"
-                header="Role"
-                headerClassName="custom-header"
-              ></Column>
-              <Column
-                header="Action"
-                headerClassName="custom-header"
-                body={(rowData) => (
-                  <span>
-                    <Icon
-                      as={BiSolidEdit}
-                      fontSize={"24"}
-                      color={"#564c95"}
-                      _hover={{ color: "green" }}
-                      cursor={"pointer"}
-                      onClick={() =>
-                        openModalEdit(
-                          rowData.user_id,
-                          rowData.username,
-                          rowData.fullname,
-                          rowData.role
-                        )
-                      }
-                    ></Icon>
+          <TableContainer width="80vw" border="1px" borderColor={"#564c95"} borderRadius="10">
+            <Table colorScheme='purple' fontSize={"16"}>
+              <Thead bg="#564c95" textColor="white" fontWeight={"bold"}>
+                <Tr>
+                  <Th textAlign={"center"} color="white" w="10%">UserID</Th>
+                  <Th textAlign={"center"} color="white" w="25%">Username</Th>
+                  <Th textAlign={"center"} color="white" w="35%">Fullname</Th>
+                  <Th textAlign={"center"} color="white" w="10%">Role</Th>
+                  <Th textAlign={"center"} color="white" w="20%">Action</Th>
+                </Tr>
+              </Thead>
+              {users
+                .sort((a, b) => a.id - b.id)
+                .map((item, index) => (
+                  <Tbody>
+                    <Tr key={item.id} bg={index % 2 === 0 ? 'white' : 'gray.100'}>
+                      <Td textAlign={"center"}>{item.id}</Td>
+                      <Td textAlign={"center"} fontWeight={"bold"}>{item.username}</Td>
+                      <Td textAlign={"center"}>{item.fullname}</Td>
+                      {item.isAdmin ? (
+                        <Td textAlign={"center"}>
+                          Admin
+                        </Td>
+                      ) : (
+                        <Td textAlign={"center"}>
+                          Teacher
+                        </Td>
+                      )}
+                      <Td textAlign={"center"}>
+                        <Icon
+                          as={BiSolidEdit}
+                          fontSize={"24"}
+                          color={"#564c95"}
+                          _hover={{ color: "green" }}
+                          cursor={"pointer"}
+                          onClick={() =>
+                            openModalEdit(
+                              item.id,
+                              item.username,
+                              item.fullname,
+                              item.isAdmin,
+                            )
+                          }
+                        ></Icon>
 
-                    <Icon
-                      as={BiSolidTrash}
-                      fontSize={"24"}
-                      color={"#564c95"}
-                      _hover={{ color: "red" }}
-                      cursor={"pointer"}
-                      onClick={() => openModalDelete(rowData.user_id)}
-                    ></Icon>
-                  </span>
-                )}
-              ></Column>
-            </DataTable>
+                        <Icon
+                          as={BiSolidTrash}
+                          fontSize={"24"}
+                          color={"#564c95"}
+                          _hover={{ color: "red" }}
+                          cursor={"pointer"}
+                          onClick={() => openModalDelete(item.id, item.username)}
+                        ></Icon>
+                      </Td>
+                    </Tr>
+                  </Tbody>
+                ))}
+            </Table>
           </TableContainer>
+          <Box mt={10} alignContent="center">
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <ReactPaginate
+                containerClassName={"pagination"}
+                pageClassName={"page-item"}
+                activeClassName={"active-page"}
+                onPageChange={(selectedItem) => {
+                  if ('selected' in selectedItem) {
+                    const nextPage = selectedItem.selected + 1;
+                    setPage(nextPage);
+                  }
+                }}
+                pageCount={totalPages}
+                initialPage={page - 1}
+                breakLabel="..."
+                previousLabel={
+                  <IconContext.Provider value={{ size: "36px" }}>
+                    <BiChevronLeftCircle color="gray" />
+                  </IconContext.Provider>
+                }
+                nextLabel={
+                  <IconContext.Provider value={{ size: "36px" }}>
+                    <BiChevronRightCircle color="gray" />
+                  </IconContext.Provider>
+                }
+              />
+            </div>
+          </Box>
         </Flex>
       </Flex>
     </Container>
@@ -215,103 +282,249 @@ const UsersList = () => {
 {
   /* Modal Edit */
 }
-interface EditUserModalProps {
+interface ModalEditProps {
   isOpen: boolean;
   onClose: () => void;
+  successEdit: () => void;
   username: string;
   fullname: string;
-  role: string;
-  handleEdit: () => void;
+  userId: number;
 }
 
-function EditUserModal({
+function ModalEdit({
   isOpen,
   onClose,
+  successEdit,
   username,
   fullname,
-  role,
-  handleEdit,
-}: EditUserModalProps) {
+  userId,
+}: ModalEditProps) {
+  const axiosInstance = axios.create(axiosConfig());
+  const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [newUsername, setNewUsername] = useState<string>('');
+  const [usernameError, setUsernameError] = useState("");
+  const [newFullname, setNewFullname] = useState<string>('');
+  const [fullnameError, setFullnameError] = useState("");
+  // const [passwordError, setPasswordError] = useState("");
+  // const [newPassword, setNewPassword] = useState<string>('');
+  const [isAllValid, setIsAllValid] = useState({
+    fullname: false,
+    username: false,
+    // password: false,
+  });
+
+  const handleChangeFullname = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewFullname(e.target.value);
+  };
+  useEffect(() => {
+    const checkFullname = () => {
+      if (newFullname.trim().length >= 5) {
+        setIsAllValid({ ...isAllValid, fullname: true });
+      } else {
+        setIsAllValid({ ...isAllValid, fullname: false });
+        setFullnameError("Fullname minimum length is 5 excluding whitespace");
+      }
+    };
+    checkFullname();
+  }, [newFullname]);
+
+  const handleChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewUsername(e.target.value);
+  };
+  useEffect(() => {
+    const checkUsername = (current_username: string) => {
+      if (current_username.length < 5) {
+        setUsernameError("Username minimum length is 5");
+        setIsAllValid({ ...isAllValid, username: false });
+      } else if (current_username.includes(" ")) {
+        setUsernameError("Username should not have a whitespace");
+        setIsAllValid({ ...isAllValid, username: false });
+      } else {
+        try {
+          axiosInstance
+            .post(`${config.REST_API_URL}/user/username`, {
+              username: current_username,
+            })
+            .then((res) => {
+              const { result } = res["data"];
+              if (!result) {
+                setIsAllValid({ ...isAllValid, username: true });
+              } else {
+                setUsernameError("Username is already taken!");
+                setIsAllValid({ ...isAllValid, username: false });
+              }
+            });
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    };
+    checkUsername(newUsername);
+  }, [newUsername]);
+
+  // const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setNewPassword(e.target.value);
+  // };
+  // useEffect(() => {
+  //   const checkPassword = () => {
+  //     const regex = /^(?=.*\d)(?=.*[A-Z]).{8,}$/;
+  //     if (newPassword.length > 8 && regex.test(newPassword)) {
+  //       setIsAllValid({ ...isAllValid, password: true });
+  //     } else {
+  //       setIsAllValid({ ...isAllValid, password: false });
+  //       setPasswordError("Password minimum length is 8 and must contain a Capital letter and 1 number");
+  //     }
+  //   };
+  //   checkPassword();
+  // }, [newPassword]);
+
+  const handleClose = () => {
+    onClose();
+    setUsernameError("");
+    setFullnameError("");
+    // setPasswordError("");
+    setIsAllValid({ ...isAllValid, username: false, fullname: false})
+  }
+
+  const handleEdit = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axiosInstance.put(`${config.REST_API_URL}/user/admin/${userId}`, {
+        username: newUsername,
+        fullname: newFullname,
+      });
+
+      console.log('User edited successfully:', response.data.message);
+      setIsLoading(false);
+      successEdit();
+      handleClose();
+    } catch (error) {
+      console.error('Error editing user:', error);
+    }
+    // window.location.reload(); // refresh to see new user changed (should change to not reloading)
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader bg="#d78dff" textAlign={"center"}>
-          Edit Premium User
-        </ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <FormControl>
-            <FormLabel ms="4px" fontSize="sm" fontWeight="bold">
-              Username
-            </FormLabel>
-            <Input
-              isRequired
-              variant="outline"
-              bg="white"
-              borderRadius="15px"
-              mb="5"
-              fontSize="sm"
-              placeholder={username}
-              size="lg"
-            />
+    <>
+      <Loading loading={isLoading} />
+      <Modal isOpen={isOpen} onClose={handleClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader bg="#d78dff" textAlign={"center"}>
+            Edit Premium User
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <FormControl>
+              <FormLabel ms="4px" fontSize="sm" fontWeight="bold">
+                New Username
+              </FormLabel>
+              <Input
+                isRequired
+                variant="outline"
+                bg="white"
+                borderRadius="15px"
+                mb="5"
+                fontSize="sm"
+                placeholder={username}
+                size="lg"
+                onChange={handleChangeUsername}
+              />
+              {newUsername && !isAllValid.username && (
+                <Text color="red.400" fontSize="12px" mt="-5" mb="2">
+                  {usernameError}
+                </Text>
+              )}
 
-            <FormLabel ms="4px" fontSize="sm" fontWeight="bold">
-              Fullname
-            </FormLabel>
-            <Input
-              isRequired
-              variant="outline"
-              bg="white"
-              borderRadius="15px"
-              mb="5"
-              fontSize="sm"
-              placeholder={fullname}
-              size="lg"
-            />
 
-            <FormLabel ms="4px" fontSize="sm" fontWeight="bold">
-              Role
-            </FormLabel>
-            <Select placeholder={"Change Role"}>
-              <option value="student">Student</option>
-              <option value="teacher">Teacher</option>
-              <option value="admin">Admin</option>
-            </Select>
-          </FormControl>
-        </ModalBody>
+              <FormLabel ms="4px" fontSize="sm" fontWeight="bold">
+                New Fullname
+              </FormLabel>
+              <Input
+                isRequired
+                variant="outline"
+                bg="white"
+                borderRadius="15px"
+                mb="5"
+                fontSize="sm"
+                placeholder={fullname}
+                size="lg"
+                onChange={handleChangeFullname}
+              />
+              {newFullname && !isAllValid.fullname && (
+                <Text color={"red.500"} fontSize={"12px"} mt="-5" mb="2">
+                  {fullnameError}
+                </Text>
+              )}
 
-        <ModalFooter justifyContent={"center"}>
-          <ButtonGroup>
-            <Button colorScheme="gray" flex="1" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button colorScheme="purple" flex="1" ml={3} onClick={handleEdit}>
-              Edit
-            </Button>
-          </ButtonGroup>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+
+              {/* <FormLabel ms="4px" fontSize="sm" fontWeight="bold">
+                Password
+              </FormLabel>
+              <Input
+                isRequired
+                bg="white"
+                borderRadius="15px"
+                mb="12px"
+                fontSize="sm"
+                type="password"
+                placeholder="Enter new password"
+                size="lg"
+                onChange={handleChangePassword}
+              />
+              {newPassword && !isAllValid.password && (
+                <Text color="red.400" fontSize="12px" mt="-2" mb="2">
+                  {passwordError}
+                </Text>
+              )} */}
+
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter justifyContent={"center"}>
+            <ButtonGroup>
+              <Button colorScheme="gray" flex="1" onClick={handleClose}>
+                Cancel
+              </Button>
+              <Button
+                colorScheme="purple"
+                flex="1"
+                ml={3}
+                onClick={handleEdit}
+                isDisabled={
+                  !(
+                    isAllValid.fullname ||
+                    isAllValid.username
+                  )
+                }
+              >
+                Edit
+              </Button>
+            </ButtonGroup>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 }
 
 {
   /* Modal Delete */
 }
-interface DeleteUserModalProps {
+interface ModalDeleteProps {
   isOpen: boolean;
   onClose: () => void;
-  user_id: number;
+  username: string;
   handleDelete: () => void;
 }
 
-function DeleteUserModal({
+function ModalDelete({
   isOpen,
   onClose,
-  user_id,
+  username,
   handleDelete,
-}: DeleteUserModalProps) {
+}: ModalDeleteProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -326,7 +539,7 @@ function DeleteUserModal({
             justifyContent="center"
           >
             <Text as={BiError} fontSize={"150px"} color="red" />
-            <Text>Are you sure want to delete this User?</Text>
+            <Text>Are you sure want to delete {username} ?</Text>
           </Box>
         </ModalBody>
 
