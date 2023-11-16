@@ -95,7 +95,7 @@ const Home = () => {
         mt="10"
       >
         <Heading size="lg">
-          Select a Premium Course to Get Premium Knowledges!
+          Welcome to LeMeS!
         </Heading>
         {courses.length > 0 ? (
           <SimpleGrid
