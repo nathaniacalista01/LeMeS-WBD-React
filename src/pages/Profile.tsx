@@ -131,15 +131,23 @@ function Profile() {
         setUsername(data.username);
         setFullname(data.fullname);
         setImagePath(data.image_path);
-        setOldImagePath(`${image_provider}/${data.image_path}`);
+        setOldImagePath(data.image_path);
         setIsLoading(false);
       }
     });
   };
   const upload = () => {
     const formData = new FormData();
-    if (oldImagePath) {
+    // Dihapus cuma kalau adaa file pengganti dia
+    if (oldImagePath && filepath) {
       // Kalau ada gambar lama, minta hapus
+      console.log('Masuk ke hapus');
+      axiosInstance
+        .delete(`${config.REST_API_URL}/user/image/${oldImagePath}`)
+        .then((res) => console.log(res))
+        .catch((error) => {
+          console.log(error);
+        });
     }
     if (selectedFile) {
       formData.append("file", selectedFile);
@@ -237,9 +245,9 @@ function Profile() {
                 src={
                   selectedFile
                     ? imagePath
-                    : (oldImagePath
-                    ? oldImagePath
-                    : "defaultprofile.jpg")
+                    : oldImagePath
+                    ? `${image_provider}/${oldImagePath}`
+                    : "defaultprofile.jpg"
                 }
                 alignSelf={"center"}
               />
