@@ -38,7 +38,7 @@ export interface Profile {
 export interface ItemsProps {
   navItems: Item[];
   mode?: "semi" | "over";
-  pict: Profile;
+  pict?: Profile;
 }
 
 export function Items({ navItems, mode = "semi", pict }: ItemsProps) {
@@ -50,28 +50,7 @@ export function Items({ navItems, mode = "semi", pict }: ItemsProps) {
     setIsModalLogoutOpen(true);
   };
   const closeModalLogout = () => {
-    axiosInstance.post(`${config.REST_API_URL}/auth/logout`).then((res) => {
-      if (res.status === 200) {
-        toast({
-          title: "Logout Success!",
-          description: "You have been logged out!",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-          position: "top",
-        });
-        navigate("/login");
-      } else {
-        toast({
-          title: "Logout failed!",
-          description: "Your logout request has failed!",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-          position: "top",
-        });
-      }
-    });
+    
     setIsModalLogoutOpen(false);
   };
 
@@ -126,23 +105,26 @@ export function Items({ navItems, mode = "semi", pict }: ItemsProps) {
     return (
       <List spacing={3}>
         <LogoutDialog isOpen={isModalLogoutOpen} onClose={closeModalLogout} />
-        <Tooltip
-          label={pict.label}
-          placement="right"
-          bg="purple.500"
-          color="white"
-        >
-          <NavLink to={pict.to} style={{ textDecoration: "none" }}>
-            <Avatar
-              src={pict.image_path}
-              name={pict.label}
-              size="l"
-              bg="transparent"
-              _hover={{ cursor: "pointer" }}
-            />
-            <Text>{pict.role}</Text>
-          </NavLink>
-        </Tooltip>
+        {pict && (
+          <Tooltip
+            label={pict.label}
+            placement="right"
+            bg="purple.500"
+            color="white"
+          >
+            <NavLink to={pict.to} style={{ textDecoration: "none" }}>
+              <Avatar
+                src={pict.image_path}
+                name={pict.label}
+                size="l"
+                bg="transparent"
+                _hover={{ cursor: "pointer" }}
+              />
+              <Text>{pict.role}</Text>
+            </NavLink>
+          </Tooltip>
+        )}
+
         {navItems.map((item, index) => sidebarItemInSemiMode(item, index))}
         <Tooltip
           label={"Logout"}
@@ -164,30 +146,33 @@ export function Items({ navItems, mode = "semi", pict }: ItemsProps) {
     return (
       <List spacing={3}>
         <LogoutDialog isOpen={isModalLogoutOpen} onClose={closeModalLogout} />
-        <WrapItem>
-          <Link
-            display="block"
-            as={NavLink}
-            to={pict.to}
-            _focus={{ bg: "gray.100" }}
-            _hover={{
-              bg: "gray.200",
-            }}
-            _activeLink={{ bg: "purple.500", color: "white" }}
-            w="full"
-            borderRadius="md"
-          >
-            <Flex alignItems="center" p={2}>
-              <Avatar name={pict.label} src={pict.image_path} />
-              <Flex display={"block"}>
-                <Text ml={2} fontWeight={"bold"}>
-                  {pict.label}
-                </Text>
-                <Text ml={2}>{pict.role}</Text>
+        {pict && (
+          <WrapItem>
+            <Link
+              display="block"
+              as={NavLink}
+              to={pict.to}
+              _focus={{ bg: "gray.100" }}
+              _hover={{
+                bg: "gray.200",
+              }}
+              _activeLink={{ bg: "purple.500", color: "white" }}
+              w="full"
+              borderRadius="md"
+            >
+              <Flex alignItems="center" p={2}>
+                <Avatar name={pict.label} src={pict.image_path} />
+                <Flex display={"block"}>
+                  <Text ml={2} fontWeight={"bold"}>
+                    {pict.label}
+                  </Text>
+                  <Text ml={2}>{pict.role}</Text>
+                </Flex>
               </Flex>
-            </Flex>
-          </Link>
-        </WrapItem>
+            </Link>
+          </WrapItem>
+        )}
+
         {navItems.map((item, index) => sidebarItemInOverMode(item, index))}
         <WrapItem>
           <Button
