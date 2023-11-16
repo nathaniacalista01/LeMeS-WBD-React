@@ -31,3 +31,10 @@ export type Users = {
     fullname: string;
     isAdmin: string;
 };
+
+export type RequestType={
+    id : number;
+    user_id : number;
+    fullname : string;
+    status: string;
+}
