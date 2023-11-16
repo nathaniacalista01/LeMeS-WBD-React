@@ -85,7 +85,7 @@ function Profile() {
                             if (!result) {
                                 setIsAllValid({ ...isAllValid, username: true });
                             } else {
-                                setUsernameError("Username had already taken!");
+                                setUsernameError("Username is already taken!");
                                 setIsAllValid({ ...isAllValid, username: false });
                             }
                         });

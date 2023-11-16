@@ -68,7 +68,6 @@ const Home = () => {
         });
         setCourses(coursesData);
         setIsLoading(false);
-        console.log("berhasil yeah");
       } catch (error) {
         console.error('Axios Error:', error);
         setIsLoading(false);
