@@ -53,6 +53,7 @@ const Request = () => {
   const newAxiosInstance = axios.create(axiosConfig());
   const toast = useToast();
   const navigate = useNavigate();
+  const axiosInstance = axios.create(axiosConfig());
   const n = 6;
 
   // FETCHING THE USER DATA (INI MSIH MAKE DATA LIST SEMUA USER, TINGGAL GANTI KE USER YG LGI REQUEST)
@@ -72,14 +73,13 @@ const Request = () => {
       return 0;
     };
     const getCourses = async (pageNumber: number) => {
-      const totalPages = await getTotalPage();
+      const totalRows = await getTotalPage();
       try {
         setIsLoading(true);
         const res = await newAxiosInstance.get(
           `${config.REST_API_URL}/premium?page=${pageNumber}`
         );
-        console.log("Ini resss : ", res);
-        setTotalPages(Math.ceil(totalPages / n));
+        setTotalPages(Math.ceil(totalRows / n));
         setRequests(res.data.data);
         setIsLoading(false);
       } catch (error) {
@@ -93,11 +93,9 @@ const Request = () => {
   // HANDLING REJECT REQUEST
   const [isModalRejectingOpen, setIsModalRejectingOpen] = useState(false);
   const [rejectingID, setRejectingID] = useState(0);
-  const [rejectingUsername, setRejectingUsername] = useState<number>();
   const openModalRejecting = (id: number, user_id: number) => {
     setIsModalRejectingOpen(true);
     setRejectingID(id);
-    setRejectingUsername(user_id);
   };
   const closeModalRejecting = () => {
     setIsModalRejectingOpen(false);
@@ -112,22 +110,49 @@ const Request = () => {
   // HANDLING ACC REQUEST
   const [isModalAcceptingOpen, setIsModalAcceptingOpen] = useState(false);
   const [acceptingID, setAcceptingID] = useState(0);
-  const [acceptingUsername, setAcceptingUsername] = useState<number>();
-  const openModalAccepting = (id: number, user_id: number) => {
+  const openModalAccepting = (user_id: number) => {
     setIsModalAcceptingOpen(true);
-    setAcceptingID(id);
-    setAcceptingUsername(user_id);
+    setAcceptingID(user_id);
   };
   const closeModalAccepting = () => {
     setIsModalAcceptingOpen(false);
   };
-  const handleAccepting = () => {
-    // Handle the Accepting action here, e.g., send an API request to update the data
+  const handleAccepting = () => { 
+    try {
+      axiosInstance
+        .put(`${config.REST_API_URL}/premium/${acceptingID}`, {
+          newStatus: "ACCEPTED",
+        })
+        .then((res) => {
+          const response = res["data"];
+          const {status, data} = response;
+          if(status === 200){
+            toast({
+              title : "Successfully upgrade user!",
+              description : "User has been upgraded to premium!",
+              status : "success",
+              isClosable : true,
+              duration : 3000,
+              position : "top"
+            })
+          }else{
+            toast({
+              title : "Upgrade failed!",
+              description : "User has not been upgraded to premium",
+              status : "error",
+              isClosable : true,
+              duration : 3000,
+              position : "top"
+            })
+          }
+        });
+    } catch (error) {
+      console.log(error);
+    }
     // After Accepting is complete, close the modal.
     closeModalAccepting();
     setRefresher((prevRefresh) => !prevRefresh); // lgsung request data baru tanpa hrus reload page (harusnya works)
   };
-  console.log(requests);
 
   return (
     <Container overflow="auto" maxW={"100vw"} maxH={"100vh"}>
@@ -186,44 +211,43 @@ const Request = () => {
                   </Th>
                 </Tr>
               </Thead>
-              {requests
-                .sort((a, b) => a.id - b.id)
-                .map((item, index) => (
-                  <Tbody>
-                    <Tr
-                      key={item.id}
-                      bg={index % 2 === 0 ? "white" : "gray.100"}
-                    >
-                      <Td textAlign={"center"}>{item.user_id}</Td>
-                      <Td textAlign={"center"}>{item.status}</Td>
-                      <Td textAlign={"center"}>
-                        <Icon
-                          mr="1"
-                          as={BiCheckCircle}
-                          fontSize={"24"}
-                          color={"#564c95"}
-                          _hover={{ color: "green" }}
-                          cursor={"pointer"}
-                          onClick={() =>
-                            openModalAccepting(item.id, item.user_id)
-                          }
-                        ></Icon>
+              {requests &&
+                requests
+                  .sort((a, b) => a.id - b.id)
+                  .map((item, index) => (
+                    <Tbody>
+                      <Tr
+                        key={item.id}
+                        bg={index % 2 === 0 ? "white" : "gray.100"}
+                      >
+                        <Td textAlign={"center"}>{item.user_id}</Td>
+                        <Td textAlign={"center"}>{item.status}</Td>
+                        <Td textAlign={"center"}>
+                          <Icon
+                            mr="1"
+                            as={BiCheckCircle}
+                            fontSize={"24"}
+                            color={"#564c95"}
+                            _hover={{ color: "green" }}
+                            cursor={"pointer"}
+                            onClick={() => openModalAccepting(item.user_id)}
+                          ></Icon>
 
-                        <Icon
-                          ml="1"
-                          as={BiSolidTrash}
-                          fontSize={"24"}
-                          color={"#564c95"}
-                          _hover={{ color: "red" }}
-                          cursor={"pointer"}
-                          onClick={() =>
-                            openModalRejecting(item.id, item.user_id)
-                          }
-                        ></Icon>
-                      </Td>
-                    </Tr>
-                  </Tbody>
-                ))}
+                          <Icon
+                            ml="1"
+                            as={BiSolidTrash}
+                            fontSize={"24"}
+                            color={"#564c95"}
+                            _hover={{ color: "red" }}
+                            cursor={"pointer"}
+                            onClick={() =>
+                              openModalRejecting(item.id, item.user_id)
+                            }
+                          ></Icon>
+                        </Td>
+                      </Tr>
+                    </Tbody>
+                  ))}
             </Table>
           </TableContainer>
           <Box mt={10} alignContent="center">
