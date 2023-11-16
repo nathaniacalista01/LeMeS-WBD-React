@@ -20,13 +20,12 @@ import {
     Table,
     Thead,
     Tbody,
-    Tfoot,
     Tr,
     Th,
     Td,
 } from "@chakra-ui/react";
 import { BiSolidTrash, BiCheckCircle, BiError, BiUpvote, BiChevronLeftCircle, BiChevronRightCircle } from "react-icons/bi";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import { Users } from "../../types"
@@ -45,8 +44,6 @@ const Request = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [page, setPage] = useState(1);
     const newAxiosInstance = axios.create(axiosConfig());
-    const location = useLocation();
-    const queryParams = new URLSearchParams(location.search);
     const toast = useToast();
     const navigate = useNavigate();
     const n = 6;
@@ -107,8 +104,9 @@ const Request = () => {
         // Handle the Rejecting action here, e.g., send an API request to update the data
         // After Rejecting is complete, close the modal.
         closeModalRejecting();
+        setRefresher((prevRefresh) => !prevRefresh) // lgsung request data baru tanpa hrus reload page (harusnya works)
     };
-
+    
     // HANDLING ACC REQUEST
     const [isModalAcceptingOpen, setIsModalAcceptingOpen] = useState(false);
     const [acceptingID, setAcceptingID] = useState(0);
@@ -125,12 +123,8 @@ const Request = () => {
         // Handle the Accepting action here, e.g., send an API request to update the data
         // After Accepting is complete, close the modal.
         closeModalAccepting();
+        setRefresher((prevRefresh) => !prevRefresh) // lgsung request data baru tanpa hrus reload page (harusnya works)
     };
-
-    const handlePageChange = (event: { first: number }) => {
-        const newPage = Math.floor(event.first / n) + 1;
-        setPage(newPage);
-    }
 
     return (
         <Container overflow="auto" maxW={"100vw"} maxH={"100vh"}>
