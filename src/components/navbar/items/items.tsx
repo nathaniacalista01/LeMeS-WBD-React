@@ -1,5 +1,5 @@
 import { IconType } from "react-icons";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   List,
   ListItem,
@@ -12,11 +12,15 @@ import {
   Avatar,
   WrapItem,
   Button,
+  useToast,
 } from "@chakra-ui/react";
 import { BiLogOut } from "react-icons/bi";
 
 import { useState } from "react";
 import { LogoutDialog } from "../LogoutPopup";
+import axios from "axios";
+import { axiosConfig } from "../../../utils/axios";
+import config from "../../../config/config";
 
 export interface Item {
   icon: IconType;
@@ -38,11 +42,36 @@ export interface ItemsProps {
 }
 
 export function Items({ navItems, mode = "semi", pict }: ItemsProps) {
+  const axiosInstance = axios.create(axiosConfig());
+  const toast = useToast();
+  const navigate = useNavigate();
   const [isModalLogoutOpen, setIsModalLogoutOpen] = useState(false);
   const openModalLogout = () => {
     setIsModalLogoutOpen(true);
   };
   const closeModalLogout = () => {
+    axiosInstance.post(`${config.REST_API_URL}/auth/logout`).then((res) => {
+      if (res.status === 200) {
+        toast({
+          title: "Logout Success!",
+          description: "You have been logged out!",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+          position: "top",
+        });
+        navigate("/login");
+      } else {
+        toast({
+          title: "Logout failed!",
+          description: "Your logout request has failed!",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+          position: "top",
+        });
+      }
+    });
     setIsModalLogoutOpen(false);
   };
 
