@@ -93,9 +93,9 @@ const Request = () => {
   // HANDLING REJECT REQUEST
   const [isModalRejectingOpen, setIsModalRejectingOpen] = useState(false);
   const [rejectingID, setRejectingID] = useState(0);
-  const openModalRejecting = (id: number, user_id: number) => {
+  const openModalRejecting = (user_id: number) => {
     setIsModalRejectingOpen(true);
-    setRejectingID(id);
+    setRejectingID(user_id);
   };
   const closeModalRejecting = () => {
     setIsModalRejectingOpen(false);
@@ -103,6 +103,35 @@ const Request = () => {
   const handleRejecting = () => {
     // Handle the Rejecting action here, e.g., send an API request to update the data
     // After Rejecting is complete, close the modal.
+    try {
+      axiosInstance
+        .delete(`${config.REST_API_URL}/premium/${rejectingID}`)
+        .then((res) => {
+          const response = res["data"];
+          const { status, data } = response;
+          if (status === 200) {
+            toast({
+              title: "Successfully delete a request!",
+              description: "Request has been deleted!",
+              status: "success",
+              isClosable: true,
+              duration: 3000,
+              position: "top",
+            });
+          } else {
+            toast({
+              title: "Delete failed!",
+              description: "Request has not been deleted!",
+              status: "error",
+              isClosable: true,
+              duration: 3000,
+              position: "top",
+            });
+          }
+        });
+    } catch (error) {
+      console.log(error);
+    }
     closeModalRejecting();
     setRefresher((prevRefresh) => !prevRefresh); // lgsung request data baru tanpa hrus reload page (harusnya works)
   };
@@ -117,7 +146,7 @@ const Request = () => {
   const closeModalAccepting = () => {
     setIsModalAcceptingOpen(false);
   };
-  const handleAccepting = () => { 
+  const handleAccepting = () => {
     try {
       axiosInstance
         .put(`${config.REST_API_URL}/premium/${acceptingID}`, {
@@ -125,25 +154,25 @@ const Request = () => {
         })
         .then((res) => {
           const response = res["data"];
-          const {status, data} = response;
-          if(status === 200){
+          const { status, data } = response;
+          if (status === 200) {
             toast({
-              title : "Successfully upgrade user!",
-              description : "User has been upgraded to premium!",
-              status : "success",
-              isClosable : true,
-              duration : 3000,
-              position : "top"
-            })
-          }else{
+              title: "Successfully upgrade user!",
+              description: "User has been upgraded to premium!",
+              status: "success",
+              isClosable: true,
+              duration: 3000,
+              position: "top",
+            });
+          } else {
             toast({
-              title : "Upgrade failed!",
-              description : "User has not been upgraded to premium",
-              status : "error",
-              isClosable : true,
-              duration : 3000,
-              position : "top"
-            })
+              title: "Upgrade failed!",
+              description: "User has not been upgraded to premium",
+              status: "error",
+              isClosable: true,
+              duration: 3000,
+              position: "top",
+            });
           }
         });
     } catch (error) {
@@ -240,9 +269,7 @@ const Request = () => {
                             color={"#564c95"}
                             _hover={{ color: "red" }}
                             cursor={"pointer"}
-                            onClick={() =>
-                              openModalRejecting(item.id, item.user_id)
-                            }
+                            onClick={() => openModalRejecting(item.user_id)}
                           ></Icon>
                         </Td>
                       </Tr>
