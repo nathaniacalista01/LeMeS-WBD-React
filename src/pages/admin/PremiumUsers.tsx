@@ -31,12 +31,6 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 
 const UsersList = () => {
-  type users = {
-    user_id: number;
-    username: string;
-    fullname: string;
-    role: string;
-  };
 
   const cancelRef = React.useRef<HTMLButtonElement | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
