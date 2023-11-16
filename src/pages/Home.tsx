@@ -32,7 +32,7 @@ const Home = () => {
   const newAxiosInstance = axios.create(axiosConfig());
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const page = parseInt(queryParams.get('page') || '1', 10);
+  const page = parseInt(queryParams.get("page") || "1", 10);
   const navigate = useNavigate();
   const n = 4;
 
@@ -40,20 +40,22 @@ const Home = () => {
     const getCourses = async (pageNumber: number) => {
       try {
         setIsLoading(true);
-        const res = await newAxiosInstance.get(`${config.REST_API_URL}/course/teacher?page=${pageNumber}`);
-        const {status} = res["data"];
-        if(status === 401){
+        const res = await newAxiosInstance.get(
+          `${config.REST_API_URL}/course/teacher?page=${pageNumber}`
+        );
+        const { status } = res["data"];
+        if (status === 401) {
           toast({
-            title : "Unathorized user",
-            description : "You have to log in",
-            status : "error",
-            duration:3000,
-            isClosable : true,
-            position : "top"
-          })
+            title: "Unathorized user",
+            description: "You have to log in",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+            position: "top",
+          });
           navigate("/login");
         }
-        setTotalPages(Math.ceil(res.data.total/n));
+        setTotalPages(Math.ceil(res.data.total / n));
 
         const coursesData: Courses[] = res.data.data.map((course: any) => {
           const releaseDate = new Date(course.release_date);
@@ -69,16 +71,16 @@ const Home = () => {
         setCourses(coursesData);
         setIsLoading(false);
       } catch (error) {
-        console.error('Axios Error:', error);
+        console.error("Axios Error:", error);
         setIsLoading(false);
       }
-    }
+    };
 
     getCourses(page);
   }, [page]);
 
   const gradientStyles = {
-    background: 'linear-gradient(to right, #fcbcd7, #ffcee6)',
+    background: "linear-gradient(to right, #fcbcd7, #ffcee6)",
   };
 
   return (
@@ -93,9 +95,7 @@ const Home = () => {
         justifyContent={"space-between"}
         mt="10"
       >
-        <Heading size="lg">
-          Welcome to LeMeS!
-        </Heading>
+        <Heading size="lg">Welcome to LeMeS!</Heading>
         {courses.length > 0 ? (
           <SimpleGrid
             columns={{ base: 1, md: 2, lg: 4 }}
@@ -108,7 +108,11 @@ const Home = () => {
                 <CardBody style={gradientStyles}>
                   <Image
                     w="50"
-                    src={item.image_path ? item.image_path.toString() : 'premiumlogo.png'}
+                    src={
+                      item.image_path
+                        ? item.image_path.toString()
+                        : "premiumlogo.png"
+                    }
                     alt="Course Image"
                     borderRadius="lg"
                     border="1px"
@@ -136,9 +140,12 @@ const Home = () => {
               </Card>
             ))}
           </SimpleGrid>
-        ) : (!isLoading && (
-          <Text fontSize={"20"} mt="200px" mb="200px">Sorry, no courses available at the moment...</Text>
-        )
+        ) : (
+          !isLoading && (
+            <Text fontSize={"20"} mt="200px" mb="200px">
+              Sorry, no courses available at the moment...
+            </Text>
+          )
         )}
         <Box mt={10} alignContent="center">
           <div style={{ display: "flex", justifyContent: "center" }}>
@@ -147,7 +154,7 @@ const Home = () => {
               pageClassName={"page-item"}
               activeClassName={"active-page"}
               onPageChange={(selectedItem) => {
-                if ('selected' in selectedItem) {
+                if ("selected" in selectedItem) {
                   const nextPage = selectedItem.selected + 1;
                   navigate(`/course?page=${nextPage}`);
                 }
