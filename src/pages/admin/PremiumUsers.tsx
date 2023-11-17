@@ -53,7 +53,7 @@ const UsersList = () => {
   const n = 6;
 
   useEffect(() => {
-    const getCourses = async (pageNumber: number) => {
+    const getUsers = async (pageNumber: number) => {
       try {
         setIsLoading(true);
         const res = await newAxiosInstance.get(`${config.REST_API_URL}/user?page=${pageNumber}`);
@@ -76,7 +76,7 @@ const UsersList = () => {
       }
     }
 
-    getCourses(page);
+    getUsers(page);
   }, [page, refresher]);
 
   // HANDLING EDIT USER
@@ -117,11 +117,11 @@ const UsersList = () => {
       setIsLoading(true);
       const response = await newAxiosInstance.delete(`${config.REST_API_URL}/user/${deleteID}`);
 
-      console.log('Module Deleted successfully:', response.data.message);
+      console.log('User deleted successfully:', response.data.message);
 
       setIsLoading(false);
     } catch (error) {
-      console.error('Error deleting module:', error);
+      console.error('Error deleting user:', error);
     }
     closeModalDelete();
     setRefresher((prevRefresh) => !prevRefresh) // lgsung request data baru tanpa hrus reload page (harusnya works)
@@ -135,8 +135,6 @@ const UsersList = () => {
         isOpen={isModalEditOpen}
         onClose={closeModalEdit}
         successEdit={successEdit}
-        username={editUsername}
-        fullname={editFullname}
         userId={editID}
       />
 
@@ -275,8 +273,6 @@ interface ModalEditProps {
   isOpen: boolean;
   onClose: () => void;
   successEdit: () => void;
-  username: string;
-  fullname: string;
   userId: number;
 }
 
@@ -284,8 +280,6 @@ function ModalEdit({
   isOpen,
   onClose,
   successEdit,
-  username,
-  fullname,
   userId,
 }: ModalEditProps) {
   const axiosInstance = axios.create(axiosConfig());
@@ -295,103 +289,143 @@ function ModalEdit({
   const [usernameError, setUsernameError] = useState("");
   const [newFullname, setNewFullname] = useState<string>('');
   const [fullnameError, setFullnameError] = useState("");
-  // const [passwordError, setPasswordError] = useState("");
-  // const [newPassword, setNewPassword] = useState<string>('');
+  const [passwordError, setPasswordError] = useState("");
+  const [oldUsername, setOldUsername] = useState("");
+  const [oldFullname, setOldFullname] = useState("");
+  const [newPassword, setNewPassword] = useState<string>('');
   const [isAllValid, setIsAllValid] = useState({
     fullname: false,
     username: false,
-    // password: false,
+    password: false,
   });
 
-  const handleChangeFullname = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewFullname(e.target.value);
-  };
-  useEffect(() => {
-    const checkFullname = () => {
-      if (newFullname.trim().length >= 5) {
-        setIsAllValid({ ...isAllValid, fullname: true });
-      } else {
-        setIsAllValid({ ...isAllValid, fullname: false });
-        setFullnameError("Fullname minimum length is 5 excluding whitespace");
-      }
-    };
-    checkFullname();
-  }, [newFullname]);
-
   const handleChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewUsername(e.target.value);
+    if (e.target.value.includes(" ")) {
+      setUsernameError("Username should not have a whitespace");
+      setIsAllValid({ ...isAllValid, username: false });
+      setNewUsername(oldUsername);
+    } else if (e.target.value.length < 5) {
+      setUsernameError("Username minimum length is 5");
+      setIsAllValid({ ...isAllValid, username: false });
+      setNewUsername(oldUsername);
+    } else {
+      try {
+        axiosInstance
+          .post(`${config.REST_API_URL}/user/username`, {
+            username: e.target.value,
+          })
+          .then((res) => {
+            const { result } = res["data"];
+            if (!result) {
+              setUsernameError("");
+              setNewUsername(e.target.value);
+              setIsAllValid({ ...isAllValid, username: true });
+            } else {
+              setNewUsername(oldUsername);
+              setUsernameError("Username is already taken!");
+              setIsAllValid({ ...isAllValid, username: false });
+            }
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
+
+  const handleChangeFullname = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value.length >= 5) {
+      setFullnameError("");
+      setNewFullname(e.target.value);
+      setIsAllValid((prevState) => ({
+        ...prevState,
+        fullname: true,
+      }));
+    } else {
+      setFullnameError("Fullname minimum length is 5");
+      setNewFullname(oldFullname);
+      setIsAllValid((prevState) => ({
+        ...prevState,
+        fullname: false,
+      }));
+    }
+  };
+
+  const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewPassword(e.target.value);
+  }
+
   useEffect(() => {
-    const checkUsername = (current_username: string) => {
-      if (current_username.length < 5) {
-        setUsernameError("Username minimum length is 5");
-        setIsAllValid({ ...isAllValid, username: false });
-      } else if (current_username.includes(" ")) {
-        setUsernameError("Username should not have a whitespace");
-        setIsAllValid({ ...isAllValid, username: false });
+    const checkPassword = () => {
+      const regex = /^(?=.*\d)(?=.*[A-Z]).{8,}$/;
+      if (newPassword.length > 8 && regex.test(newPassword)) {
+        setIsAllValid({ ...isAllValid, password: true });
       } else {
-        try {
-          axiosInstance
-            .post(`${config.REST_API_URL}/user/username`, {
-              username: current_username,
-            })
-            .then((res) => {
-              const { result } = res["data"];
-              if (!result) {
-                setIsAllValid({ ...isAllValid, username: true });
-              } else {
-                setUsernameError("Username is already taken!");
-                setIsAllValid({ ...isAllValid, username: false });
-              }
-            });
-        } catch (error) {
-          console.log(error);
-        }
+        setIsAllValid({ ...isAllValid, password: false });
+        setPasswordError("Password minimum length is 8 and must contain a Capital letter and 1 number");
       }
     };
-    checkUsername(newUsername);
-  }, [newUsername]);
-
-  // const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setNewPassword(e.target.value);
-  // };
-  // useEffect(() => {
-  //   const checkPassword = () => {
-  //     const regex = /^(?=.*\d)(?=.*[A-Z]).{8,}$/;
-  //     if (newPassword.length > 8 && regex.test(newPassword)) {
-  //       setIsAllValid({ ...isAllValid, password: true });
-  //     } else {
-  //       setIsAllValid({ ...isAllValid, password: false });
-  //       setPasswordError("Password minimum length is 8 and must contain a Capital letter and 1 number");
-  //     }
-  //   };
-  //   checkPassword();
-  // }, [newPassword]);
+    checkPassword();
+  }, [newPassword])
 
   const handleClose = () => {
     onClose();
     setUsernameError("");
     setFullnameError("");
-    // setPasswordError("");
-    setIsAllValid({ ...isAllValid, username: false, fullname: false})
+    setPasswordError("");
+    setIsAllValid({ ...isAllValid, username: false, fullname: false, password: false })
   }
+
+  useEffect(() => {
+    // Fetch Data to Get User Detail
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const res = await axiosInstance.get(
+          `${config.REST_API_URL}/user/${userId}`
+        );
+        if (res.data.status === 200) {
+          setNewUsername(res.data.data.username);
+          setNewFullname(res.data.data.fullname);
+
+          setOldUsername(res.data.data.username);
+          setOldFullname(res.data.data.fullname);
+        } else {
+          console.log("No response data");
+        }
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching material data:", error);
+      }
+    };
+    fetchData();
+  }, [userId]);
 
   const handleEdit = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.put(`${config.REST_API_URL}/user/admin/${userId}`, {
-        username: newUsername,
-        fullname: newFullname,
-      });
-
-      console.log('User edited successfully:', response.data.message);
-      setIsLoading(false);
-      successEdit();
-      handleClose();
+      if (newPassword.length > 0 && isAllValid.password) { // Passwordnya dibuah pake api yg bisa ganti password
+        const response = await axiosInstance.put(`${config.REST_API_URL}/user/admin/${userId}`, {
+          username: newUsername,
+          fullname: newFullname,
+          password: newPassword,
+        });
+        console.log('User edited successfully');
+        setIsLoading(false);
+        successEdit();
+        handleClose();
+      } else { // ga ganti password
+        const response = await axiosInstance.put(`${config.REST_API_URL}/user/${userId}`, {
+          username: newUsername,
+          fullname: newFullname,
+        });
+        console.log('User edited successfully');
+        setIsLoading(false);
+        successEdit();
+        handleClose();
+      }
     } catch (error) {
       console.error('Error editing user:', error);
     }
-    // window.location.reload(); // refresh to see new user changed (should change to not reloading)
   };
 
   return (
@@ -416,7 +450,7 @@ function ModalEdit({
                 borderRadius="15px"
                 mb="5"
                 fontSize="sm"
-                placeholder={username}
+                placeholder={oldUsername}
                 size="lg"
                 onChange={handleChangeUsername}
               />
@@ -437,7 +471,7 @@ function ModalEdit({
                 borderRadius="15px"
                 mb="5"
                 fontSize="sm"
-                placeholder={fullname}
+                placeholder={oldFullname}
                 size="lg"
                 onChange={handleChangeFullname}
               />
@@ -448,7 +482,7 @@ function ModalEdit({
               )}
 
 
-              {/* <FormLabel ms="4px" fontSize="sm" fontWeight="bold">
+              <FormLabel ms="4px" fontSize="sm" fontWeight="bold">
                 Password
               </FormLabel>
               <Input
@@ -466,7 +500,7 @@ function ModalEdit({
                 <Text color="red.400" fontSize="12px" mt="-2" mb="2">
                   {passwordError}
                 </Text>
-              )} */}
+              )}
 
             </FormControl>
           </ModalBody>
@@ -484,7 +518,8 @@ function ModalEdit({
                 isDisabled={
                   !(
                     isAllValid.fullname ||
-                    isAllValid.username
+                    isAllValid.username ||
+                    isAllValid.password
                   )
                 }
               >

@@ -4,7 +4,7 @@ import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import { CoursesList } from "./pages/admin/PremiumCourses";
+import Courses from "./pages/admin/PremiumCourses";
 import Users from "./pages/admin/PremiumUsers";
 import Request from "./pages/admin/Request";
 import AdminRegister from "./pages/admin/AdminRegister";
@@ -33,7 +33,7 @@ function App() {
         <Route
           path="courses"
           element={
-            <AdminLayout redirect="/not-found" children={<CoursesList />} />
+            <AdminLayout redirect="/not-found" children={<Courses />} />
           }
         />
         <Route

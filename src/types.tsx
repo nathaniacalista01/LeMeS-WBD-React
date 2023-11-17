@@ -1,9 +1,10 @@
 export type Courses = {
     id: number;
-    title: String;
-    description: String;
-    image_path: String;
+    title: string;
+    description: string;
+    image_path: string;
     release_date: string;
+    teacher_id: number;
 }
 
 export type Modules = {
