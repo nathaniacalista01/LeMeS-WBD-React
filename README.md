@@ -1,4 +1,4 @@
-# binotify-premium-app: The Frontend for binotify
+# LeMeS Premium App: The Frontend for LeMeS
 
 ## Introduction
 
