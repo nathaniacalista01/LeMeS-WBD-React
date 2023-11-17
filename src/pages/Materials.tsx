@@ -19,11 +19,7 @@ import {
   AccordionPanel,
   Button,
 } from "@chakra-ui/react";
-import {
-  BiSolidEdit,
-  BiSolidTrash,
-  BiPlusCircle,
-} from "react-icons/bi";
+import { BiSolidEdit, BiSolidTrash, BiPlusCircle } from "react-icons/bi";
 import { useNavigate, useParams } from "react-router-dom";
 import { Modules, Materials } from "../types";
 import {
@@ -67,8 +63,8 @@ const ModuleMaterials = () => {
         const res = await newAxiosInstance.get(
           `${config.REST_API_URL}/modul/course/${course_id}`
         );
-        const {status,data} = res ["data"];
-        if(status !== 200){
+        const { status, data } = res["data"];
+        if (status !== 200) {
           navigate("/not-found");
         }
         const ModulesData: Modules[] = res.data.data.map((module: any) => {
@@ -173,7 +169,11 @@ const ModuleMaterials = () => {
       const res = await newAxiosInstance.get(
         `${config.REST_API_URL}/material/module/${module_id}`
       );
-      // console.log(res);
+      const { status, data } = res["data"];
+      console.log(status,data);
+      if (status !== 200) {
+        navigate("/not-found");
+      }
       const MaterialsData: Materials[] = res.data.data.map((material: any) => {
         return {
           id: material.id,
