@@ -23,6 +23,7 @@ import {
   Tr,
   Th,
   Td,
+  Select,
 } from "@chakra-ui/react";
 import {
   BiSolidTrash,
@@ -46,6 +47,7 @@ import { IconContext } from "react-icons";
 const Request = () => {
   const initialUsers: Users[] = [];
   const [requests, setRequests] = useState<RequestType[]>([]);
+  const [status, setStatus] = useState("");
   const [refresher, setRefresher] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -85,8 +87,8 @@ const Request = () => {
           setTotalPages(Math.ceil(totalRows / n));
           setRequests(res.data.data);
           setIsLoading(false);
-        }else{
-          setIsError(true)
+        } else {
+          setIsError(true);
         }
       } catch (error) {
         setIsError(true);
@@ -142,7 +144,9 @@ const Request = () => {
     closeModalRejecting();
     setRefresher((prevRefresh) => !prevRefresh); // lgsung request data baru tanpa hrus reload page (harusnya works)
   };
-
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setStatus(e.target.value);
+  };
   // HANDLING ACC REQUEST
   const [isModalAcceptingOpen, setIsModalAcceptingOpen] = useState(false);
   const [acceptingID, setAcceptingID] = useState(0);
@@ -189,12 +193,8 @@ const Request = () => {
     closeModalAccepting();
     setRefresher((prevRefresh) => !prevRefresh); // lgsung request data baru tanpa hrus reload page (harusnya works)
   };
-  if(isError){
-    return (
-      <Container>
-        Error...
-      </Container>
-    )
+  if (isError) {
+    return <Container>Error...</Container>;
   }
 
   return (

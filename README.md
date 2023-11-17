@@ -1,46 +1,73 @@
-# Getting Started with Create React App
+# binotify-premium-app: The Frontend for binotify
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Introduction
 
-## Available Scripts
+Repository ini adalah frontend dari aplikasi LeMeS premium yang digunakan oleh Admin untuk mengelola permintaan request premium dari para pengguna. Selain itu, Teacher juga dapat menggunakan frontend ini untuk mengelola course premium, beserta dengan modul dan materialnya. Apalikasi ini dibuat dengan menggunakan Reat + Typescript. Aplikasi ini dibuat untuk memenuhi tugas besar mata kuliah Pemrograman Aplikasi Berbasis Web.
 
-In the project directory, you can run:
+## Overview Feature
 
-### `yarn start`
+- Chakra UI
+- Loading state
+- Toast
+- HTTP Client with Axios
+- Cookie
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Screenshot
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Login Page
+![Login page ](image-1.png)
+### Register Page
+![Register Page](image.png)
+### Upgrade Premium Request Page (Admin)
+![](image-2.png)
 
-### `yarn test`
+### Premium Course Management Page (Admin)
+![Alt text](image-3.png)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Premium User Management Page (Admin)
+![](image-4.png)
 
-### `yarn build`
+### Add User (Admin)
+![Alt text](image-5.png)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Add Course (Admin)
+![Alt text](image-6.png)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Edit User
+![Alt text](image-7.png)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Edit Course
+![Alt text](image-8.png)
 
-### `yarn eject`
+### Delete User
+![Alt text](image-10.png)
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Delete Course
+![Alt text](image-9.png)
+### Upgrade Premium
+![Alt text](image-11.png)
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Decline Premium
+![Alt text](image-12.png)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Cara menjalankan aplikasi
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+1. Pastikan sudah terinstall NodeJS
+2. clone repositori ini
+3. Buat file `.env` pada root folder aplikasi mengikuti contoh .env.example
+4. Install dependency dengan menjalankan perintah `yarn install`
+6. Atau, dalam mode production, `yarn start`
 
-## Learn More
+### Pembagian Tugas
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. Frontend Fitur Regsiter & Login:
+2. Backend Fitur Register & Login : 13521139
+3. Frontend User Premium's table: 
+4. Backend  User Premium's table: 
+5. Frontend Course Premium's table: 
+6. Backend  Course Premium's table: 
+7. Frontend Request Premium's table: 
+8. Backend  Request Premium's table: 13521139
+9. Frontend Edit Profile
+10. Backend Edit Profile : 13521139
+11. Project Setup: 13521139
