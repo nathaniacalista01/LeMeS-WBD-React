@@ -116,9 +116,26 @@ const UsersList = () => {
     try {
       setIsLoading(true);
       const response = await newAxiosInstance.delete(`${config.REST_API_URL}/user/${deleteID}`);
-
-      console.log('User deleted successfully:', response.data.message);
-
+      const{status,data} = response["data"];
+      if(status !== 200){
+        toast({
+          title : "Delete failed",
+          description : "User has not been deleted",
+          status : "error",
+          duration : 3000,
+          isClosable : true,
+          position : "top"
+        })
+      }else{
+        toast({
+          title : "Delete success!",
+          description : "User has been deleted",
+          status : "success",
+          duration : 3000,
+          isClosable : true,
+          position : "top"
+        })
+      }
       setIsLoading(false);
     } catch (error) {
       console.error('Error deleting user:', error);
@@ -409,7 +426,26 @@ function ModalEdit({
           fullname: newFullname,
           password: newPassword,
         });
-        console.log('User edited successfully');
+        const {status,data} = response;
+        if(status === 200){
+          toast({
+            title : "Edit success!",
+            description : "User has been edited successfully!",
+            status : "success",
+            isClosable : true,
+            duration : 3000,
+            position : "top"
+          })
+        }else{
+          toast({
+            title : "Edit failed!",
+            description : "User has not been deleted!",
+            status:"error",
+            isClosable : true,
+            duration : 3000,
+            position:"top"
+          })
+        }
         setIsLoading(false);
         successEdit();
         handleClose();

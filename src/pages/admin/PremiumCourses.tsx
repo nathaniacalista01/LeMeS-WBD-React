@@ -35,8 +35,15 @@ import config from "../../config/config";
 import axios from "axios";
 import { axiosConfig, axiosInstance } from "../../utils/axios";
 import { IconContext } from "react-icons";
-import { Courses } from "../../types"
-import { BiSolidTrash, BiError, BiChevronLeftCircle, BiChevronRightCircle, BiSolidEdit } from "react-icons/bi";
+import { Courses } from "../../types";
+import {
+  BiSolidTrash,
+  BiError,
+  BiChevronLeftCircle,
+  BiChevronRightCircle,
+  BiSolidEdit,
+} from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
 
 const CoursesList = () => {
   const initialCourses: Courses[] = [];
@@ -47,6 +54,7 @@ const CoursesList = () => {
   const [page, setPage] = useState(1);
   const newAxiosInstance = axios.create(axiosConfig());
   const toast = useToast();
+  const navigate = useNavigate();
   const n = 6;
 
   // FETCH DATA COURSES
@@ -54,19 +62,13 @@ const CoursesList = () => {
     const getCourses = async (pageNumber: number) => {
       try {
         setIsLoading(true);
-        const res = await newAxiosInstance.get(`${config.REST_API_URL}/course?page=${pageNumber}`);
+        const res = await newAxiosInstance.get(
+          `${config.REST_API_URL}/course?page=${pageNumber}`
+        );
         const { status } = res["data"];
-        // if (status === 401) {
-        //     toast({
-        //         title: "Unauthorized user",
-        //         description: "You have to log in",
-        //         status: "error",
-        //         duration: 3000,
-        //         isClosable: true,
-        //         position: "top"
-        //     })
-        //     navigate("/login");
-        // }
+        if (status !== 200) {
+          navigate("/not-found");
+        }
         setTotalPages(Math.ceil(res.data.total / n));
 
         const coursesData: Courses[] = res.data.data.map((course: any) => {
@@ -82,10 +84,10 @@ const CoursesList = () => {
         setCourses(coursesData);
         setIsLoading(false);
       } catch (error) {
-        console.error('Axios Error:', error);
+        console.error("Axios Error:", error);
         setIsLoading(false);
       }
-    }
+    };
 
     getCourses(page);
   }, [page, refresher]);
@@ -107,7 +109,14 @@ const CoursesList = () => {
   const [editTitle, setEditedTitle] = useState("");
   const [editReleaseDate, setEditedReleaseDate] = useState("");
   const [editID, setEditID] = useState(0);
-  const openModalEdit = (id: number, title: string, description: string, image_path: string, release_date: string, teacher_id: number) => {
+  const openModalEdit = (
+    id: number,
+    title: string,
+    description: string,
+    image_path: string,
+    release_date: string,
+    teacher_id: number
+  ) => {
     setEditID(id);
     setEditedTitle(title);
     setEditedDescription(description);
@@ -141,8 +150,8 @@ const CoursesList = () => {
 
   const successDelete = () => {
     closeModalDelete();
-    setRefresher((prevRefresh) => !prevRefresh) // lgsung request data baru tanpa hrus reload page (harusnya works)
-  }
+    setRefresher((prevRefresh) => !prevRefresh); // lgsung request data baru tanpa hrus reload page (harusnya works)
+  };
 
   return (
     <Container overflow="auto" maxW={"100vw"} maxH={"100vh"}>
@@ -203,26 +212,48 @@ const CoursesList = () => {
               </Button>
             </Box>
           </Box>
-          <TableContainer width="80vw" border="1px" borderColor={"#564c95"} borderRadius="10">
-            <Table colorScheme='purple' fontSize={"16"}>
+          <TableContainer
+            width="80vw"
+            border="1px"
+            borderColor={"#564c95"}
+            borderRadius="10"
+          >
+            <Table colorScheme="purple" fontSize={"16"}>
               <Thead bg="#564c95" textColor="white" fontWeight={"bold"}>
                 <Tr>
-                  <Th textAlign={"center"} color="white" w="10%">CourseID</Th>
-                  <Th textAlign={"center"} color="white" w="25%">Title</Th>
-                  <Th textAlign={"center"} color="white" w="35%">Description</Th>
-                  <Th textAlign={"center"} color="white" w="10%">Release Date</Th>
-                  <Th textAlign={"center"} color="white" w="20%">Action</Th>
+                  <Th textAlign={"center"} color="white" w="10%">
+                    CourseID
+                  </Th>
+                  <Th textAlign={"center"} color="white" w="25%">
+                    Title
+                  </Th>
+                  <Th textAlign={"center"} color="white" w="35%">
+                    Description
+                  </Th>
+                  <Th textAlign={"center"} color="white" w="10%">
+                    Release Date
+                  </Th>
+                  <Th textAlign={"center"} color="white" w="20%">
+                    Action
+                  </Th>
                 </Tr>
               </Thead>
               {courses
                 .sort((a, b) => a.id - b.id)
                 .map((item, index) => (
                   <Tbody>
-                    <Tr key={item.id} bg={index % 2 === 0 ? 'white' : 'gray.100'}>
+                    <Tr
+                      key={item.id}
+                      bg={index % 2 === 0 ? "white" : "gray.100"}
+                    >
                       <Td textAlign={"center"}>{item.id}</Td>
-                      <Td textAlign={"center"} fontWeight={"bold"}>{item.title}</Td>
+                      <Td textAlign={"center"} fontWeight={"bold"}>
+                        {item.title}
+                      </Td>
                       <Td textAlign={"center"}>{item.description}</Td>
-                      <Td textAlign={"center"}>{item.release_date.substring(0, 10)}</Td>
+                      <Td textAlign={"center"}>
+                        {item.release_date.substring(0, 10)}
+                      </Td>
                       <Td textAlign={"center"}>
                         <Icon
                           as={BiSolidEdit}
@@ -237,7 +268,7 @@ const CoursesList = () => {
                               item.description,
                               item.image_path,
                               item.release_date,
-                              item.teacher_id,
+                              item.teacher_id
                             )
                           }
                         ></Icon>
@@ -248,7 +279,13 @@ const CoursesList = () => {
                           color={"#564c95"}
                           _hover={{ color: "red" }}
                           cursor={"pointer"}
-                          onClick={() => openModalDelete(item.id, item.title, item.image_path)}
+                          onClick={() =>
+                            openModalDelete(
+                              item.id,
+                              item.title,
+                              item.image_path
+                            )
+                          }
                         ></Icon>
                       </Td>
                     </Tr>
@@ -263,7 +300,7 @@ const CoursesList = () => {
                 pageClassName={"page-item"}
                 activeClassName={"active-page"}
                 onPageChange={(selectedItem) => {
-                  if ('selected' in selectedItem) {
+                  if ("selected" in selectedItem) {
                     const nextPage = selectedItem.selected + 1;
                     setPage(nextPage);
                   }
@@ -299,19 +336,15 @@ interface ModalAddProps {
   successAdd: () => void;
 }
 
-function ModalAdd({
-  isOpen,
-  onClose,
-  successAdd,
-}: ModalAddProps) {
+function ModalAdd({ isOpen, onClose, successAdd }: ModalAddProps) {
   const axiosInstance = axios.create(axiosConfig());
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [newTitle, setNewTitle] = useState<string>('');
-  const [newDescription, setNewDescription] = useState<string>('');
-  const [newTeacher, setNewTeacher] = useState('');
-  const [fileName, setFileName] = useState<string>('');
-  const [teacherError, setTeacherError] = useState<string>('');
+  const [newTitle, setNewTitle] = useState<string>("");
+  const [newDescription, setNewDescription] = useState<string>("");
+  const [newTeacher, setNewTeacher] = useState("");
+  const [fileName, setFileName] = useState<string>("");
+  const [teacherError, setTeacherError] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isAllValid, setIsAllValid] = useState({
     title: false,
@@ -355,29 +388,26 @@ function ModalAdd({
   const handleChangeTeacher = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value.length > 0) {
       try {
-        const id = e.target.value.replace(/\s/g, '');
-        axiosInstance
-          .get(`${config.REST_API_URL}/user/${id}`)
-          .then((res) => {
-
-            if (res.data.status != 200) {
-              setTeacherError("Teacher with this ID is not available");
-              setIsAllValid((prevState) => ({
-                ...prevState,
-                teacher: false,
-              }));
-            } else {
-              setTeacherError("");
-              setNewTeacher(e.target.value);
-              setIsAllValid((prevState) => ({
-                ...prevState,
-                teacher: true,
-              }));
-            }
-          });
+        const id = e.target.value.replace(/\s/g, "");
+        axiosInstance.get(`${config.REST_API_URL}/user/${id}`).then((res) => {
+          if (res.data.status != 200) {
+            setTeacherError("Teacher with this ID is not available");
+            setIsAllValid((prevState) => ({
+              ...prevState,
+              teacher: false,
+            }));
+          } else {
+            setTeacherError("");
+            setNewTeacher(e.target.value);
+            setIsAllValid((prevState) => ({
+              ...prevState,
+              teacher: true,
+            }));
+          }
+        });
       } catch (error) {
         console.log(error);
-      };
+      }
     } else {
       setTeacherError("Teacher with this ID is not available");
       setIsAllValid((prevState) => ({
@@ -404,15 +434,21 @@ function ModalAdd({
         setSelectedFile(null);
         setIsAllValid({ ...isAllValid, file: false });
       }
-    }
+    };
     checkFile();
   }, [selectedFile]);
 
   const handleClose = () => {
     onClose();
     setTeacherError("");
-    setIsAllValid({ ...isAllValid, title: false, description: false, teacher: false, file: false })
-  }
+    setIsAllValid({
+      ...isAllValid,
+      title: false,
+      description: false,
+      teacher: false,
+      file: false,
+    });
+  };
 
   const upload = () => {
     const formData = new FormData();
@@ -421,7 +457,7 @@ function ModalAdd({
     }
     axiosInstance
       .post(`${config.REST_API_URL}/course/image`, formData)
-      .then((res) => { })
+      .then((res) => {})
       .catch((er) => console.log(er));
   };
 
@@ -433,19 +469,40 @@ function ModalAdd({
       } catch (error) {
         console.error("Error uploading:", error);
       } finally {
-        const response = await axiosInstance.post(`${config.REST_API_URL}/course`, {
-          title: newTitle,
-          description: newDescription,
-          image_path: fileName,
-          teacher_id: parseInt(newTeacher),
-        });
-
-        console.log('Course added successfully:', response.data.message);
+        const response = await axiosInstance.post(
+          `${config.REST_API_URL}/course`,
+          {
+            title: newTitle,
+            description: newDescription,
+            image_path: fileName,
+            teacher_id: parseInt(newTeacher),
+          }
+        );
+        const { status, data } = response;
+        if (status === 200) {
+          toast({
+            title: "Success adding course!",
+            description: "New premium course has been added!",
+            status: "success",
+            isClosable: true,
+            duration: 3000,
+            position: "top",
+          });
+        } else {
+          toast({
+            title: "Failed adding course!",
+            description: "Course has not been added",
+            status: "error",
+            isClosable: true,
+            duration: 3000,
+            position: "top",
+          });
+        }
         setIsLoading(false);
         successAdd();
       }
     } catch (error) {
-      console.error('Error adding course:', error);
+      console.error("Error adding course:", error);
     }
     handleClose();
   };
@@ -504,12 +561,12 @@ function ModalAdd({
                 placeholder={"Assign Teacher"}
                 size="lg"
                 onKeyPress={(e) => {
-                  if (e.key === ' ') {
+                  if (e.key === " ") {
                     e.preventDefault();
                   }
                 }}
                 onChange={(e) => {
-                  const sanitizedValue = e.target.value.replace(/[^0-9]/g, '');
+                  const sanitizedValue = e.target.value.replace(/[^0-9]/g, "");
                   e.target.value = sanitizedValue;
                   handleChangeTeacher(e);
                 }}
@@ -531,7 +588,6 @@ function ModalAdd({
                 size="lg"
                 onChange={handleChangeFile}
               />
-
             </FormControl>
           </ModalBody>
 
@@ -564,8 +620,6 @@ function ModalAdd({
   );
 }
 
-
-
 {
   /* Modal Edit */
 }
@@ -593,15 +647,15 @@ function ModalEdit({
   const axiosInstance = axios.create(axiosConfig());
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [newTitle, setNewTitle] = useState<string>('');
-  const [newDescription, setNewDescription] = useState<string>('');
-  const [newTeacher, setNewTeacher] = useState('');
-  const [fileName, setFileName] = useState<string>('');
-  const [oldTitle, setOldTitle] = useState<string>('');
-  const [oldDescription, setOldDescription] = useState<string>('');
-  const [oldTeacher, setOldTeacher] = useState('');
-  const [oldFileName, setOldFileName] = useState<string>('');
-  const [teacherError, setTeacherError] = useState<string>('');
+  const [newTitle, setNewTitle] = useState<string>("");
+  const [newDescription, setNewDescription] = useState<string>("");
+  const [newTeacher, setNewTeacher] = useState("");
+  const [fileName, setFileName] = useState<string>("");
+  const [oldTitle, setOldTitle] = useState<string>("");
+  const [oldDescription, setOldDescription] = useState<string>("");
+  const [oldTeacher, setOldTeacher] = useState("");
+  const [oldFileName, setOldFileName] = useState<string>("");
+  const [teacherError, setTeacherError] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isAllValid, setIsAllValid] = useState({
     title: false,
@@ -645,30 +699,27 @@ function ModalEdit({
   const handleChangeTeacher = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value.length > 0) {
       try {
-        const id = e.target.value.replace(/\s/g, '');
-        axiosInstance
-          .get(`${config.REST_API_URL}/user/${id}`)
-          .then((res) => {
-
-            if (res.data.status != 200) {
-              setTeacherError("Teacher with this ID is not available");
-              setNewTeacher(oldTeacher);
-              setIsAllValid((prevState) => ({
-                ...prevState,
-                teacher: false,
-              }));
-            } else {
-              setTeacherError("");
-              setNewTeacher(e.target.value);
-              setIsAllValid((prevState) => ({
-                ...prevState,
-                teacher: true,
-              }));
-            }
-          });
+        const id = e.target.value.replace(/\s/g, "");
+        axiosInstance.get(`${config.REST_API_URL}/user/${id}`).then((res) => {
+          if (res.data.status != 200) {
+            setTeacherError("Teacher with this ID is not available");
+            setNewTeacher(oldTeacher);
+            setIsAllValid((prevState) => ({
+              ...prevState,
+              teacher: false,
+            }));
+          } else {
+            setTeacherError("");
+            setNewTeacher(e.target.value);
+            setIsAllValid((prevState) => ({
+              ...prevState,
+              teacher: true,
+            }));
+          }
+        });
       } catch (error) {
         console.log(error);
-      };
+      }
     } else {
       setTeacherError("");
       setNewTeacher(oldTeacher);
@@ -696,15 +747,21 @@ function ModalEdit({
         setSelectedFile(null);
         setIsAllValid({ ...isAllValid, file: false });
       }
-    }
+    };
     checkFile();
   }, [selectedFile]);
 
   const handleClose = () => {
     onClose();
     setTeacherError("");
-    setIsAllValid({ ...isAllValid, title: false, description: false, teacher: false, file: false })
-  }
+    setIsAllValid({
+      ...isAllValid,
+      title: false,
+      description: false,
+      teacher: false,
+      file: false,
+    });
+  };
 
   useEffect(() => {
     // Fetch Data to Get Course Detail
@@ -725,7 +782,7 @@ function ModalEdit({
           setOldDescription(res.data.data.description);
           setOldFileName(res.data.data.image_path);
         } else {
-          console.log("No response")
+          console.log("No response");
         }
         setIsLoading(false);
       } catch (error) {
@@ -753,7 +810,7 @@ function ModalEdit({
     }
     axiosInstance
       .post(`${config.REST_API_URL}/course/image`, formData)
-      .then((res) => { })
+      .then((res) => {})
       .catch((er) => console.log(er));
   };
 
@@ -769,20 +826,41 @@ function ModalEdit({
       } catch (error) {
         console.error("Error uploading:", error);
       } finally {
-
-        const response = await axiosInstance.put(`${config.REST_API_URL}/course/${courseId}`, {
-          title: newTitle,
-          description: newDescription,
-          image_path: fileName,
-          teacher_id: newTeacher,
-        });
-
-        console.log('Course edited successfully:', response.data.message);
+        const response = await axiosInstance.put(
+          `${config.REST_API_URL}/course/${courseId}`,
+          {
+            title: newTitle,
+            description: newDescription,
+            image_path: fileName,
+            teacher_id: newTeacher,
+          }
+        );
+        const { status, data } = response;
+        if (status === 200) {
+          toast({
+            title: "Edit success!",
+            description: "Course has been edited successfully!",
+            status: "success",
+            isClosable: true,
+            duration: 3000,
+            position: "top",
+          });
+        } else {
+          toast({
+            title: "Edit failed!",
+            description: "Course has not been deleted!",
+            status: "error",
+            isClosable: true,
+            duration: 3000,
+            position: "top",
+          });
+        }
+        console.log("Course edited successfully:", response.data.message);
         setIsLoading(false);
         successEdit();
       }
     } catch (error) {
-      console.error('Error editing course:', error);
+      console.error("Error editing course:", error);
     }
     handleClose();
   };
@@ -841,12 +919,12 @@ function ModalEdit({
                 placeholder={oldTeacher}
                 size="lg"
                 onKeyPress={(e) => {
-                  if (e.key === ' ') {
+                  if (e.key === " ") {
                     e.preventDefault();
                   }
                 }}
                 onChange={(e) => {
-                  const sanitizedValue = e.target.value.replace(/[^0-9]/g, '');
+                  const sanitizedValue = e.target.value.replace(/[^0-9]/g, "");
                   e.target.value = sanitizedValue;
                   handleChangeTeacher(e);
                 }}
@@ -868,7 +946,6 @@ function ModalEdit({
                 size="lg"
                 onChange={handleChangeFile}
               />
-
             </FormControl>
           </ModalBody>
 
@@ -922,21 +999,40 @@ function ModalDelete({
   successDelete,
 }: ModalDeleteProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
   const handleDelete = async () => {
     try {
       setIsLoading(true);
-      axiosInstance.delete(`${config.REST_API_URL}/course/image/${oldFile}`)
-      const response = await axiosInstance.delete(`${config.REST_API_URL}/course/${oldId}`);
-
-      console.log('Course deleted successfully:', response.data.message);
-
+      axiosInstance.delete(`${config.REST_API_URL}/course/image/${oldFile}`);
+      const response = await axiosInstance.delete(
+        `${config.REST_API_URL}/course/${oldId}`
+      );
+      const { status, data } = response["data"];
+      if (status === 200) {
+        toast({
+          title : "Delete success!",
+          description : "Course has been deleted",
+          status : "success",
+          duration : 3000,
+          isClosable : true,
+          position : "top"
+        });
+      } else {
+        toast({
+          title: "Delete failed",
+          description: "Course has not been deleted",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+          position: "top",
+        });
+      }
       setIsLoading(false);
       successDelete();
     } catch (error) {
-      console.error('Error deleting course:', error);
-
-    };
-  }
+      console.error("Error deleting course:", error);
+    }
+  };
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
