@@ -27,13 +27,8 @@ export default function Navbar() {
   };
   useEffect(()=>{
     checkAdmin();
+    getProfile();
   },[])
-  const pict: Profile = {
-    image_path: "defaultprofile.jpg",
-    label: "username",
-    role: "admin",
-    to: "/profile",
-  };
   const adminItems: Item[] = [
     { icon: BiUserPlus, label: "Upgrade Request", to: "/admin/request" },
     { icon: BiBookAdd, label: "Premium Courses", to: "/admin/courses" },
@@ -43,6 +38,31 @@ export default function Navbar() {
     { icon: BiHome, label: "Home", to: "/course?page=1" },
     // { icon: BiLogOut, label: "Logout", to: "logout" }
   ];
+
+  const [userImage, setUserImage] = useState("");
+  const [username, setUsername] = useState("");
+  const [userRole, setUserRole] = useState("");
+  const getProfile = () => {
+    axiosInstance
+    .get(`${config.REST_API_URL}/user/profile`)
+    .then((res) => {
+      if (res.data.data.image_path){
+        setUserImage(res.data.data.image_path);
+      } else{
+        setUserImage("defaultprofile.jpg");
+      }
+      setUsername(res.data.data.username);
+      {isAdmin ? setUserRole("Admin") : setUserRole("Teacher")}
+    })
+  }
+  
+  const pict: Profile = {
+    image_path: userImage.toString(),
+    label: username,
+    role: userRole,
+    to: "/profile",
+  };
+  
   return (
     <Provider>
       <Container sidenav={<Sidenav navItems={isAdmin ? adminItems : teacherItems} pict={!isAdmin ? pict : undefined} />}>
