@@ -60,14 +60,18 @@ Repository ini adalah frontend dari aplikasi LeMeS premium yang digunakan oleh A
 
 ### Pembagian Tugas
 
-1. Frontend Fitur Regsiter & Login:
+1. Frontend Fitur Regsiter & Login: 13521161, 13521164
 2. Backend Fitur Register & Login : 13521139
-3. Frontend User Premium's table: 
-4. Backend  User Premium's table: 
-5. Frontend Course Premium's table: 
-6. Backend  Course Premium's table: 
-7. Frontend Request Premium's table: 
+3. Frontend User Premium's table: 13521161
+4. Backend  User Premium's table: 13521164
+5. Frontend Course Premium's table: 13521161, 13521164
+6. Backend  Course Premium's table: 13521161, 13521164
+7. Frontend Request Premium's table: 13521164
 8. Backend  Request Premium's table: 13521139
-9. Frontend Edit Profile
+9. Frontend Edit Profile : 13521161, 13521164
 10. Backend Edit Profile : 13521139
 11. Project Setup: 13521139
+12. Frontend Fitur Homepage (untuk Teacher) : 13521139, 13521164
+13. Backend Fitur Homepage : 13521139, 13521164
+14. Frontend Not Found : 13521161
+15. Modals and Popus : 13521161, 13521164
