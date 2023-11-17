@@ -24,7 +24,7 @@ import {
   BiSolidTrash,
   BiPlusCircle,
 } from "react-icons/bi";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Modules, Materials } from "../types";
 import {
   EditModuleModal,
@@ -46,6 +46,7 @@ import "pdfjs-dist/build/pdf.worker.entry";
 import Loading from "../components/loading/Loading";
 
 const ModuleMaterials = () => {
+  const navigate = useNavigate();
   const { course_id } = useParams();
   const [course_id_int, setCourseIDInt] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -66,6 +67,10 @@ const ModuleMaterials = () => {
         const res = await newAxiosInstance.get(
           `${config.REST_API_URL}/modul/course/${course_id}`
         );
+        const {status,data} = res ["data"];
+        if(status !== 200){
+          navigate("/not-found");
+        }
         const ModulesData: Modules[] = res.data.data.map((module: any) => {
           return {
             id: module.id,

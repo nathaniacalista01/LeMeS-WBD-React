@@ -58,17 +58,6 @@ const UsersList = () => {
         setIsLoading(true);
         const res = await newAxiosInstance.get(`${config.REST_API_URL}/user?page=${pageNumber}`);
         const { status } = res["data"];
-        // if (status === 401) {
-        //     toast({
-        //         title: "Unauthorized user",
-        //         description: "You have to log in",
-        //         status: "error",
-        //         duration: 3000,
-        //         isClosable: true,
-        //         position: "top"
-        //     })
-        //     navigate("/login");
-        // }
         setTotalPages(Math.ceil(res.data.total / n));
 
         const usersData: Users[] = res.data.data.map((user: any) => {

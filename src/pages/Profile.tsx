@@ -141,7 +141,6 @@ function Profile() {
     // Dihapus cuma kalau adaa file pengganti dia
     if (oldImagePath && filepath) {
       // Kalau ada gambar lama, minta hapus
-      console.log('Masuk ke hapus');
       axiosInstance
         .delete(`${config.REST_API_URL}/user/image/${oldImagePath}`)
         .then((res) => console.log(res))

@@ -214,7 +214,7 @@ export function EditModuleModal({
                     setEditedDescription(res.data.data.description);
                     setTitle(res.data.data.title);
                     setDescription(res.data.data.description);
-                } else { }
+                }
                 setIsLoading(false);
             } catch (error) {
                 console.error('Error fetching module data:', error);
